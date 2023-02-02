@@ -23,12 +23,12 @@ class AgreementController extends Controller
         foreach ($agreements as $agreement)
         {
             $agreement->type_agreement_name = TypeAgreement::find($agreement->type_agreement_id)->type_agreement_name;
-            $agreement->place_name = ServicePlace::find(ExonerationDetail::find($agreement->id)->service_place_id)->place_name;
+            //$agreement->place_name = ServicePlace::find(ExonerationDetail::find($agreement->id)->service_place_id)->place_name;
             $agreement->entity_name = Entity::find($agreement->entity_id)->entity_name;
-            $agreement->hour = ExonerationDetail::find($agreement->id)->hour;
-            $agreement->people = ExonerationDetail::find($agreement->id)->people;
-            $agreement->date = ExonerationDetail::find($agreement->id)->date;
-            $agreement->exonerated_amount = ExonerationDetail::find($agreement->id)->exonerated_amount;
+            //$agreement->hour = ExonerationDetail::find($agreement->id)->hour;
+            //$agreement->people = ExonerationDetail::find($agreement->id)->people;
+            //$agreement->date = ExonerationDetail::find($agreement->id)->date;
+            //$agreement->exonerated_amount = ExonerationDetail::find($agreement->id)->exonerated_amount;
         }
 
         $agreements = Encrypt::encryptObject($agreements, "id");
