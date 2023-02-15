@@ -139,21 +139,31 @@
                           </thead>
                           <tbody>
                             <tr
-                              v-for="(exoneration, index) in recordsFiltered"
+                              v-for="(
+                                exoneration, index
+                              ) in editedItem.exonerations"
                               :key="index"
                             >
                               <td>
-                                <p>{{ exoneration.exonerations.place_name }}</p>
-                              </td>
-                              <!-- <td>
-                                <p>{{ exoneration.agreement_name }}</p>
-                              </td>
-                              <td>
-                                <p>{{ exoneration.agreement_name }}</p>
+                                <p>
+                                  {{ exoneration.place_name }}
+                                </p>
                               </td>
                               <td>
-                                <p>{{ exoneration.agreement_name }}</p>
-                              </td> -->
+                                <p>{{ exoneration.date }}</p>
+                              </td>
+                              <td>
+                                <p>{{ exoneration.hour }}</p>
+                              </td>
+                              <td>
+                                <p>{{ exoneration.people }}</p>
+                              </td>
+                              <td>
+                                <p>{{ exoneration.charge }}</p>
+                              </td>
+                              <td>
+                                <p>{{ exoneration.exonerated_amount }}</p>
+                              </td>
                               <td class="text-center">
                                 <a
                                   @click="deleteAcademic(exoneration.id)"
@@ -445,7 +455,7 @@ export default {
       { text: "ESPACIO/ELENCO", value: "place_name" },
       { text: "FECHAS EXONERADAS", value: "date" },
       { text: "HORAS EXONERADAS", value: "hour" },
-      { text: "TARIFA ($)", value: "charge" },
+      { text: "TARIFA ($)", value: "not_charged" },
       { text: "MONTO EXONERADO ($)", value: "exonerated_amount" },
       { text: "ACCIONES", value: "actions", sortable: false },
     ],
@@ -599,8 +609,6 @@ export default {
     async initialize() {
       this.records = [];
       this.recordsFiltered = [];
-      this.exonerations = [];
-      this.recordsFilteredExonerations = [];
 
       let requests = [
         agreementApi.get(),
@@ -619,17 +627,11 @@ export default {
         );
       });
 
-      console.log(responses);
       this.records = responses[0].data.agreements;
       this.types = responses[1].data.types;
       this.entities = responses[2].data.entities;
       this.directions = responses[3].data.directions;
-      this.editedItem.national_direction_name =
-        this.editedItem.national_direction_name ??
-        this.directions[3].national_direction_name;
       this.places = responses[4].data.places;
-      this.editedItem.place_name =
-        this.editedItem.place_name ?? this.places[4].place_name;
       this.dependences = responses[5].data.dependences;
       this.tariffs = responses[6].data.tariffs;
 
@@ -637,9 +639,6 @@ export default {
       this.changePlace();
 
       this.recordsFiltered = this.records;
-      //console.log(this.recordsFiltered);
-      this.exonerations = this.recordsFiltered.exonerations;
-      console.log(this.exonerations);
     },
 
     async getExonerations(agreementId) {

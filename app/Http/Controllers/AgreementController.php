@@ -21,7 +21,11 @@ class AgreementController extends Controller
 
         foreach ($agreements as $agreement)
         {
-            $agreement->exonerations = Exoneration::where('agreement_id', $agreement->id)->get();
+            $agreement->exonerations = Exoneration::select('exonerations.*', 'service_places.place_name', DB::raw('IFNULL(tariffs.amount, exonerations.not_charged) AS charge'))
+            ->leftJoin('service_places', 'exonerations.service_place_id', '=', 'service_places.id')
+            ->leftJoin('tariffs', 'exonerations.tariff_id', '=', 'tariffs.id')
+            ->where('exonerations.agreement_id', $agreement->id)
+            ->get();
             $agreement->entity_name = Entity::find($agreement->entity_id)->entity_name;
             $agreement->type_agreement_name = TypeAgreement::find($agreement->type_agreement_id)->type_agreement_name;
         }

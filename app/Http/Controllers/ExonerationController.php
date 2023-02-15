@@ -19,10 +19,10 @@ class ExonerationController extends Controller
      */
     public function index(Request $request)
     {
-        $exonerations = Exoneration::all();
+        //$exonerations = Exoneration::all();
         //$exonerations = Exoneration::where('agreement_id', $request->agreement_id)->get();
 
-        foreach($exonerations as $exoneration)
+        /* foreach($exonerations as $exoneration)
         {
             $exoneration->place_name = ServicePlace::find(Exoneration::find($exoneration->id)->service_place_id)->place_name;
             $exoneration->people = Exoneration::find($exoneration->id)->people;
@@ -35,14 +35,14 @@ class ExonerationController extends Controller
             }else{
                 $exoneration->charge = $exonerationDetail->not_charged;
             } 
-        }
+        } */
 
-        $exonerations = Encrypt::encryptObject($exonerations,"id");
+        /* $exonerations = Encrypt::encryptObject($exonerations,"id");
 
         return response()->json([
             "status"=>"success", 
             "message"=>"Registro obtenido correctamente.", 
-            "exonerations"=>$exonerations]);
+            "exonerations"=>$exonerations]); */
     }
 
     public function store(Request $request)
