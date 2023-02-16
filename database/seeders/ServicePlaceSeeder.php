@@ -66,8 +66,7 @@ class ServicePlaceSeeder extends Seeder
             ],
             [
                 "id" => 13,
-                "place_name" => "PARQUES ARQUEOLÓGICOS
-                (SAN ANDRES, CASA BLANCA, JOYA DE CEREN, TAZUMAL Y CIHUATÁN)",
+                "place_name" => "PARQUES ARQUEOLÓGICOS (SAN ANDRES, CASA BLANCA, JOYA DE CEREN, TAZUMAL Y CIHUATÁN)",
             ],
         ]);
     }

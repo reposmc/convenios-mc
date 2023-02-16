@@ -11,7 +11,7 @@ use App\Http\Controllers\NationalDirectionController;
 use App\Http\Controllers\TariffController;
 use App\Http\Controllers\ServicePlaceController;
 use App\Http\Controllers\DependenceController;
-use App\Http\Controllers\ExonerationDetailController;
+use App\Http\Controllers\ExonerationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PDFController;
@@ -40,6 +40,7 @@ Route::group(['middleware'=> ['auth', 'verified', 'log', 'throttle:web']], funct
         Route::resource('/api/web/department', DepartmentController::class);
         Route::resource('/api/web/municipality', MunicipalityController::class);
         Route::resource('/api/web/agreement', AgreementController::class);
+        Route::resource('/api/web/exoneration', ExonerationController::class);
         Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']); 
         Route::resource('/api/web/type', TypeAgreementController::class);
         Route::resource('/api/web/entity', EntityController::class);
@@ -48,7 +49,7 @@ Route::group(['middleware'=> ['auth', 'verified', 'log', 'throttle:web']], funct
         Route::get('api/tariff/byPlaceName/{service_places}', [TariffController::class, 'byPlaceName']);
         Route::resource('/api/web/dependence', DependenceController::class);
         Route::resource('/api/web/direction', NationalDirectionController::class);
-        Route::resource('/api/web/exonerationdetail', ExonerationDetailController::class);
+        Route::resource('/api/web/exonerationDetail', ExonerationDetailController::class);
         Route::resource('/api/web/user', UserController::class);
         Route::resource('/api/web/role', RoleController::class);
 
@@ -91,6 +92,10 @@ Route::group(['middleware'=> ['auth', 'verified', 'log', 'throttle:web']], funct
 
         Route::get('/types', function () {
             return view('type.index');
+        });
+        
+        Route::get('/exonerations', function () {
+            return view('exoneration.index');
         });
     });
 

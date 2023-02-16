@@ -18,6 +18,14 @@ return new class extends Migration
             $table->string('exonerated_description');
             $table->foreignId('agreement_id')->constrained('agreements');
             $table->foreignId('dependence_id')->constrained('dependences');
+            $table->string('hour');
+            $table->integer('people');
+            $table->date('date');
+            $table->decimal('exonerated_amount', 8, 2);
+            $table->foreignId('service_place_id')->constrained('service_places');
+            $table->unsignedBigInteger('tariff_id')->constrained('tariffs')->nullable();
+            $table->decimal('not_charged', 8, 2)->nullable();
+            $table->decimal('total_amount', 8, 2)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

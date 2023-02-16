@@ -21,6 +21,14 @@ class Exoneration extends Model
         'exonerated_description',
         'agreement_id',
         'dependence_id',
+        'hour',
+        'people',
+        'date',
+        'exonerated_amount',
+        'service_place_id',
+        'tariff_id',
+        'not_charged',
+        'total_amount',
     ];
 
     public $hidden = [
@@ -41,8 +49,13 @@ class Exoneration extends Model
         return $this->belongsTo(ServicePlace::class, 'dependence_id', 'id');
     }
 
-    public function exonerationDetail()
+    public function tariff()
     {
-        return $this->hasMany(ExonerationDetail::class);
+        return $this->belongsTo(Tariff::class, "tariff_id", "id");
+    }
+
+    public function place()
+    {
+        return $this->belongsTo(ServicePlace::class, "service_place_id", "id");
     }
 }

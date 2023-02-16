@@ -47,6 +47,19 @@
                     </li>
                     <!-- Home -->
 
+                    <!-- Agreement -->
+                        <li class="text-center pb-1">
+                            <a href="{{ url('/agreements') }}" class="text-center">
+                                <i class="material-icons md-18 mx-auto">business</i>
+                            </a>
+                            <a href="{{ url('/agreements') }}">
+                                <p class="link mx-auto">Convenio</p>
+                            </a>
+                        </li>
+                    <!-- Agreement -->
+
+
+
                     <!-- Settings -->
                     <!-- Administrative routes -->
                     @if (auth()->user()->hasRole('Administrador') == 'Administrador')
@@ -58,7 +71,6 @@
                                 <p class="link">Administración</p>
                             </div>
                             <ul class="sub-menu">
-                                <li><a href="{{ url('/agreements') }}">Convenios</a></li>
                                 <li><a href="{{ url('/departments ') }}">Departamentos</a></li>
                                 <li><a href="{{ url('/directions') }}">Direcciones Nacionales</a></li>
                                 <li><a href="{{ url('/entities') }}">Entidades</a></li>
