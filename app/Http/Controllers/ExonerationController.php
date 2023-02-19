@@ -61,30 +61,8 @@ class ExonerationController extends Controller
 
     public function show($agreement_id)
     {
-        $agreement = Agreement::find($agreement_id);
-        $exonerations = $agreement->exonerations;
-
-        foreach($exonerations as $exoneration)
-        {
-            $exoneration->place_name = ServicePlace::find($exoneration->id)->place_name;
-            $exoneration->people = ExonerationDetail::find($exoneration->id)->people;
-            $exoneration->date = ExonerationDetail::find($exoneration->id)->date;
-            $exoneration->exonerated_amount = ExonerationDetail::find($exoneration->id)->exonerated_amount;
-            $exonerationDetail = ExonerationDetail::find($exoneration->id);
-            if($exonerationDetail->tariff_id){
-                $exoneration->charge = Tariff::find($exonerationDetail->tariff_id)->type_charge;
-            }else{
-                $exoneration->charge = $exonerationDetail->not_charged;
-            }
-        }
-
-        $exonerations = Encrypt::encryptObject($exonerations,"id");
-
-        return response()->json([
-            "status"=>"success", 
-            "message"=>"Registro obtenido correctamente.", 
-            "exonerations"=>$exonerations]);
-            }
+       //
+    }
 
     public function update(Request $request, Exoneration $exoneration)
     {

@@ -61,6 +61,13 @@ class AgreementController extends Controller
                 $not_charged = null;
             }
 
+            /* if($tariff_id == null) {
+            $total_amount = $request->people * $request->not_charged;
+            } else {
+                $tariff = Tariff::find($tariff_id);
+                $total_amount = $request->people * $tariff->amount;
+            } */
+
             Exoneration::create([
                 'exonerated_description' => $request->exonerated_description,
                 'agreement_id' => Agreement::where("agreement_name", $request->agreement_name)->first()->id,
@@ -72,6 +79,7 @@ class AgreementController extends Controller
                 'service_place_id' => $place_id,
                 'tariff_id' => $tariff_id,
                 'not_charged' => $not_charged,
+                //'total_amount' => $total_amount,
             ]);
         }
 
@@ -83,16 +91,16 @@ class AgreementController extends Controller
 
     public function update(Request $request)
     {
-        $entity = Entity::where("entity_name", $request->entity_name)->first();
         $type = TypeAgreement::where("type_agreement_name", $request->type_agreement_name)->first();
+        $entity = Entity::where("entity_name", $request->entity_name)->first();
 
-        $data = Encrypt::decryptArray($request->except(["entity_name", "type_agreement_name"]), "id");
+        $data = Encrypt::decryptArray($request->except(["entity_name", "type_agreement_name", "exonerations"]), "id");
 
-        $data["entity_id"] = $entity->id;
         $data["type_agreement_id"] = $type->id;
-        
-        Agreement::where('id', $data)->update($data);
-        
+        $data["entity_id"] = $entity->id;
+         
+        Agreement::where("id", $data)->update($data);
+
         return response()->json([
             "status"=>"success",
             "message"=>"Registro modificado correctamente."
@@ -103,7 +111,7 @@ class AgreementController extends Controller
     {
         $id = Encrypt::decryptValue($id);
 
-        Agreement::where("id", $id)->delete();
+        Exoneration::where("id", $id)->delete();
         return response()->json([
             "status"=>"success",
             "message"=>"Registro eliminado correctamente."]);

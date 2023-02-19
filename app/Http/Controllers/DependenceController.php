@@ -48,7 +48,8 @@ class DependenceController extends Controller
         Dependence::where("id", $data)->update($data);
         return response()->json([
             "status"=>"success",
-            "message"=>"Registro editado correctamente."]);
+            "message"=>"Registro modificado correctamente."
+        ]);
     }
 
     public function destroy($id)

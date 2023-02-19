@@ -116,6 +116,7 @@
                       <v-btn
                         color="btn btn-normal mb-3 mt-3"
                         rounded
+                        v-if="editedItem.hour != ''"
                         @click="openExonerationModal()"
                       >
                         Agregar Exoneración
@@ -127,7 +128,10 @@
                     <v-col cols="12" lg="12" md="12" xs="12">
                       <!-- Academic Level -->
                       <div class="table-responsive-md">
-                        <table class="table table-responsive-md table-hover">
+                        <table
+                          class="table table-responsive-md table-hover"
+                          v-if="editedItem.hour != ''"
+                        >
                           <thead>
                             <th>Especio/Elenco</th>
                             <th>Fechas exoneradas</th>
@@ -166,7 +170,7 @@
                               </td>
                               <td class="text-center">
                                 <a
-                                  @click="deleteAcademic(exoneration.id)"
+                                  @click="deleteItem(exoneration.id)"
                                   class="p-1 mr-1 text-center"
                                   ><span class="material-icons text-blue">
                                     delete
@@ -174,11 +178,6 @@
                                 >
                               </td>
                             </tr>
-                            <!-- <tr v-if="academics.length == 0">
-                <td colspan="5" class="text-center pt-3">
-                  <p>No se registró ningún nivel educativo.</p>
-                </td>
-              </tr> -->
                           </tbody>
                         </table>
                       </div>
@@ -193,14 +192,6 @@
                       >
                         Guardar
                       </v-btn>
-                      <!-- <v-btn
-                        v-if="showExonerationButton"
-                        color="btn-normal no-uppercase mt-3"
-                        rounded
-                        @click="openExonerationModal()"
-                      >
-                        Agregar Exoneraciones
-                      </v-btn> -->
                       <v-btn
                         color="btn-normal-close no-uppercase mt-3"
                         rounded
@@ -246,11 +237,11 @@
         <v-icon
           small
           class="mr-2"
-          @click="editItem(item) && getExonerations(agreementId)"
+          @click="editItem(item)"
+          title="Ver exoneraciones y editar convenios"
         >
-          mdi-pencil
+          mdi-eye
         </v-icon>
-        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
       <template v-slot:no-data>
         <a
@@ -299,21 +290,27 @@
               <br /><br />
               <h5>Información de la exoneración</h5>
               <v-divider></v-divider>
-              <v-btn
-                class="mb-2 btn-normal no-uppercase"
-                rounded
-                small
-                @click="OpenNewPlace()"
-              >
-                Espacio/Elenco
-                <v-icon right> mdi-plus-circle </v-icon>
-              </v-btn>
               <v-row>
-                <v-checkbox
-                  @click="hidden = !hidden"
-                  :label="`Monto no tarifado`"
-                >
-                </v-checkbox>
+                <v-col align="start">
+                  <v-btn
+                    class="mb-2 btn-normal no-uppercase"
+                    rounded
+                    small
+                    @click="OpenNewPlace()"
+                  >
+                    Espacio/Elenco
+                    <v-icon right> mdi-plus-circle </v-icon>
+                  </v-btn>
+                </v-col>
+                <v-col>
+                  <v-checkbox
+                    @click="hidden = !hidden"
+                    :label="`Monto no tarifado`"
+                  >
+                  </v-checkbox>
+                </v-col>
+              </v-row>
+              <v-row>
                 <!-- Exoneracion: date -->
                 <v-col cols="12" sm="12" md="6">
                   <base-input
@@ -600,7 +597,7 @@ export default {
 
   created() {
     this.initialize();
-    this.getExonerations();
+    //this.getExonerations();
     //console.log(this.recordsFiltered);
     //this.exonerations = this.recordsFiltered.exonerations;
   },
@@ -641,7 +638,7 @@ export default {
       this.recordsFiltered = this.records;
     },
 
-    async getExonerations(agreementId) {
+    /* async getExonerations(agreementId) {
       this.recordsExonerations = [];
       this.recordsFilteredExonerations = [];
 
@@ -668,7 +665,7 @@ export default {
         );
 
       this.recordsFilteredExonerations = this.recordsExonerations;
-    },
+    }, */
 
     OpenNewPlace() {
       window.location.href = "places/";
@@ -685,10 +682,10 @@ export default {
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
 
-      /* this.$v.editedItem.type_agreement_name.$model =
+      this.$v.editedItem.type_agreement_name.$model =
         this.editedItem.type_agreement_name;
       this.$v.editedItem.entity_name.$model = this.editedItem.entity_name;
-      this.$v.editedItem.national_direction_name.$model =
+      /* this.$v.editedItem.national_direction_name.$model =
         this.editedItem.national_direction_name;
       this.$v.editedItem.place_name.$model = this.editedItem.place_name;
       this.$v.editedItem.dependence_name.$model =
@@ -701,9 +698,8 @@ export default {
       this.$v.editedItem.not_charged.$model = this.editedItem.not_charged; */
     },
 
-    deleteItem(item) {
-      this.editedIndex = this.recordsFiltered.indexOf(item);
-      this.editedItem = Object.assign({}, item);
+    deleteItem() {
+      this.exonerations.splice(this.exonerations.indexOf(this.editItem), 1);
       this.dialogDelete = true;
     },
 
@@ -711,6 +707,7 @@ export default {
       const res = await agreementApi
         .delete(`/${this.editedItem.id}`)
         .catch((error) => {
+          console.log(this.editedItem);
           this.updateAlert(
             true,
             "No fue posible eliminar el registros.",
@@ -753,6 +750,8 @@ export default {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       });
+      this.$v.editedItem.$reset();
+      this.dialog = false;
     },
 
     async save() {
@@ -812,11 +811,9 @@ export default {
 
       if (res.data.status == "success") {
         this.updateAlert(true, "Registro almacenado correctamente.", "success");
-        //this.closeExoneration();
       }
-
+      this.close();
       this.closeExoneration();
-      this.getExonerations();
       this.initialize();
     },
 
