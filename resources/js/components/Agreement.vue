@@ -122,6 +122,17 @@
                         Agregar Exoneración
                       </v-btn>
                     </v-col>
+                    <v-col align="end">
+                      <v-btn
+                        color="btn btn-normal mb-3 mt-3"
+                        rounded
+                        v-if="editedItem.hour != ''"
+                        @click="GetReport()"
+                      >
+                        Generar Reporte
+                        <v-icon>mdi-file-document</v-icon>
+                      </v-btn>
+                    </v-col>
                   </v-row>
                   <!-- Form -->
                   <v-row>
@@ -167,6 +178,15 @@
                               </td>
                               <td>
                                 <p>{{ exoneration.exonerated_amount }}</p>
+                              </td>
+                              <td class="text-center">
+                                <a
+                                  @click="editItemExoneration(exoneration)"
+                                  class="p-1 mr-1 text-center"
+                                  ><span class="material-icons text-blue">
+                                    edit
+                                  </span></a
+                                >
                               </td>
                               <td class="text-center">
                                 <a
@@ -216,7 +236,7 @@
                     <v-btn
                       color="btn-normal no-uppercase mt-3 mb-3 pr-5 pl-5 mx-auto"
                       rounded
-                      @click="deleteItemConfirm"
+                      @click="deleteItemOfTable()"
                       >Confirmar</v-btn
                     >
                     <v-btn
@@ -358,8 +378,8 @@
                     :validation="$v.editedItem.exonerated_description"
                     auto-grow
                     outlined
-                    rows="1"
-                    row-height="15"
+                    rows="12"
+                    row-height="1"
                     dense
                   ></v-textarea>
                 </v-col>
@@ -458,8 +478,6 @@ export default {
     ],
     records: [],
     recordsFiltered: [],
-    recordsExonerations: [],
-    recordsFilteredExonerations: [],
     editedIndex: -1,
     editedItem: {
       agreement_name: "",
@@ -572,12 +590,6 @@ export default {
     },
   },
 
-  /* data1() {
-    return {
-      showExonerationButton: false,
-    };
-  }, */
-
   watch: {
     dialog(val) {
       val || this.close();
@@ -590,16 +602,8 @@ export default {
     },
   },
 
-  /* mounted() {
-    console.log(this.recordsFiltered);
-    this.exonerations = this.recordsFiltered.exonerations;
-  }, */
-
   created() {
     this.initialize();
-    //this.getExonerations();
-    //console.log(this.recordsFiltered);
-    //this.exonerations = this.recordsFiltered.exonerations;
   },
 
   methods: {
@@ -632,40 +636,8 @@ export default {
       this.dependences = responses[5].data.dependences;
       this.tariffs = responses[6].data.tariffs;
 
-      this.changeDirection();
-      this.changePlace();
-
       this.recordsFiltered = this.records;
     },
-
-    /* async getExonerations(agreementId) {
-      this.recordsExonerations = [];
-      this.recordsFilteredExonerations = [];
-
-      let requestsExonerations = [
-        exonerationApi.get("?agreement_id=" + agreementId),
-      ];
-      let responsesExonerations = await Promise.all(requestsExonerations).catch(
-        (error) => {
-          this.updateAlert(
-            true,
-            "No fue posible obtener las exoneraciones.",
-            "fail"
-          );
-          this.redirectSessionFinished = lib.verifySessionFinished(
-            error.response.status,
-            401
-          );
-        }
-      );
-
-      this.recordsExonerations =
-        responsesExonerations[0].data.exonerations.filter(
-          (exonerations) => exonerations.agreement_id === agreementId
-        );
-
-      this.recordsFilteredExonerations = this.recordsExonerations;
-    }, */
 
     OpenNewPlace() {
       window.location.href = "places/";
@@ -675,10 +647,12 @@ export default {
       this.dialogExoneration = true;
     },
 
+    GetReport() {
+      window.location.href = "Reports/";
+    },
+
     editItem(item) {
-      console.log(this.item);
       this.dialog = true;
-      //this.hideExonerationTable = true;
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
 
@@ -698,16 +672,44 @@ export default {
       this.$v.editedItem.not_charged.$model = this.editedItem.not_charged; */
     },
 
+    editItemExoneration(exoneration) {
+      this.editedIndex = this.exonerations.indexOf(exoneration);
+      this.editedItem = Object.assign({}, exoneration);
+      this.dialogExoneration = true;
+      this.$v.editedItem.$reset();
+
+      /* this.$v.editedItem.national_direction_name.$model =
+        this.editedItem.national_direction_name;
+      this.$v.editedItem.dependence_name.$model =
+        this.editedItem.dependence_name;
+      this.$v.editedItem.date.$model = this.editedItem.date;
+      this.$v.editedItem.place_name.$model = this.editedItem.place_name;
+      this.$v.editedItem.type_charge.$model = this.editedItem.type_charge;
+      this.$v.editeditem.not_charged.$model = this.editedItem.not_charged;
+      this.$v.editedItem.exonerated_description.$model =
+        this.editedItem.exonerated_description;
+      this.$v.editedItem.hour.$model = this.editedItem.hour;
+      this.$v.editedItem.people.$model = this.editItem.people;
+      this.$v.editedItem.exonerated_amount.$model =
+        this.editItem.exonerated_amount; */
+    },
+
     deleteItem() {
-      this.exonerations.splice(this.exonerations.indexOf(this.editItem), 1);
       this.dialogDelete = true;
     },
 
-    async deleteItemConfirm() {
-      const res = await agreementApi
+    deleteItemOfTable() {
+      this.editedItem.exonerations.splice(
+        this.editedItem.exonerations.indexOf(this.exoneration),
+        1
+      );
+      this.closeDelete();
+    },
+
+    /* async deleteItemConfirm() {
+      const res = await exonerationApi
         .delete(`/${this.editedItem.id}`)
         .catch((error) => {
-          console.log(this.editedItem);
           this.updateAlert(
             true,
             "No fue posible eliminar el registros.",
@@ -730,7 +732,7 @@ export default {
 
       this.initialize();
       this.closeDelete();
-    },
+    }, */
 
     close() {
       this.dialog = false;
@@ -741,17 +743,46 @@ export default {
     },
 
     closeExoneration() {
+      this.$nextTick(() => {
+        this.editedItem.national_direction_name = Object.assign(
+          {},
+          this.defaultItem.national_direction_name
+        );
+        this.editedItem.dependence_name = Object.assign(
+          {},
+          this.defaultItem.dependence_name
+        );
+        this.editedItem.place_name = Object.assign(
+          {},
+          this.defaultItem.place_name
+        );
+        this.editedItem.exonerated_amount = Object.assign(
+          {},
+          this.defaultItem.exonerated_amount
+        );
+        this.editedItem.exonerated_description = Object.assign(
+          {},
+          this.defaultItem.exonerated_description
+        );
+        this.editedItem.hour = Object.assign({}, this.defaultItem.hour);
+        this.editedItem.type_charge = Object.assign(
+          {},
+          this.defaultItem.type_charge
+        );
+        this.editedItem.people = Object.assign({}, this.defaultItem.people);
+        this.editedItem.not_charged = Object.assign(
+          {},
+          this.defaultItem.not_charged
+        );
+        this.editedItem.date = Object.assign({}, this.defaultItem.date);
+        this.editedIndex = -1;
+      });
+      this.$v.editedItem.$reset();
       this.dialogExoneration = false;
     },
 
     closeDelete() {
       this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-      this.$v.editedItem.$reset();
-      this.dialog = false;
     },
 
     async save() {
@@ -812,8 +843,9 @@ export default {
       if (res.data.status == "success") {
         this.updateAlert(true, "Registro almacenado correctamente.", "success");
       }
-      this.close();
+      //this.close();
       this.closeExoneration();
+      this.editedItem.exonerations.push({ ...this.editedItem });
       this.initialize();
     },
 

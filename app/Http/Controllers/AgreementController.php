@@ -61,13 +61,6 @@ class AgreementController extends Controller
                 $not_charged = null;
             }
 
-            /* if($tariff_id == null) {
-            $total_amount = $request->people * $request->not_charged;
-            } else {
-                $tariff = Tariff::find($tariff_id);
-                $total_amount = $request->people * $tariff->amount;
-            } */
-
             Exoneration::create([
                 'exonerated_description' => $request->exonerated_description,
                 'agreement_id' => Agreement::where("agreement_name", $request->agreement_name)->first()->id,
@@ -98,7 +91,7 @@ class AgreementController extends Controller
 
         $data["type_agreement_id"] = $type->id;
         $data["entity_id"] = $entity->id;
-         
+        
         Agreement::where("id", $data)->update($data);
 
         return response()->json([
