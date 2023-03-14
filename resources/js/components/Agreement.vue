@@ -837,6 +837,7 @@ export default {
         this.editedIndex = -1;
       });
       window.location.reload();
+      //comentario
     },
 
     viewExonerationItem(item) {
