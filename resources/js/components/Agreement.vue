@@ -827,7 +827,8 @@ export default {
       this.$v.editedItem.entity_name.$model = this.editedItem.entity_name;
 
       this.clearFields();
-      //Otra cosa
+
+      //comentario
     },
 
     close() {
@@ -837,6 +838,7 @@ export default {
         this.editedIndex = -1;
       });
       window.location.reload();
+      //comentario
     },
 
     viewExonerationItem(item) {
