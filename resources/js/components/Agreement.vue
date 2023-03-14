@@ -471,6 +471,16 @@
                     @change="changePlace()"
                   />
                 </v-col>
+                <!-- Exoneracion: Exempted hours -->
+                  <v-col cols="12" sm="12" md="3">
+                    <base-input
+                      label="Horas exoneradas"
+                      v-model="$v.editedItem.hour.$model"
+                      :validation="$v.editedItem.hour"
+                      type="number"
+                      validationTextType="none"
+                    />
+                  </v-col>
                 <!-- not Tariff-->
                 <v-col cols="12" xs="12" sm="12" md="3" v-show="hidden">
                   <base-input
@@ -488,16 +498,6 @@
                     :items="tariffs"
                     item="type_charge"
                     :validation="$v.editedItem.type_charge"
-                  />
-                </v-col>
-                <!-- Exoneracion: Exempted hours -->
-                <v-col cols="12" sm="12" md="3">
-                  <base-input
-                    label="Horas exoneradas"
-                    v-model="$v.editedItem.hour.$model"
-                    :validation="$v.editedItem.hour"
-                    type="number"
-                    validationTextType="none"
                   />
                 </v-col>
                 <!-- Exoneracion: number of people -->
@@ -827,6 +827,7 @@ export default {
       this.$v.editedItem.entity_name.$model = this.editedItem.entity_name;
 
       this.clearFields();
+
       //comentario
     },
 
