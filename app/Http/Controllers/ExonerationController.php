@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Exoneration;
 use Illuminate\Http\Request;
-use App\Models\Agreement;
 use App\Models\ServicePlace;
+use App\Models\Exoneration;
+use App\Models\Agreement;
+use App\Models\Dependence;
 use App\Models\Tariff;
 use Encrypt;
 use DB;
@@ -19,44 +20,75 @@ class ExonerationController extends Controller
      */
     public function index(Request $request)
     {
-        //$exonerations = Exoneration::all();
-        //$exonerations = Exoneration::where('agreement_id', $request->agreement_id)->get();
-
-        /* foreach($exonerations as $exoneration)
-        {
-            $exoneration->place_name = ServicePlace::find(Exoneration::find($exoneration->id)->service_place_id)->place_name;
-            $exoneration->people = Exoneration::find($exoneration->id)->people;
-            $exoneration->date = Exoneration::find($exoneration->id)->date;
-            $exoneration->hour = Exoneration::find($exoneration->id)->hour;
-            $exoneration->exonerated_amount = Exoneration::find($exoneration->id)->exonerated_amount;
-            $exonerationDetail = Exoneration::find($exoneration->id);
-            if($exonerationDetail->tariff_id){
-                $exoneration->charge = Tariff::find($exonerationDetail->tariff_id)->amount;
-            }else{
-                $exoneration->charge = $exonerationDetail->not_charged;
-            } 
-        } */
-
-        /* $exonerations = Encrypt::encryptObject($exonerations,"id");
-
-        return response()->json([
-            "status"=>"success", 
-            "message"=>"Registro obtenido correctamente.", 
-            "exonerations"=>$exonerations]); */
+        //
     }
 
     public function store(Request $request)
     {
-        //dd($request);
-        $super = $request->except("dependence_name");
-        $dependence = Dependence::where("dependence_name", $request->dependence_name)->first();
-        $agreement = DB::table('agreements')->latest('id')->first();
-        //dd($agreement);
-        $super["dependence_id"] = $dependence->id;
-        $super["agreement_id"] = $agreement->id;
-        Exoneration::insert($super);
+        /* $agreement = Agreement::findOrFail($request->id);
+        foreach ($request->exonerations as $exonerationData) {
 
-        return response()->json(["status"=>"success", "message"=>"Registro creado correctamente."]);
+            $place_id = ServicePlace::where("place_name", $exonerationData['place_name'])->first()->id;
+
+            if($exonerationData['type_charge'] == null || $exonerationData['type_charge'] == ""){
+                $tariff_id = null;
+                $not_charged = $exonerationData['not_charged'];
+            }else{
+                $tariff_id = Tariff::where("type_charge", $exonerationData['type_charge'])->first()->id;
+                $not_charged = null;
+            }
+
+            Exoneration::create([
+                'exonerated_description' => $exonerationData['exonerated_description'],
+                'agreement_id' => $agreement->id,
+                'dependence_id' => Dependence::where("dependence_name", $exonerationData['dependence_name'])->first()->id,
+                'hour'=> $exonerationData['hour'],
+                'people'=> $exonerationData['people'],
+                'date'=> $exonerationData['date'],
+                'exonerated_amount' => $exonerationData['exonerated_amount'],
+                'service_place_id' => $place_id,
+                'tariff_id' => $tariff_id,
+                'not_charged' => $not_charged,
+            ]);
+        }
+
+        return response()->json([
+            "status"=>"success",
+            "message"=>"Registro creado correctamente."
+        ]); */
+        $agreement_id = Agreement::where("agreement_name", $request->agreement_name)->first()->id;
+        $dependence_id = Dependence::where("dependence_name", $request->dependence_name)->first()->id;
+        $place_id = ServicePlace::where("place_name", $request->place_name)->first()->id;
+
+        $exonerations = $request->exonerations;
+
+        foreach ($exonerations as $exoneration) {
+            $tariff_id = null;
+            $not_charged = null;
+            if ($exoneration["type_charge"] != null && $exoneration["type_charge"] != "") {
+                $tariff_id = Tariff::where("type_charge", $exoneration["type_charge"])->first()->id;
+            } else {
+                $not_charged = $exoneration["not_charged"];
+            }
+
+            Exoneration::create([
+                'exonerated_description' => $exoneration["exonerated_description"],
+                'agreement_id' => $agreement_id,
+                'dependence_id' => $dependence_id,
+                'hour'=> $exoneration["hour"],
+                'people'=> $exoneration["people"],
+                'date'=> $exoneration["date"],
+                'exonerated_amount' => $exoneration["exonerated_amount"],
+                'service_place_id' => $place_id,
+                'tariff_id' => $tariff_id,
+                'not_charged' => $not_charged,
+            ]);
+    }
+
+    return response()->json([
+        "status" => "success",
+        "message" => "Registros creados correctamente."
+    ]);
     }
 
     public function show($agreement_id)
@@ -64,7 +96,7 @@ class ExonerationController extends Controller
        //
     }
 
-    public function update(Request $request, Exoneration $exoneration)
+    public function update(Request $request)
     {
         //
     }
@@ -76,6 +108,7 @@ class ExonerationController extends Controller
         Exoneration::where("id", $id)->delete();
         return response()->json([
             "status"=>"success",
-            "message"=>"Registro eliminado correctamente."]);
+            "message"=>"Registro eliminado correctamente."
+        ]);
     }
 }

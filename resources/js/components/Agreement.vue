@@ -22,15 +22,10 @@
           <v-toolbar-title>Convenios</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="1400px" persistent>
-            <template v-slot:activator="{ on, attrs }">
+            <template v-slot:activator="{}">
               <v-row>
                 <v-col align="end">
-                  <v-btn
-                    class="mb-2 btn-normal"
-                    v-bind="attrs"
-                    v-on="on"
-                    rounded
-                  >
+                  <v-btn class="mb-2 btn-normal" @click="OpenAgreement" rounded>
                     Agregar
                   </v-btn>
                 </v-col>
@@ -111,38 +106,31 @@
                     </v-col>
                     <!-- Agreement description -->
                   </v-row>
-                  <v-row>
+                  <v-row v-if="showExoneration">
                     <v-col align="start">
                       <v-btn
                         color="btn btn-normal mb-3 mt-3"
                         rounded
-                        v-if="editedItem.hour != ''"
                         @click="openExonerationModal()"
                       >
                         Agregar Exoneración
                       </v-btn>
-                    </v-col>
-                    <v-col align="end">
                       <v-btn
-                        color="btn btn-normal mb-3 mt-3"
+                        v-if="showSaveButton()"
+                        color="btn-normal no-uppercase "
                         rounded
-                        v-if="editedItem.hour != ''"
-                        @click="GetReport()"
+                        @click="saveExoneration()"
                       >
-                        Generar Reporte
-                        <v-icon>mdi-file-document</v-icon>
+                        Guardar exoneraciones
                       </v-btn>
                     </v-col>
                   </v-row>
                   <!-- Form -->
-                  <v-row>
+                  <v-row v-if="showExoneration">
                     <v-col cols="12" lg="12" md="12" xs="12">
                       <!-- Academic Level -->
                       <div class="table-responsive-md">
-                        <table
-                          class="table table-responsive-md table-hover"
-                          v-if="editedItem.hour != ''"
-                        >
+                        <table class="table table-responsive-md table-hover">
                           <thead>
                             <th>Especio/Elenco</th>
                             <th>Fechas exoneradas</th>
@@ -198,6 +186,11 @@
                                 >
                               </td>
                             </tr>
+                            <tr v-if="noData()">
+                              <td colspan="7" class="text-center">
+                                <p>Aun no se registró ninguna exoneración.</p>
+                              </td>
+                            </tr>
                           </tbody>
                         </table>
                       </div>
@@ -208,7 +201,7 @@
                       <v-btn
                         color="btn-normal no-uppercase mt-3"
                         rounded
-                        @click="save"
+                        @click="save()"
                       >
                         Guardar
                       </v-btn>
@@ -258,7 +251,15 @@
           small
           class="mr-2"
           @click="editItem(item)"
-          title="Ver exoneraciones y editar convenios"
+          title="Agregar exoneraciones y editar convenios"
+        >
+          mdi-pencil
+        </v-icon>
+        <v-icon
+          small
+          class="mr-2"
+          @click="viewExonerationItem(item)"
+          title="Ver exoneraciones"
         >
           mdi-eye
         </v-icon>
@@ -274,11 +275,129 @@
       </template>
     </v-data-table>
     <template>
+      <v-dialog v-model="viewExonerations" max-width="1400px" persistent>
+        <v-card class="flexcard" height="100%">
+          <h1 class="black-secondary text-center mt-4 mb-4">Exoneraciones</h1>
+          <v-card-text>
+            <v-container>
+              <h5>Información del convenio</h5>
+              <v-divider></v-divider>
+              <v-form disabled>
+                <v-row>
+                  <!-- Agreement Name -->
+                  <v-col cols="12" sm="12" md="3">
+                    <base-input
+                      label="Nombre"
+                      v-model="$v.editedItem.agreement_name.$model"
+                      :validation="$v.editedItem.agreement_name"
+                      validationTextType="default"
+                    />
+                  </v-col>
+                  <!-- Agreement Name -->
+                  <!-- Agreement type -->
+                  <v-col cols="12" sm="12" md="3">
+                    <base-input
+                      label="Tipo de convenio"
+                      v-model.trim="$v.editedItem.type_agreement_name.$model"
+                      :items="types"
+                      item="type_agreement_name"
+                      :validation="$v.editedItem.type_agreement_name"
+                    />
+                  </v-col>
+                  <!-- Agreement type -->
+                  <!-- Agreement:Entity -->
+                  <v-col cols="12" sm="12" md="3">
+                    <base-input
+                      label="Entidad"
+                      v-model.trim="$v.editedItem.entity_name.$model"
+                      :items="entities"
+                      item="entity_name"
+                      :validation="$v.editedItem.entity_name"
+                    />
+                  </v-col>
+                  <!-- Agreement:Entity -->
+                  <!-- Agreement description -->
+                  <v-col cols="12" sm="12" md="3">
+                    <v-textarea
+                      label="Descripción del convenio"
+                      v-model="$v.editedItem.description.$model"
+                      :validation="$v.editedItem.description"
+                      auto-grow
+                      outlined
+                      rows="1"
+                      row-height="15"
+                      dense
+                    ></v-textarea>
+                  </v-col>
+                  <!-- Agreement description -->
+                </v-row>
+              </v-form>
+            </v-container>
+            <v-row>
+              <v-col cols="12" lg="12" md="12" xs="12">
+                <!-- Academic Level -->
+                <div class="table-responsive-md">
+                  <table class="table table-responsive-md table-hover">
+                    <thead>
+                      <th>Especio/Elenco</th>
+                      <th>Fechas exoneradas</th>
+                      <th>Horas exoneradas</th>
+                      <th>Número de personas</th>
+                      <th>Tarifa ($)</th>
+                      <th>Monto exonerado ($)</th>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="(exoneration, index) in editedItem.exonerations"
+                        :key="index"
+                      >
+                        <td>
+                          <p>
+                            {{ exoneration.place_name }}
+                          </p>
+                        </td>
+                        <td>
+                          <p>{{ exoneration.date }}</p>
+                        </td>
+                        <td>
+                          <p>{{ exoneration.hour }}</p>
+                        </td>
+                        <td>
+                          <p>{{ exoneration.people }}</p>
+                        </td>
+                        <td>
+                          <p>{{ exoneration.charge }}</p>
+                        </td>
+                        <td>
+                          <p>{{ exoneration.exonerated_amount }}</p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col align="center">
+                <v-btn
+                  color="btn-normal-close no-uppercase mt-3 mb-3"
+                  rounded
+                  @click="closeViewExonerations"
+                >
+                  Cerrar
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </template>
+    <template>
       <v-dialog v-model="dialogExoneration" max-width="1400px" persistent>
         <v-card class="flexcard" height="100%">
-          <h3 class="black-secondary text-center mt-4 mb-4">
-            Agregar Exoneracion
-          </h3>
+          <h1 class="black-secondary text-center mt-4 mb-4">
+            Agregar Exoneración
+          </h1>
           <v-card-text>
             <v-container>
               <br />
@@ -353,7 +472,7 @@
                   />
                 </v-col>
                 <!-- not Tariff-->
-                <v-col cols="12" xs="12" sm="12" md="12" v-show="hidden">
+                <v-col cols="12" xs="12" sm="12" md="3" v-show="hidden">
                   <base-input
                     label="Tarifa"
                     v-model.trim="$v.editedItem.not_charged.$model"
@@ -362,7 +481,7 @@
                   />
                 </v-col>
                 <!-- Space: Tariff -->
-                <v-col cols="12" sm="12" md="12" v-show="!hidden">
+                <v-col cols="12" sm="12" md="3" v-show="!hidden">
                   <base-select-search
                     label="Tipo de Tarifa"
                     v-model.trim="$v.editedItem.type_charge.$model"
@@ -371,20 +490,8 @@
                     :validation="$v.editedItem.type_charge"
                   />
                 </v-col>
-                <v-col cols="12" sm="12" md="12">
-                  <v-textarea
-                    label="Descripción de la exoneración"
-                    v-model="$v.editedItem.exonerated_description.$model"
-                    :validation="$v.editedItem.exonerated_description"
-                    auto-grow
-                    outlined
-                    rows="12"
-                    row-height="1"
-                    dense
-                  ></v-textarea>
-                </v-col>
                 <!-- Exoneracion: Exempted hours -->
-                <v-col cols="12" sm="12" md="4">
+                <v-col cols="12" sm="12" md="3">
                   <base-input
                     label="Horas exoneradas"
                     v-model="$v.editedItem.hour.$model"
@@ -392,10 +499,9 @@
                     type="number"
                     validationTextType="none"
                   />
-                  <br />
                 </v-col>
                 <!-- Exoneracion: number of people -->
-                <v-col cols="12" sm="12" md="4">
+                <v-col cols="12" sm="12" md="3">
                   <base-input
                     label="Número de personas"
                     v-model="$v.editedItem.people.$model"
@@ -404,8 +510,8 @@
                     v-mask="'#####'"
                   />
                 </v-col>
-                <!-- Exoneracion: exonerated_amount -->
-                <v-col cols="12" sm="12" md="4">
+                <!-- Exoneracion: exonerated amount -->
+                <v-col cols="12" sm="12" md="3">
                   <base-input
                     label="Monto"
                     v-model="$v.editedItem.exonerated_amount.$model"
@@ -413,12 +519,26 @@
                     type="number"
                   />
                 </v-col>
+                <!-- Exoneracion: Exonerated description -->
+                <v-col cols="12" sm="12" md="12">
+                  <v-textarea
+                    label="Descripción de la exoneración"
+                    v-model="$v.editedItem.exonerated_description.$model"
+                    :validation="$v.editedItem.exonerated_description"
+                    clearable
+                    clear-icon="mdi-backspace"
+                    auto-grow
+                    outlined
+                    rows="3"
+                    dense
+                  ></v-textarea>
+                </v-col>
               </v-row>
               <v-row>
                 <v-col align="center">
                   <v-btn
                     class="btn btn-normal mb-3 mt-1"
-                    @click="saveExoneration()"
+                    @click="addNewExoneration()"
                     >Guardar</v-btn
                   >
                   <v-btn
@@ -457,7 +577,9 @@ export default {
   data: () => ({
     search: "",
     dialog: false,
+    showExoneration: false,
     dialogExoneration: false,
+    viewExonerations: false,
     hidden: false,
     showModal: false,
     dialogDelete: false,
@@ -466,14 +588,6 @@ export default {
       { text: "TIPO DE CONVENIO", value: "type_agreement_name" },
       { text: "DESCRIPCIÓN", value: "description" },
       { text: "ENTIDAD", value: "entity_name" },
-      { text: "ACCIONES", value: "actions", sortable: false },
-    ],
-    headerExonerations: [
-      { text: "ESPACIO/ELENCO", value: "place_name" },
-      { text: "FECHAS EXONERADAS", value: "date" },
-      { text: "HORAS EXONERADAS", value: "hour" },
-      { text: "TARIFA ($)", value: "not_charged" },
-      { text: "MONTO EXONERADO ($)", value: "exonerated_amount" },
       { text: "ACCIONES", value: "actions", sortable: false },
     ],
     records: [],
@@ -600,6 +714,9 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete();
     },
+    viewExonerations(val) {
+      val || this.closeExoneration();
+    },
   },
 
   created() {
@@ -643,155 +760,27 @@ export default {
       window.location.href = "places/";
     },
 
-    openExonerationModal() {
-      this.dialogExoneration = true;
-    },
-
-    GetReport() {
-      window.location.href = "Reports/";
-    },
-
-    editItem(item) {
+    OpenAgreement() {
       this.dialog = true;
-      this.editedIndex = this.recordsFiltered.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-
-      this.$v.editedItem.type_agreement_name.$model =
-        this.editedItem.type_agreement_name;
-      this.$v.editedItem.entity_name.$model = this.editedItem.entity_name;
-      /* this.$v.editedItem.national_direction_name.$model =
-        this.editedItem.national_direction_name;
-      this.$v.editedItem.place_name.$model = this.editedItem.place_name;
-      this.$v.editedItem.dependence_name.$model =
-        this.editedItem.dependence_name;
-      this.$v.editedItem.exonerated_amount.$model =
-        this.editedItem.exonerated_amount;
-      this.$v.editedItem.exonerated_description.$model =
-        this.editedItem.exonerated_description;
-      this.$v.editedItem.type_charge.$model = this.editedItem.type_charge;
-      this.$v.editedItem.not_charged.$model = this.editedItem.not_charged; */
-    },
-
-    editItemExoneration(exoneration) {
-      this.editedIndex = this.exonerations.indexOf(exoneration);
-      this.editedItem = Object.assign({}, exoneration);
-      this.dialogExoneration = true;
-      this.$v.editedItem.$reset();
-
-      /* this.$v.editedItem.national_direction_name.$model =
-        this.editedItem.national_direction_name;
-      this.$v.editedItem.dependence_name.$model =
-        this.editedItem.dependence_name;
-      this.$v.editedItem.date.$model = this.editedItem.date;
-      this.$v.editedItem.place_name.$model = this.editedItem.place_name;
-      this.$v.editedItem.type_charge.$model = this.editedItem.type_charge;
-      this.$v.editeditem.not_charged.$model = this.editedItem.not_charged;
-      this.$v.editedItem.exonerated_description.$model =
-        this.editedItem.exonerated_description;
-      this.$v.editedItem.hour.$model = this.editedItem.hour;
-      this.$v.editedItem.people.$model = this.editItem.people;
-      this.$v.editedItem.exonerated_amount.$model =
-        this.editItem.exonerated_amount; */
-    },
-
-    deleteItem() {
-      this.dialogDelete = true;
-    },
-
-    deleteItemOfTable() {
-      this.editedItem.exonerations.splice(
-        this.editedItem.exonerations.indexOf(this.exoneration),
-        1
-      );
-      this.closeDelete();
-    },
-
-    /* async deleteItemConfirm() {
-      const res = await exonerationApi
-        .delete(`/${this.editedItem.id}`)
-        .catch((error) => {
-          this.updateAlert(
-            true,
-            "No fue posible eliminar el registros.",
-            "fail"
-          );
-          this.close();
-          this.redirectSessionFinished = lib.verifySessionFinished(
-            error.response.status,
-            419
-          );
-        });
-
-      if (res.data.status == "success") {
-        this.redirectSessionFinished = lib.verifySessionFinished(
-          res.status,
-          200
-        );
-        this.updateAlert(true, "Registro eliminado.", "success");
-      }
-
-      this.initialize();
-      this.closeDelete();
-    }, */
-
-    close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    closeExoneration() {
-      this.$nextTick(() => {
-        this.editedItem.national_direction_name = Object.assign(
-          {},
-          this.defaultItem.national_direction_name
-        );
-        this.editedItem.dependence_name = Object.assign(
-          {},
-          this.defaultItem.dependence_name
-        );
-        this.editedItem.place_name = Object.assign(
-          {},
-          this.defaultItem.place_name
-        );
-        this.editedItem.exonerated_amount = Object.assign(
-          {},
-          this.defaultItem.exonerated_amount
-        );
-        this.editedItem.exonerated_description = Object.assign(
-          {},
-          this.defaultItem.exonerated_description
-        );
-        this.editedItem.hour = Object.assign({}, this.defaultItem.hour);
-        this.editedItem.type_charge = Object.assign(
-          {},
-          this.defaultItem.type_charge
-        );
-        this.editedItem.people = Object.assign({}, this.defaultItem.people);
-        this.editedItem.not_charged = Object.assign(
-          {},
-          this.defaultItem.not_charged
-        );
-        this.editedItem.date = Object.assign({}, this.defaultItem.date);
-        this.editedIndex = -1;
-      });
-      this.$v.editedItem.$reset();
-      this.dialogExoneration = false;
-    },
-
-    closeDelete() {
-      this.dialogDelete = false;
+      this.showExoneration = false;
+      this.editedItem.agreement_name = "";
+      this.editedItem.entity_name = "";
+      this.editedItem.type_agreement_name = "";
+      this.editedItem.description = "";
     },
 
     async save() {
       this.$v.$touch();
       if (this.editedIndex > -1) {
+        console.log(this.editedItem);
         const res = await agreementApi
           .put(`/${this.editedItem.id}`, this.editedItem)
           .catch((error) => {
-            this.updateAlert(true, "No fue posible crear el registro.", "fail");
+            this.updateAlert(
+              true,
+              "No fue posible modificar el registro.",
+              "fail"
+            );
             this.close();
             this.redirectSessionFinished = lib.verifySessionFinished(
               error.response.status,
@@ -802,9 +791,10 @@ export default {
         if (res.data.status == "success") {
           this.updateAlert(
             true,
-            "Registro almacenado correctamente.",
+            "Registro modificado correctamente.",
             "success"
           );
+          window.location.reload();
         }
       } else {
         const res = await agreementApi
@@ -826,6 +816,106 @@ export default {
       this.initialize();
     },
 
+    editItem(item) {
+      this.dialog = true;
+      this.showExoneration = true;
+      this.editedIndex = this.recordsFiltered.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+
+      this.$v.editedItem.type_agreement_name.$model =
+        this.editedItem.type_agreement_name;
+      this.$v.editedItem.entity_name.$model = this.editedItem.entity_name;
+
+      this.clearFields();
+      //this.initialize();
+    },
+
+    close() {
+      this.dialog = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+      window.location.reload();
+    },
+
+    viewExonerationItem(item) {
+      this.viewExonerations = true;
+      this.editedIndex = this.recordsFiltered.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+
+      this.$v.editedItem.type_agreement_name.$model =
+        this.editedItem.type_agreement_name;
+      this.$v.editedItem.entity_name.$model = this.editedItem.entity_name;
+    },
+
+    closeViewExonerations() {
+      this.viewExonerations = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+
+    closeExoneration() {
+      this.dialogExoneration = false;
+    },
+
+    openExonerationModal() {
+      this.dialogExoneration = true;
+
+      this.editedItem.national_direction_name = "";
+      this.editedItem.dependence_name = "";
+      this.editedItem.place_name = "";
+      this.editedItem.type_charge = "";
+      this.editedItem.not_charged = "";
+      this.editedItem.people = "";
+      this.editedItem.date = "";
+      this.editedItem.exonerated_amount = "";
+      this.editedItem.hour = "";
+      this.editedItem.exonerated_description = "";
+      this.hidden = false;
+
+      this.$v.editedItem.$reset();
+    },
+
+    clearFields() {
+      this.editedItem.exonerations.splice(0);
+    },
+
+    showSaveButton() {
+      return this.editedItem.exonerations.length > 0;
+    },
+
+    noData() {
+      return this.editedItem.exonerations.length == 0;
+    },
+
+    async addNewExoneration() {
+      this.$v.$touch();
+      if (this.$v.$invalid) {
+        this.updateAlert(true, "Campos obligatorios.", "fail");
+        return;
+      }
+
+      const newExoneration = {
+        exonerated_description: this.editedItem.exonerated_description,
+        dependence_name: this.editedItem.dependence_name,
+        hour: this.editedItem.hour,
+        people: this.editedItem.people,
+        date: this.editedItem.date,
+        exonerated_amount: this.editedItem.exonerated_amount,
+        place_name: this.editedItem.place_name,
+        type_charge: this.editedItem.type_charge,
+        not_charged: this.editedItem.not_charged,
+      };
+
+      this.editedItem.exonerations.push(newExoneration);
+      this.$nextTick(() => {
+        this.closeExoneration();
+      });
+    },
+
     async saveExoneration() {
       this.$v.$touch();
       if (this.$v.$invalid) {
@@ -833,20 +923,40 @@ export default {
         return;
       }
 
-      const res = await agreementApi
+      const res = await exonerationApi
         .post(null, this.editedItem)
         .catch((error) => {
           this.updateAlert(true, "No fue posible crear el registro.", "fail");
-          this.closeExoneration();
         });
 
       if (res.data.status == "success") {
         this.updateAlert(true, "Registro almacenado correctamente.", "success");
       }
-      //this.close();
-      this.closeExoneration();
-      this.editedItem.exonerations.push({ ...this.editedItem });
-      this.initialize();
+
+      this.close();
+      //his.initialize();
+      window.location.reload();
+    },
+
+    editItemExoneration() {
+      this.dialogExoneration = true;
+      this.deleteItemOfTable();
+    },
+
+    deleteItem() {
+      this.dialogDelete = true;
+    },
+
+    deleteItemOfTable() {
+      this.editedItem.exonerations.splice(
+        this.editedItem.exonerations.indexOf(this.exoneration),
+        1
+      );
+      this.closeDelete();
+    },
+
+    closeDelete() {
+      this.dialogDelete = false;
     },
 
     async changeDirection() {

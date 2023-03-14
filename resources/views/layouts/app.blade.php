@@ -58,6 +58,17 @@
                         </li>
                     <!-- Agreement -->
 
+                    <!-- report -->
+                        <li class="text-center pb-1">
+                            <a href="{{ url('/reports') }}" class="text-center">
+                                <i class="material-icons md-18 mx-auto">archive</i>
+                            </a>
+                            <a href="{{ url('/reports') }}">
+                                <p class="link mx-auto">Reportes</p>
+                            </a>
+                        </li>
+                    <!-- report -->
+
 
 
                     <!-- Settings -->

@@ -41,7 +41,7 @@ class AgreementController extends Controller
 
     public function store(Request $request)
     {
-        if($request->national_direction_name == null){
+        /* if($request->national_direction_name == null){ */
             Agreement::create([
                 'agreement_name' => $request->agreement_name,
                 'description' => $request->description,
@@ -49,7 +49,7 @@ class AgreementController extends Controller
                 'entity_id' => Entity::where("entity_name", $request->entity_name)->first()->id,
             ]);
 
-        }else{
+        /* }else{
 
             $place_id = ServicePlace::where("place_name", $request->place_name)->first()->id;
 
@@ -72,9 +72,8 @@ class AgreementController extends Controller
                 'service_place_id' => $place_id,
                 'tariff_id' => $tariff_id,
                 'not_charged' => $not_charged,
-                //'total_amount' => $total_amount,
             ]);
-        }
+        } */
 
         return response()->json([
             "status"=>"success",
@@ -84,6 +83,7 @@ class AgreementController extends Controller
 
     public function update(Request $request)
     {
+        //dd($request);
         $type = TypeAgreement::where("type_agreement_name", $request->type_agreement_name)->first();
         $entity = Entity::where("entity_name", $request->entity_name)->first();
 
@@ -102,11 +102,6 @@ class AgreementController extends Controller
 
     public function destroy($id)
     {
-        $id = Encrypt::decryptValue($id);
-
-        Exoneration::where("id", $id)->delete();
-        return response()->json([
-            "status"=>"success",
-            "message"=>"Registro eliminado correctamente."]);
+        //
     }
 }
