@@ -488,6 +488,7 @@
                     v-model.trim="$v.editedItem.not_charged.$model"
                     :validation="$v.editedItem.not_charged"
                     validationTextType="none"
+                    type="number"
                   />
                 </v-col>
                 <!-- Space: Tariff -->
@@ -517,6 +518,7 @@
                     v-model="$v.editedItem.exonerated_amount.$model"
                     :validation="$v.editedItem.exonerated_amount"
                     type="number"
+                    
                   />
                 </v-col>
                 <!-- Exoneracion: Exonerated description -->
@@ -990,6 +992,11 @@ export default {
           });
         });
       this.tariffs = data.tariffs;
+    }, 
+
+    amount() {
+      this.editItem.exonerated_amount = this.editItem.people * this.editItem.not_charged;
+      return this.editItem.exonerated_amount;
     },
 
     searchValue() {
