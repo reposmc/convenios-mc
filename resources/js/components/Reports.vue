@@ -23,7 +23,7 @@
                 </v-row>
                 <v-row class="mx-auto">
                     <!-- Date -->
-                        <v-col cols="12" sm="12" md="6">
+                        <v-col cols="12" sm="12" md="6" v-show="hidden"> 
                           <base-input
                             label="Fecha de inicio"
                             v-model="$v.parameters.dateOne.$model"
@@ -32,7 +32,7 @@
                             type="date"
                             />
                         </v-col>
-                        <v-col cols="12" sm="12" md="6">
+                        <v-col cols="12" sm="12" md="6" v-show="hidden">
                             <base-input
                              label="Fecha final"
                              v-model="$v.parameters.dateTwo.$model"
@@ -40,8 +40,14 @@
                              validationTextType="none"
                              type="date"
                             />
-                        </v-col>
-                    <!-- Agreement:Entity -->    
+                        </v-col>   
+                </v-row>
+                <v-row class="mx-auto">
+                      <v-checkbox
+                        @click="hidden = !hidden"
+                        :label="`Reporte por período`"
+                      >
+                      </v-checkbox>
                 </v-row>
                 <br>
                 <v-row class="mx-auto">
@@ -81,6 +87,7 @@ export default {
         agreements: [],
         redirectSessionFinished: false,
         alertTimeOut: 0,
+        hidden: false,
     }),
 
     //Validations

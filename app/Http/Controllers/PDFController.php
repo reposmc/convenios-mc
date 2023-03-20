@@ -19,26 +19,44 @@ class PDFController extends Controller
     {
         //dd($request);
         //dd($data);
-        // $data = $request->all();
+        $date = $request->all();
 
-        $agreement_id = Agreement::where("agreement_name", $request->agreement_name)->first()->id;
+        if($request->dateOne == null || $request->dateOne == ''){
+            $agreement_id = Agreement::where("agreement_name", $request->agreement_name)->first()->id;
 
-        $data = Agreement::select('agreements.*', 'entities.entity_name', 'type_agreements.type_agreement_name')
-                            ->join('entities', 'agreements.entity_id', '=', 'entities.id')
-                            ->join('type_agreements', 'agreements.type_agreement_id', '=', 'type_agreements.id')
-                            ->where('agreements.id', $agreement_id)
-                            ->get();
+            $data = Agreement::select('agreements.*', 'entities.entity_name', 'type_agreements.type_agreement_name')
+                                ->join('entities', 'agreements.entity_id', '=', 'entities.id')
+                                ->join('type_agreements', 'agreements.type_agreement_id', '=', 'type_agreements.id')
+                                ->where('agreements.id', $agreement_id)
+                                ->get();
 
-        foreach($data as $item){
-            $item->exonerations = Exoneration::select('exonerations.*', 'service_places.place_name',
-                     DB::raw('IFNULL(tariffs.amount, exonerations.not_charged) AS charge'))
-            ->leftJoin('service_places', 'exonerations.service_place_id', '=', 'service_places.id')
-            ->leftJoin('tariffs', 'exonerations.tariff_id', '=', 'tariffs.id') 
-            ->where('exonerations.agreement_id', $agreement_id)
-            ->get();
-            //dd($item);
-        } 
-        //dd($data);
+            foreach($data as $item){
+                $item->exonerations = Exoneration::select('exonerations.*', 'service_places.place_name',
+                        DB::raw('IFNULL(tariffs.amount, exonerations.not_charged) AS charge'))
+                ->leftJoin('service_places', 'exonerations.service_place_id', '=', 'service_places.id')
+                ->leftJoin('tariffs', 'exonerations.tariff_id', '=', 'tariffs.id') 
+                ->where('exonerations.agreement_id', $agreement_id)
+                ->get();
+            } 
+        }else{
+            $agreement_id = Agreement::where("agreement_name", $request->agreement_name)->first()->id;
+
+            $data = Agreement::select('agreements.*', 'entities.entity_name', 'type_agreements.type_agreement_name')
+                                ->join('entities', 'agreements.entity_id', '=', 'entities.id')
+                                ->join('type_agreements', 'agreements.type_agreement_id', '=', 'type_agreements.id')
+                                ->where('agreements.id', $agreement_id)
+                                ->get();
+
+            foreach($data as $item){
+                $item->exonerations = Exoneration::select('exonerations.*', 'service_places.place_name',
+                        DB::raw('IFNULL(tariffs.amount, exonerations.not_charged) AS charge'))
+                ->leftJoin('service_places', 'exonerations.service_place_id', '=', 'service_places.id')
+                ->leftJoin('tariffs', 'exonerations.tariff_id', '=', 'tariffs.id')
+                ->whereRaw("(exonerations.date >= ? AND exonerations.date <= ?)", [$date['dateOne'], $date['dateTwo']])
+                ->where('exonerations.agreement_id', $agreement_id)
+                ->get();
+            }
+        }
             
         $pdf = PDF::loadView('PDF.report', compact('data'));
 
