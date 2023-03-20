@@ -64,6 +64,11 @@ class PDFController extends Controller
                 ->whereRaw("(exonerations.date >= ? AND exonerations.date <= ?)", [$date['dateOne'], $date['dateTwo']])
                 ->where('exonerations.agreement_id', $agreement_id)
                 ->get();
+
+                $item->totalAmount = Exoneration::selectRaw('SUM(exonerations.exonerated_amount) AS Total')
+                    ->whereRaw("(exonerations.date >= ? AND exonerations.date <= ?)", [$date['dateOne'], $date['dateTwo']])
+                    ->where('exonerations.agreement_id', $agreement_id)
+                    ->value('Total');
             }
         }
             
