@@ -30,6 +30,10 @@ class PDFController extends Controller
                                 ->where('agreements.id', $agreement_id)
                                 ->get();
 
+           /*  $data = Exoneration::selectRaw('SUM(exonerations.exonerated_amount) AS Total')
+                    ->where('exonerations.agreement_id', $agreement_id)
+                    ->value('Total'); */
+
             foreach($data as $item){
                 $item->exonerations = Exoneration::select('exonerations.*', 'service_places.place_name',
                         DB::raw('IFNULL(tariffs.amount, exonerations.not_charged) AS charge'))
@@ -37,7 +41,12 @@ class PDFController extends Controller
                 ->leftJoin('tariffs', 'exonerations.tariff_id', '=', 'tariffs.id') 
                 ->where('exonerations.agreement_id', $agreement_id)
                 ->get();
+
+                $item->totalAmount = Exoneration::selectRaw('SUM(exonerations.exonerated_amount) AS Total')
+                    ->where('exonerations.agreement_id', $agreement_id)
+                    ->value('Total');
             } 
+
         }else{
             $agreement_id = Agreement::where("agreement_name", $request->agreement_name)->first()->id;
 

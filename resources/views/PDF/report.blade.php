@@ -102,7 +102,7 @@
         </tbody>
     </table>
     <br><br>
-    <h4>Monto Total: {{ $d->total }}</h4>
+    <h4>Monto Total: {{ $d->totalAmount }}</h4>
     @endforeach
 
     <div id="footer">
