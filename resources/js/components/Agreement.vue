@@ -938,7 +938,7 @@ export default {
       }
 
       this.close();
-      //his.initialize();
+      //This.initialize();
       window.location.reload();
     },
 
