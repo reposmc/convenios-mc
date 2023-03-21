@@ -12,23 +12,19 @@
         width: 100%;
         border-spacing: 0px;
     }
-    td {
-        text-align: left;
-        padding: 12px;
-    }
-    h3 {
-        line-height: 200%;
-    }
-    body {
-        font-family: Arial, sans-serif;
-    }
+
+    td,
     th {
-        background: #323e48;
-        color: white;
-        height: 3%;
-        text-align: center;
-        font-weight: bold;
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
     }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+        border: 1px solid white;
+    }
+
 </style>
 
 <body>

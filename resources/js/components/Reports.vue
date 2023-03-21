@@ -69,6 +69,81 @@ import BaseInput from "./base-components/BaseInput.vue";
 import lib from "../libs/function";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
 import axios from "axios";
+
+export default {
+    components: { BaseInput },
+    data: () => ({
+        records: [],
+        recordsFiltered: [],
+        editedIndex: -1,
+        parameters: {
+            agreement_name: "",
+            dateOne: "",
+            dateTwo: "",
+        },
+        textAlert: "",
+        alertEvent: "success",
+        showAlert: false,
+        agreements: [],
+        redirectSessionFinished: false,
+        alertTimeOut: 0,
+        hidden: false,
+    }),
+
+    //Validations
+    validations: {
+        parameters: {
+            agreement_name: {
+                required,
+            },
+            dateOne: {
+                minLength: minLength(1),
+            },
+            dateTwo: {
+                minLength: minLength(1),
+            },
+        },
+    },
+
+    mounted() {
+        this.initialize();
+    },
+
+    methods: {
+        async initialize() {
+            this.records = [];
+            this.recordsFiltered = [];
+
+            let requests = [agreementApi.get()];
+            let responses = await Promise.all(requests).catch((error) => {
+                this.updateAlert(true, "No fue posible obtener los registros.", "fail");
+                this.redirectSessionFinished = lib.verifySessionFinished(
+                    error.response.status,
+                    401
+                );
+            });
+
+            this.agreements = responses[0].data.agreements;
+            this.recordsFiltered = this.records;
+        },
+
+        async generateReport() {
+            console.log(this.parameters);
+            if(this.parameters){
+                window.open(`/pdf/reports?agreement_name=${this.parameters.agreement_name}&&dateOne=${this.parameters.dateOne}&&dateTwo=${this.parameters.dateTwo}`);
+                return;
+            }
+        },
+    },
+};
+</script>
+
+<script>
+import agreementApi from "../apis/agreementApi";
+import BaseInput from "./base-components/BaseInput.vue";
+import lib from "../libs/function";
+import { required, minLength, maxLength } from "vuelidate/lib/validators";
+import axios from "axios";
 export default {
     components: { BaseInput },
     data: () => ({

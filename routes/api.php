@@ -63,7 +63,6 @@ Route::group(
         Route::resource('/direction', NationalDirectionController::class);
         Route::resource('/place', ServicePlaceController::class);
         Route::resource('/tariff', TariffController::class);
-        //Route::resource('/exoneration', ExonerationDetailController::class);
         Route::resource('/type', TypeAgreementController::class);
         Route::resource('/dependence', DependenceController::class);
         Route::resource('/role', RoleController::class);

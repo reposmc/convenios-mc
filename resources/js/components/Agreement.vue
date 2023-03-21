@@ -812,6 +812,7 @@ export default {
         this.editedItem.type_agreement_name;
       this.$v.editedItem.entity_name.$model = this.editedItem.entity_name;
       this.clearFields();
+
       //comentario
     },
     close() {
@@ -903,7 +904,7 @@ export default {
         this.updateAlert(true, "Registro almacenado correctamente.", "success");
       }
       this.close();
-      //his.initialize();
+      //This.initialize();
       window.location.reload();
     },
     editItemExoneration() {
@@ -951,11 +952,8 @@ export default {
           });
         });
       this.tariffs = data.tariffs;
-    }, 
-    amount() {
-      this.editItem.exonerated_amount = this.editItem.people * this.editItem.not_charged;
-      return this.editItem.exonerated_amount;
     },
+
     searchValue() {
       this.recordsFiltered = [];
       if (this.search != "") {

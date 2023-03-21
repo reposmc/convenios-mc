@@ -93,6 +93,18 @@
                                 <li><a href="{{ url('/users') }}">Usuarios</a></li>
                             </ul>
                         </li>
+                        @elseif(auth()->user()->hasRole('Usuario') == 'Usuario')
+                            <li>
+                                <div class="icon-link pb-1">
+                                    <a href="#" class="arrow text-center">
+                                        <i class="material-icons md-18 mx-auto">settings</i>
+                                    </a>
+                                    <p class="link">Administración</p>
+                                </div>
+                                <ul class="sub-menu">
+                                    <li><a href="{{ url('/places') }}">Espacios de Servicio</a></li>
+                                </ul>
+                            </li>
                     @endif
                     <!-- End Administrative routes -->
                     <!-- Settings -->
