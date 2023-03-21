@@ -97,10 +97,15 @@ Route::group(['middleware'=> ['auth', 'verified', 'log', 'throttle:web']], funct
         Route::get('/exonerations', function () {
             return view('exoneration.index');
         });
+
+        Route::get('/reports', function () {
+            return view('reports.index');
+        });
     });
 
     //Reports
     Route::get('generate-pdf', [PDFController::class, 'generatePDF']);
+    Route::get('pdf/reports', [PDFController::class, 'generatePDF']);
 
     //Excel
     Route::get('export', [ExcelController::class, 'export']);

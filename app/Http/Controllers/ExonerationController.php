@@ -25,37 +25,6 @@ class ExonerationController extends Controller
 
     public function store(Request $request)
     {
-        /* $agreement = Agreement::findOrFail($request->id);
-        foreach ($request->exonerations as $exonerationData) {
-
-            $place_id = ServicePlace::where("place_name", $exonerationData['place_name'])->first()->id;
-
-            if($exonerationData['type_charge'] == null || $exonerationData['type_charge'] == ""){
-                $tariff_id = null;
-                $not_charged = $exonerationData['not_charged'];
-            }else{
-                $tariff_id = Tariff::where("type_charge", $exonerationData['type_charge'])->first()->id;
-                $not_charged = null;
-            }
-
-            Exoneration::create([
-                'exonerated_description' => $exonerationData['exonerated_description'],
-                'agreement_id' => $agreement->id,
-                'dependence_id' => Dependence::where("dependence_name", $exonerationData['dependence_name'])->first()->id,
-                'hour'=> $exonerationData['hour'],
-                'people'=> $exonerationData['people'],
-                'date'=> $exonerationData['date'],
-                'exonerated_amount' => $exonerationData['exonerated_amount'],
-                'service_place_id' => $place_id,
-                'tariff_id' => $tariff_id,
-                'not_charged' => $not_charged,
-            ]);
-        }
-
-        return response()->json([
-            "status"=>"success",
-            "message"=>"Registro creado correctamente."
-        ]); */
         $agreement_id = Agreement::where("agreement_name", $request->agreement_name)->first()->id;
         $dependence_id = Dependence::where("dependence_name", $request->dependence_name)->first()->id;
         $place_id = ServicePlace::where("place_name", $request->place_name)->first()->id;

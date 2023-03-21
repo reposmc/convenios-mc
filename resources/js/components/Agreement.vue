@@ -471,6 +471,16 @@
                     @change="changePlace()"
                   />
                 </v-col>
+                <!-- Exoneracion: Exempted hours -->
+                  <v-col cols="12" sm="12" md="3">
+                    <base-input
+                      label="Horas exoneradas"
+                      v-model="$v.editedItem.hour.$model"
+                      :validation="$v.editedItem.hour"
+                      type="number"
+                      validationTextType="none"
+                    />
+                  </v-col>
                 <!-- not Tariff-->
                 <v-col cols="12" xs="12" sm="12" md="3" v-show="hidden">
                   <base-input
@@ -478,6 +488,7 @@
                     v-model.trim="$v.editedItem.not_charged.$model"
                     :validation="$v.editedItem.not_charged"
                     validationTextType="none"
+                    type="number"
                   />
                 </v-col>
                 <!-- Space: Tariff -->
@@ -488,16 +499,6 @@
                     :items="tariffs"
                     item="type_charge"
                     :validation="$v.editedItem.type_charge"
-                  />
-                </v-col>
-                <!-- Exoneracion: Exempted hours -->
-                <v-col cols="12" sm="12" md="3">
-                  <base-input
-                    label="Horas exoneradas"
-                    v-model="$v.editedItem.hour.$model"
-                    :validation="$v.editedItem.hour"
-                    type="number"
-                    validationTextType="none"
                   />
                 </v-col>
                 <!-- Exoneracion: number of people -->
@@ -517,6 +518,7 @@
                     v-model="$v.editedItem.exonerated_amount.$model"
                     :validation="$v.editedItem.exonerated_amount"
                     type="number"
+                    
                   />
                 </v-col>
                 <!-- Exoneracion: Exonerated description -->
@@ -571,7 +573,6 @@ import lib from "../libs/function";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
 import axios from "axios";
 import BaseInput from "./base-components/BaseInput.vue";
-
 export default {
   components: { BaseInput },
   data: () => ({
@@ -638,7 +639,6 @@ export default {
     redirectSessionFinished: false,
     alertTimeOut: 0,
   }),
-
   //Validations
   validations: {
     editedItem: {
@@ -696,14 +696,12 @@ export default {
       },
     },
   },
-
   //Validations
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "Nuevo registro" : "Editar registro";
     },
   },
-
   watch: {
     dialog(val) {
       val || this.close();
@@ -718,16 +716,13 @@ export default {
       val || this.closeExoneration();
     },
   },
-
   created() {
     this.initialize();
   },
-
   methods: {
     async initialize() {
       this.records = [];
       this.recordsFiltered = [];
-
       let requests = [
         agreementApi.get(),
         typeApi.get(),
@@ -744,7 +739,6 @@ export default {
           401
         );
       });
-
       this.records = responses[0].data.agreements;
       this.types = responses[1].data.types;
       this.entities = responses[2].data.entities;
@@ -752,14 +746,11 @@ export default {
       this.places = responses[4].data.places;
       this.dependences = responses[5].data.dependences;
       this.tariffs = responses[6].data.tariffs;
-
       this.recordsFiltered = this.records;
     },
-
     OpenNewPlace() {
       window.location.href = "places/";
     },
-
     OpenAgreement() {
       this.dialog = true;
       this.showExoneration = false;
@@ -768,7 +759,6 @@ export default {
       this.editedItem.type_agreement_name = "";
       this.editedItem.description = "";
     },
-
     async save() {
       this.$v.$touch();
       if (this.editedIndex > -1) {
@@ -787,7 +777,6 @@ export default {
               419
             );
           });
-
         if (res.data.status == "success") {
           this.updateAlert(
             true,
@@ -803,7 +792,6 @@ export default {
             this.updateAlert(true, "No fue posible crear el registro.", "fail");
             this.close();
           });
-
         if (res.data.status == "success") {
           this.updateAlert(
             true,
@@ -815,41 +803,35 @@ export default {
       this.close();
       this.initialize();
     },
-
     editItem(item) {
       this.dialog = true;
       this.showExoneration = true;
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
-
       this.$v.editedItem.type_agreement_name.$model =
         this.editedItem.type_agreement_name;
       this.$v.editedItem.entity_name.$model = this.editedItem.entity_name;
-
       this.clearFields();
       //comentario
     },
-
     close() {
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       });
-      window.location.reload();
-      //comentario
+      if (this.formTitle === "Editar registro") {
+        window.location.reload();
+      }
     },
-
     viewExonerationItem(item) {
       this.viewExonerations = true;
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
-
       this.$v.editedItem.type_agreement_name.$model =
         this.editedItem.type_agreement_name;
       this.$v.editedItem.entity_name.$model = this.editedItem.entity_name;
     },
-
     closeViewExonerations() {
       this.viewExonerations = false;
       this.$nextTick(() => {
@@ -857,14 +839,11 @@ export default {
         this.editedIndex = -1;
       });
     },
-
     closeExoneration() {
       this.dialogExoneration = false;
     },
-
     openExonerationModal() {
       this.dialogExoneration = true;
-
       this.editedItem.national_direction_name = "";
       this.editedItem.dependence_name = "";
       this.editedItem.place_name = "";
@@ -876,29 +855,23 @@ export default {
       this.editedItem.hour = "";
       this.editedItem.exonerated_description = "";
       this.hidden = false;
-
       this.$v.editedItem.$reset();
     },
-
     clearFields() {
       this.editedItem.exonerations.splice(0);
     },
-
     showSaveButton() {
       return this.editedItem.exonerations.length > 0;
     },
-
     noData() {
       return this.editedItem.exonerations.length == 0;
     },
-
     async addNewExoneration() {
       this.$v.$touch();
       if (this.$v.$invalid) {
         this.updateAlert(true, "Campos obligatorios.", "fail");
         return;
       }
-
       const newExoneration = {
         exonerated_description: this.editedItem.exonerated_description,
         dependence_name: this.editedItem.dependence_name,
@@ -910,44 +883,36 @@ export default {
         type_charge: this.editedItem.type_charge,
         not_charged: this.editedItem.not_charged,
       };
-
       this.editedItem.exonerations.push(newExoneration);
       this.$nextTick(() => {
         this.closeExoneration();
       });
     },
-
     async saveExoneration() {
       this.$v.$touch();
       if (this.$v.$invalid) {
         this.updateAlert(true, "Campos obligatorios.", "fail");
         return;
       }
-
       const res = await exonerationApi
         .post(null, this.editedItem)
         .catch((error) => {
           this.updateAlert(true, "No fue posible crear el registro.", "fail");
         });
-
       if (res.data.status == "success") {
         this.updateAlert(true, "Registro almacenado correctamente.", "success");
       }
-
       this.close();
       //his.initialize();
       window.location.reload();
     },
-
     editItemExoneration() {
       this.dialogExoneration = true;
       this.deleteItemOfTable();
     },
-
     deleteItem() {
       this.dialogDelete = true;
     },
-
     deleteItemOfTable() {
       this.editedItem.exonerations.splice(
         this.editedItem.exonerations.indexOf(this.exoneration),
@@ -955,11 +920,9 @@ export default {
       );
       this.closeDelete();
     },
-
     closeDelete() {
       this.dialogDelete = false;
     },
-
     async changeDirection() {
       let { data } = await axios
         .get(
@@ -976,7 +939,6 @@ export default {
         });
       this.dependences = data.dependences;
     },
-
     async changePlace() {
       let { data } = await axios
         .get("api/tariff/byPlaceName/" + this.editedItem.place_name)
@@ -989,11 +951,13 @@ export default {
           });
         });
       this.tariffs = data.tariffs;
+    }, 
+    amount() {
+      this.editItem.exonerated_amount = this.editItem.people * this.editItem.not_charged;
+      return this.editItem.exonerated_amount;
     },
-
     searchValue() {
       this.recordsFiltered = [];
-
       if (this.search != "") {
         this.records.forEach((record) => {
           let searchConcat = "";
@@ -1009,16 +973,13 @@ export default {
         });
         return;
       }
-
       this.recordsFiltered = this.records;
     },
-
     updateAlert(show = false, text = "Alerta", event = "success") {
       this.textAlert = text;
       this.alertEvent = event;
       this.showAlert = show;
     },
-
     updateTimeOut(event) {
       this.redirectSessionFinished = event;
     },

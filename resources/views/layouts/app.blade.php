@@ -67,7 +67,7 @@
                                 <p class="link mx-auto">Reportes</p>
                             </a>
                         </li>
-                    <!-- report -->
+                    <!-- report -->
 
 
 
@@ -187,8 +187,8 @@
                                         <div class=" col-md-12 text-end">
                                             <a href="{{ url('/login') }}" class="btn btn-normal-nav shadow-none">Iniciar
                                                 sesión</a>
-                                            <a href="{{ route('register') }}"
-                                                class="btn btn-normal-secondary-nav shadow-none">Registrarme</a>
+                                            {{-- <a href="{{ route('register') }}"
+                                                class="btn btn-normal-secondary-nav shadow-none">Registrarme</a> --}}
                                         </div>
 
                                     </div>
