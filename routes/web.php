@@ -34,7 +34,7 @@ Route::get('/', function () {
 
 Auth::routes(['verify' => true, 'remember_me'=>false]);
 
-Route::group(['middleware'=> ['auth', 'verified', 'log', 'throttle:web']], function () {
+Route::group(['middleware'=> ['auth', 'verified']], function () {
     Route::group(['middleware'=>['has.role:Administrador']], function () {
         // Apis
         Route::resource('/api/web/department', DepartmentController::class);
@@ -101,16 +101,55 @@ Route::group(['middleware'=> ['auth', 'verified', 'log', 'throttle:web']], funct
         Route::get('/reports', function () {
             return view('reports.index');
         });
+
+        //Reports
+        Route::get('generate-pdf', [PDFController::class, 'generatePDF']);
+        Route::get('pdf/reports', [PDFController::class, 'generatePDF']);
+
+        //Excel
+        Route::get('export', [ExcelController::class, 'export']);
+        Route::get('/home', [HomeController::class, 'index'])->name('home');
     });
 
-    //Reports
-    Route::get('generate-pdf', [PDFController::class, 'generatePDF']);
-    Route::get('pdf/reports', [PDFController::class, 'generatePDF']);
+    Route::group(['middleware'=>['has.role:Administrador,Usuario']], function () {
+        // Apis
+        Route::resource('/api/web/department', DepartmentController::class);
+        Route::resource('/api/web/municipality', MunicipalityController::class);
+        Route::resource('/api/web/agreement', AgreementController::class);
+        Route::resource('/api/web/exoneration', ExonerationController::class);
+        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']); 
+        Route::resource('/api/web/type', TypeAgreementController::class);
+        Route::resource('/api/web/entity', EntityController::class);
+        Route::resource('/api/web/tariff', TariffController::class);
+        Route::resource('/api/web/place', ServicePlaceController::class);
+        Route::get('api/tariff/byPlaceName/{service_places}', [TariffController::class, 'byPlaceName']);
+        Route::resource('/api/web/dependence', DependenceController::class);
+        Route::resource('/api/web/direction', NationalDirectionController::class);
+        Route::resource('/api/web/exonerationDetail', ExonerationDetailController::class);
+        Route::resource('/api/web/user', UserController::class);
+        Route::resource('/api/web/role', RoleController::class);
 
-    //Excel
-    Route::get('export', [ExcelController::class, 'export']);
+        // Views
+        Route::get('/agreements', function () {
+            return view('agreement.index');
+        });
 
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+        Route::get('/reports', function () {
+            return view('reports.index');
+        });
+
+        Route::get('/places', function () {
+            return view('place.index');
+        });
+
+        //Reports
+        Route::get('generate-pdf', [PDFController::class, 'generatePDF']);
+        Route::get('pdf/reports', [PDFController::class, 'generatePDF']);
+
+        //Excel
+        Route::get('export', [ExcelController::class, 'export']);
+        Route::get('/home', [HomeController::class, 'index'])->name('home');
+    });
 });
 
 Route::post('import', [ExcelController::class, 'import']);
