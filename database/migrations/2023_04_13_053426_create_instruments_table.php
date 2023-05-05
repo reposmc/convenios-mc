@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description');
             $table->foreignId('type_instrument_id')->constrained('type_instruments');
             $table->foreignId('sector_id')->constrained('sectors');
-            $table->text('entity');;
+            $table->foreignId('entity_id')->constrained('entities');
             $table->softDeletes();
             $table->timestamps();
         });

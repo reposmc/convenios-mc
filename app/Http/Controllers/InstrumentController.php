@@ -23,11 +23,12 @@ class InstrumentController extends Controller
         foreach ($instruments as $instrument)
         {
             $instrument->exonerations = Exoneration::select('exonerations.*', DB::raw('IFNULL(tariffs.amount, exonerations.not_charged_hour) AS charge_hour'))
-            //->leftJoin('service_places', 'exonerations.service_place_id', '=', 'service_places.id')
+            ->leftJoin('service_places', 'exonerations.service_place_id', '=', 'service_places.id')
             ->leftJoin('tariffs', 'exonerations.tariff_id', '=', 'tariffs.id')
             ->where('exonerations.instrument_id', $instrument->id)
             ->get();
             $instrument->sector_name = Sector::find($instrument->sector_id)->sector_name;
+            $agreement->entity_name = Entity::find($agreement->entity_id)->entity_name;
             $instrument->type_instrument_name = TypeInstrument::find($instrument->type_instrument_id)->type_instrument_name;
         }
 
@@ -46,7 +47,7 @@ class InstrumentController extends Controller
             'instrument_name' => $request->instrument_name,
             'description' => $request->description,
             'type_instrument_id' => TypeInstrument::where("type_instrument_name", $request->type_instrument_name)->first()->id,
-            'entity' => $request->entity,
+            'entity_id' => Entity::where("entity_name", $request->entity_name)->first()->id,
             'sector_id' => Sector::where("sector_name", $request->sector_name)->first()->id,
         ]);
 
@@ -60,11 +61,13 @@ class InstrumentController extends Controller
     {
         $type = TypeInstrument::where("type_instrument_name", $request->type_instrument_name)->first();
         $sector = Sector::where("sector_name", $request->sector_name)->first();
+        $entity = Entity::where("entity_name", $request->entity_name)->first();
 
         $data = Encrypt::decryptArray($request->except(["type_instrument_name", "sector_name", "exonerations"]), "id");
 
         $data["type_instrument_id"] = $type->id;
         $data["sector_id"] = $sector->id;
+        $data["entity_id"] = $entity->id;
         
         Instrument::where("id", $data)->update($data);
 
