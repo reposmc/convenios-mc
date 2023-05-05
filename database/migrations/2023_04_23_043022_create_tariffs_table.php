@@ -15,9 +15,10 @@ return new class extends Migration
     {
         Schema::create('tariffs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('service_place_id')->constrained('service_places');
-            $table->string('type_charge');
+            $table->longText('type_charge');
             $table->decimal('amount', 8, 2);
+            $table->string('rent');
+            $table->foreignId('dependence_id')->constrained('dependences');
             $table->softDeletes();
             $table->timestamps();
         });

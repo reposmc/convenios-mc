@@ -18,9 +18,10 @@ class Tariff extends Model
 
     protected $fillable = [
         'id',
-        'service_place_id',
         'type_charge',
         'amount',
+        'rent',
+        'dependence_id',
     ];
 
     public $hidden = [
@@ -31,13 +32,8 @@ class Tariff extends Model
 
     public $timestamps = false;
 
-    public function exonerationDetail()
+    public function dependences()
     {
-        return $this->hasMany(ExonerationDetail::class);
-    }
-
-    public function places()
-    {
-        return $this->belongsTo(ServicePlace::class, 'service_place_id', 'id');
+        return $this->belongsTo(Dependence::class, 'dependence_id', 'id');
     }
 }
