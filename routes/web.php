@@ -5,7 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\MunicipalityController;
 use App\Http\Controllers\InstrumentController;
-use App\Http\Controllers\typeInstrumentController;
+use App\Http\Controllers\TypeInstrumentController;
 use App\Http\Controllers\EntityController;
 use App\Http\Controllers\NationalDirectionController;
 use App\Http\Controllers\TariffController;
@@ -42,7 +42,7 @@ Route::group(['middleware'=> ['auth', 'verified']], function () {
         Route::resource('/api/web/municipality', MunicipalityController::class);
         Route::resource('/api/web/instrument', InstrumentController::class);
         Route::resource('/api/web/exoneration', ExonerationController::class);
-        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']); 
+        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']);
         Route::resource('/api/web/type', TypeInstrumentController::class);
         Route::resource('/api/web/entity', EntityController::class);
         Route::resource('/api/web/tariff', TariffController::class);
@@ -94,7 +94,7 @@ Route::group(['middleware'=> ['auth', 'verified']], function () {
         Route::get('/types', function () {
             return view('type.index');
         });
-        
+
         Route::get('/exonerations', function () {
             return view('exoneration.index');
         });
@@ -118,10 +118,10 @@ Route::group(['middleware'=> ['auth', 'verified']], function () {
 
     Route::group(['middleware'=>['has.role:Administrador,Usuario']], function () {
         // Apis
-        
+
         Route::resource('/api/web/instrument', InstrumentController::class);
         Route::resource('/api/web/exoneration', ExonerationController::class);
-        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']); 
+        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']);
         Route::resource('/api/web/type', TypeInstrumentController::class);
         Route::resource('/api/web/entity', EntityController::class);
         Route::resource('/api/web/tariff', TariffController::class);
