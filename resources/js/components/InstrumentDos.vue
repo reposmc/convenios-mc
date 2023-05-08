@@ -271,17 +271,26 @@
       </template>
     </v-data-table>
 
-    <v-dialog v-model="dialogExoneration" max-width="800px">
+    <v-dialog v-model="dialogExoneration" max-width="900px">
       <v-card class="h-100 p-3">
         <v-container>
-          <h3 class="black-secondary text-center mt-3 mb-3">
+          <h1 class="black-secondary text-center mt-3 mb-3">
             Agregar exoneraciones
-          </h3>
+          </h1>
           <!-- title -->
           <v-row>
             <v-col cols="12" sm="12" md="12">
-              <h5>Nombre del instrumento: {{ editedItem.instrument_name }}</h5>
+              <h5>Detalle del instrumento</h5>
               <hr />
+            </v-col>
+            <v-col cols="12" sm="12" md="12">
+              <base-input
+                label="Instrumento"
+                v-model.trim="$v.editedItem.instrument_name.$model"
+                :validation="$v.editedItem.instrument_name"
+                validationTextType="default"
+                :disabled="true"
+              />
             </v-col>
           </v-row>
           <!-- title -->
@@ -383,42 +392,43 @@
                 @change="getTariffAmount()"
               />
             </v-col>
-            <v-col cols="12" sm="12" md="4">
-              <base-input
-                label="Monto de tarifa"
-                v-model.number="$v.formExonerations.tariff_amount.$model"
-                :validation="$v.formExonerations.tariff_amount"
-                type="number"
-                @input="totalAmount"
-              />
+            <v-col cols="12" sm="12" md="3">
+              <h5 class="mb-0 mt-2 text-primary">
+                Tarifa: ${{ this.tariff_value }}
+              </h5>
             </v-col>
-            <v-col cols="12" sm="12" md="4">
+            <v-col cols="12" sm="12" md="3">
               <base-input
-                label="Horas evento/alquiler"
+                label="Evento/alquiler"
                 v-model.number="$v.formExonerations.number_hour.$model"
                 :validation="$v.formExonerations.number_hour"
                 type="number"
+                :disabled="this.formExonerations.number_people != ''"
               />
             </v-col>
-            <v-col cols="12" sm="12" md="4">
-              <base-input
-                label="Monto total"
-                v-model.number="$v.formExonerations.tafiff_total_amount.$model"
-                :validation="$v.formExonerations.tafiff_total_amount"
-                type="number"
-              />
-            </v-col>
-            <v-col cols="12" sm="12" md="4"> </v-col>
-            <v-col cols="12" sm="12" md="4">
+            <v-col cols="12" sm="12" md="3">
               <base-input
                 label="Número de personas"
                 v-model.number="$v.formExonerations.number_people.$model"
                 :validation="$v.formExonerations.number_people"
                 type="number"
-                @input="totalAmount"
+                :disabled="this.formExonerations.number_hour != ''"
               />
             </v-col>
-            <v-col cols="12" sm="12" md="4"> </v-col>
+            <v-col cols="12" sm="12" md="3">
+              <h5
+                class="mb-0 text-primary"
+                v-if="this.formExonerations.number_people"
+              >
+                Total por personas: ${{ totalTariffNumberPeople }}
+              </h5>
+              <h5
+                class="mb-0 text-primary"
+                v-if="this.formExonerations.number_hour"
+              >
+                Total por evento/alquiler: ${{ totalTariffNumberHour }}
+              </h5></v-col
+            >
             <v-col cols="12" sm="12" md="12">
               <base-text-area
                 label="Descripción de la exoneración"
@@ -444,9 +454,18 @@
             <v-simple-table class="mt-2">
               <thead>
                 <tr>
-                  <th>Fecha</th>
-                  <th>Descripción</th>
-                  <th>Tarifa</th>
+                  <th v-if="this.formExonerations.date_event">Fecha</th>
+                  <th v-if="this.formExonerations.service_place_name">
+                    Espacio
+                  </th>
+                  <th v-if="this.formExonerations.is_tariffed">¿Tarifado?</th>
+                  <th v-if="this.formExonerations.exonerated_description">
+                    Descripción
+                  </th>
+                  <th v-if="this.formExonerations.tariff_type_charge">
+                    Descripción tarifa
+                  </th>
+                  <th v-if="this.formExonerations.tariff_amount">Tarifa</th>
                   <th v-if="this.formExonerations.number_hour">Cant. Horas</th>
                   <th v-if="this.formExonerations.number_people">
                     Cant. Personas
@@ -460,9 +479,24 @@
                   v-for="(assigned, index) in editedItem.assignedExonerations"
                   :key="index"
                 >
-                  <td>{{ assigned.date_event }}</td>
-                  <td>{{ assigned.exonerated_description }}</td>
-                  <td>{{ assigned.tariff_amount }}</td>
+                  <td v-if="assigned.date_event">
+                    {{ assigned.date_event }}
+                  </td>
+                  <td v-if="assigned.service_place_name">
+                    {{ assigned.service_place_name }}
+                  </td>
+                  <td v-if="assigned.is_tariffed">
+                    {{ assigned.is_tariffed }}
+                  </td>
+                  <td v-if="assigned.tariff_type_charge">
+                    {{ assigned.tariff_type_charge }}
+                  </td>
+                  <td v-if="assigned.exonerated_description">
+                    {{ assigned.exonerated_description }}
+                  </td>
+                  <td v-if="assigned.tariff_amount">
+                    {{ assigned.tariff_amount }}
+                  </td>
                   <td v-if="assigned.number_hour">
                     {{ assigned.number_hour }}
                   </td>
@@ -827,7 +861,23 @@ export default {
         service_place_name: "",
         is_tariffed: false,
         tariff_type_charge: "",
-        tariff_amount: "",
+        tariff_amount: 0,
+        number_hour: "",
+        number_people: "",
+        tafiff_total_amount: 0,
+        exonerated_description: "",
+      },
+      defaultFormExonerations: {
+        concept: "",
+        worth: "",
+        concept_amount: "",
+        //
+        dependence_name: "",
+        date_event: "",
+        service_place_name: "",
+        is_tariffed: false,
+        tariff_type_charge: "",
+        tariff_amount: 0,
         number_hour: "",
         number_people: "",
         tafiff_total_amount: 0,
@@ -848,7 +898,7 @@ export default {
       alertTimeOut: 0,
       debounce: 0,
       selectedTab: 0,
-      monto: 0,
+      tariff_value: 0,
     };
   },
 
@@ -920,11 +970,11 @@ export default {
         minLength: minLength(1),
       },
       //
-      dependence_name: {},
-      date_event: {},
+      dependence_name: { required },
+      date_event: { required },
       service_place_name: {},
       is_tariffed: {},
-      tariff_type_charge: {},
+      tariff_type_charge: { required },
       tariff_amount: {},
       number_hour: {},
       tafiff_total_amount: {},
@@ -941,18 +991,32 @@ export default {
     isUsuarioRole() {
       return this.roles.some((role) => role.name === "Usuario");
     },
-    // totalTariffNumberPeople: function () {
-    //   return (
-    //     parseFloat(this.editedItem.tariff_amount) *
-    //     parseFloat(this.editedItem.number_people)
-    //   );
-    // },
-    // totalTariffNumberHour: function () {
-    //   return (
-    //     parseFloat(this.editedItem.tariff_amount) *
-    //     parseFloat(this.editedItem.number_hour)
-    //   );
-    // },
+    totalTariffNumberPeople: function () {
+      if (
+        !isNaN(parseFloat(this.tariff_value)) &&
+        !isNaN(parseFloat(this.formExonerations.number_people))
+      ) {
+        return (
+          parseFloat(this.tariff_value) *
+          parseFloat(this.formExonerations.number_people)
+        );
+      } else {
+        return 0;
+      }
+    },
+    totalTariffNumberHour: function () {
+      if (
+        !isNaN(parseFloat(this.tariff_value)) &&
+        !isNaN(parseFloat(this.formExonerations.number_hour))
+      ) {
+        return (
+          parseFloat(this.tariff_value) *
+          parseFloat(this.formExonerations.number_hour)
+        );
+      } else {
+        return 0;
+      }
+    },
   },
 
   watch: {
@@ -1027,12 +1091,12 @@ export default {
       this.$v.$reset();
     },
 
-    totalAmount() {
-      console.log(this.formExonerations);
-      this.formExonerations.tafiff_total_amount =
-        parseFloat(this.formExonerations.tariff_amount) *
-        parseFloat(this.formExonerations.number_people);
-    },
+    // totalAmount() {
+    //   // console.log(this.formExonerations);
+    //   this.formExonerations.tafiff_total_amount =
+    //     parseFloat(this.formExonerations.tariff_amount) *
+    //     parseFloat(this.formExonerations.number_people);
+    // },
 
     async save() {
       this.$v.editedItem.$touch();
@@ -1107,48 +1171,13 @@ export default {
         this.editedItem = this.defaultItem;
         this.editedIndex = -1;
       });
+      this.$v.formExonerations.$reset();
       this.dialogExoneration = false;
     },
 
-    // openExonerationModal() {
-    //   this.dialogExoneration = true;
-
-    //   this.editedItem.national_direction_name = "";
-    //   this.editedItem.dependence_name = "";
-    //   this.editedItem.service_place_name = "";
-    //   this.editedItem.tariff_hour = "";
-    //   this.editedItem.not_charged_hour = "";
-    //   this.editedItem.tariff_people = "";
-    //   this.editedItem.not_charged_people = "";
-    //   this.editedItem.people = "";
-    //   this.editedItem.date = "";
-    //   this.editedItem.amount_hour = 0;
-    //   this.editedItem.amount_people = 0;
-    //   this.editedItem.hour = "";
-    //   this.editedItem.exonerated_description = "";
-    //   (this.editedItem.concept = ""),
-    //     (this.editedItem.worth = ""),
-    //     (this.editedItem.concept_amount = ""),
-    //     this.$v.editedItem.$reset();
-    // },
-
-    // clearFields() {
-    //   this.editedItem.exonerations.splice(0);
-    // },
-
-    // showSaveButton() {
-    //   return this.editedItem.exonerations.length > 0;
-    // },
-
-    // noData() {
-    //   return this.editedItem.exonerations.length == 0;
-    // },
-
     addNewExoneration(item) {
       this.editedIndex = this.recordsFiltered.indexOf(item);
-      console.log(this.editedIndex);
       this.editedItem = Object.assign({}, item);
-      console.log(this.editedItem);
       this.dialogExoneration = true;
     },
 
@@ -1170,30 +1199,7 @@ export default {
       }
 
       this.close();
-      //this.initialize();
-      //   window.location.reload();
     },
-
-    // editItemExoneration() {
-    //   this.dialogExoneration = true;
-    //   this.deleteItemOfTable();
-    // },
-
-    // deleteItem() {
-    //   this.dialogDelete = true;
-    // },
-
-    // deleteItemOfTable() {
-    //   this.editedItem.exonerations.splice(
-    //     this.editedItem.exonerations.indexOf(this.exoneration),
-    //     1
-    //   );
-    //   this.closeDelete();
-    // },
-
-    // closeDelete() {
-    //   this.dialogDelete = false;
-    // },
 
     async changeDirection() {
       let { data } = await axios
@@ -1243,8 +1249,8 @@ export default {
           );
         });
 
-      console.log(parseFloat(data.tariff_amount));
-      this.formExonerations.tariff_amount = parseFloat(data.tariff_amount);
+      // console.log(parseFloat(data.tariff_amount));
+      this.tariff_value = parseFloat(data.tariff_amount);
     },
 
     getDataFromApi() {
@@ -1283,9 +1289,32 @@ export default {
         return;
       }
 
+      this.formExonerations.tariff_amount = this.tariff_value;
+
+      if (this.formExonerations.is_tariffed == true) {
+        this.formExonerations.is_tariffed = "No tarifado";
+      } else {
+        this.formExonerations.is_tariffed = "Tarifado";
+      }
+
+      if (this.formExonerations.number_hour !== "") {
+        this.formExonerations.tafiff_total_amount =
+          this.formExonerations.tariff_amount *
+          this.formExonerations.number_hour;
+      } else {
+        this.formExonerations.tafiff_total_amount =
+          this.formExonerations.tariff_amount *
+          this.formExonerations.number_people;
+      }
+
+      //push
       this.editedItem.assignedExonerations.push({
         ...this.formExonerations,
       });
+
+      //clear inputs
+      this.formExonerations = this.defaultFormExonerations;
+      this.tariff_value = 0;
 
       this.$v.formExonerations.$reset();
     },
