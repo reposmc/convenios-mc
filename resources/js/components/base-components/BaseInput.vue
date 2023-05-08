@@ -12,6 +12,8 @@
       :key="counter"
       :min="min"
       :max="max"
+      :readonly="readonly"
+      :disabled="disabled"
       :type="type"
       @input="updateValue"
       v-mask="mask"
@@ -200,6 +202,14 @@ export default {
     max: {
       type: Number,
       default: 150,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   watch: {

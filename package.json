@@ -28,7 +28,6 @@
         "@babel/preset-env": "^7.16.8",
         "javascript-obfuscator": "^4.0.0",
         "v-mask": "^2.3.0",
-        "vue-router": "^4.1.6",
         "vuelidate": "^0.7.7",
         "vuetify": "^2.6.2",
         "webpack-obfuscator": "^3.5.0"

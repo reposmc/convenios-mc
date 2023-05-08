@@ -57,18 +57,18 @@
               <v-card-text>
                 <v-container>
                   <h5>Información del instrumento</h5>
-                  <hr/>
+                  <hr />
                   <v-row>
                     <!-- Instrument type -->
-                      <v-col cols="12" sm="12" md="6">
-                        <base-select-search
-                          label="Tipo de instrumento"
-                          v-model.trim="$v.editedItem.type_instrument_name.$model"
-                          :items="types"
-                          item="type_instrument_name"
-                          :validation="$v.editedItem.type_instrument_name"
-                        />
-                      </v-col>
+                    <v-col cols="12" sm="12" md="6">
+                      <base-select-search
+                        label="Tipo de instrumento"
+                        v-model.trim="$v.editedItem.type_instrument_name.$model"
+                        :items="types"
+                        item="type_instrument_name"
+                        :validation="$v.editedItem.type_instrument_name"
+                      />
+                    </v-col>
                     <!-- Instrument type -->
                     <!-- Instrument Name -->
                     <v-col cols="12" sm="12" md="6">
@@ -85,25 +85,25 @@
                     <!-- Instrument:Entity -->
                     <v-col cols="12" sm="12" md="6">
                       <base-select-search
-                          label="Entidad"
-                          v-model.trim="$v.editedItem.entity_name.$model"
-                          :items="entities"
-                          item="entity_name"
-                          :validation="$v.editedItem.entity_name"
-                        />
+                        label="Entidad"
+                        v-model.trim="$v.editedItem.entity_name.$model"
+                        :items="entities"
+                        item="entity_name"
+                        :validation="$v.editedItem.entity_name"
+                      />
                     </v-col>
                     <!-- Instrument:Entity -->
                     <!-- Instrument:Sector -->
-                      <v-col cols="12" sm="12" md="6">
-                        <base-select-search
-                          label="Sector"
-                          v-model.trim="$v.editedItem.sector_name.$model"
-                          :items="sectors"
-                          item="sector_name"
-                          :validation="$v.editedItem.sector_name"
-                        />
-                      </v-col>
-                      <!-- Instrument:Sector -->
+                    <v-col cols="12" sm="12" md="6">
+                      <base-select-search
+                        label="Sector"
+                        v-model.trim="$v.editedItem.sector_name.$model"
+                        :items="sectors"
+                        item="sector_name"
+                        :validation="$v.editedItem.sector_name"
+                      />
+                    </v-col>
+                    <!-- Instrument:Sector -->
                   </v-row>
                   <v-row>
                     <!-- Instrument description -->
@@ -145,7 +145,9 @@
                     <v-col cols="12" lg="12" md="12" xs="12">
                       <div class="table-responsive-md">
                         <table class="table table-responsive-md table-hover">
-                          <thead v-if="editedItem.type_instrument_name == 'Convenio'">
+                          <thead
+                            v-if="editedItem.type_instrument_name == 'Convenio'"
+                          >
                             <th>Elenco</th>
                             <th>Fecha</th>
                             <th>Tarifa elenco</th>
@@ -153,10 +155,12 @@
                             <th>Monto elenco($)</th>
                             <th>Número de personas</th>
                             <th>Tarifa entrada($)</th>
-                            <th>Monto entrada($)</th> 
+                            <th>Monto entrada($)</th>
                             <th class="text-center">Acciones</th>
                           </thead>
-                          <thead v-if="editedItem.type_instrument_name != 'Convenio'">
+                          <thead
+                            v-if="editedItem.type_instrument_name != 'Convenio'"
+                          >
                             <th>Concepto</th>
                             <th>Fecha</th>
                             <th>Valor</th>
@@ -164,32 +168,41 @@
                             <th>Descripción</th>
                             <th class="text-center">Acciones</th>
                           </thead>
-                          <tbody v-if="editedItem.type_instrument_name == 'Convenio'">
+                          <tbody
+                            v-if="editedItem.type_instrument_name == 'Convenio'"
+                          >
                             <tr
-                              v-for="(exoneration, index) in editedItem.exonerations" :key="index"
+                              v-for="(
+                                exoneration, index
+                              ) in editedItem.exonerations"
+                              :key="index"
                             >
                               <td>
-                                <p> {{ exoneration.service_place_name }}</p>
+                                <p>{{ exoneration.service_place_name }}</p>
                               </td>
                               <td>
                                 <p>{{ exoneration.date }}</p>
                               </td>
                               <td>
-                                  <p>{{ exoneration.tariff_hour }}
-                                    {{ exoneration.not_charged_hour }}</p>
+                                <p>
+                                  {{ exoneration.tariff_hour }}
+                                  {{ exoneration.not_charged_hour }}
+                                </p>
                               </td>
                               <td>
                                 <p>{{ exoneration.hour }}</p>
                               </td>
                               <td>
-                                  <p>{{ exoneration.amount_hour }}</p>
+                                <p>{{ exoneration.amount_hour }}</p>
                               </td>
                               <td>
                                 <p>{{ exoneration.people }}</p>
                               </td>
                               <td>
-                                  <p>{{ exoneration.tariff_people }}
-                                    {{ exoneration.not_charged_people }}</p>
+                                <p>
+                                  {{ exoneration.tariff_people }}
+                                  {{ exoneration.not_charged_people }}
+                                </p>
                               </td>
                               <td>
                                 <p>{{ exoneration.amount_people }}</p>
@@ -219,24 +232,29 @@
                               </td>
                             </tr>
                           </tbody>
-                          <tbody v-if="editedItem.type_instrument_name != 'Convenio'">
+                          <tbody
+                            v-if="editedItem.type_instrument_name != 'Convenio'"
+                          >
                             <tr
-                              v-for="(exoneration, index) in editedItem.exonerations" :key="index"
+                              v-for="(
+                                exoneration, index
+                              ) in editedItem.exonerations"
+                              :key="index"
                             >
                               <td>
-                                <p> {{ exoneration.concept }}</p>
+                                <p>{{ exoneration.concept }}</p>
                               </td>
                               <td>
                                 <p>{{ exoneration.date }}</p>
                               </td>
                               <td>
-                                  <p>{{ exoneration.worth }}</p>
+                                <p>{{ exoneration.worth }}</p>
                               </td>
                               <td>
                                 <p>{{ exoneration.concept_amount }}</p>
                               </td>
                               <td>
-                                  <p>{{ exoneration.exonerated_description }}</p>
+                                <p>{{ exoneration.exonerated_description }}</p>
                               </td>
                               <td class="text-center">
                                 <a
@@ -340,15 +358,13 @@
     <template>
       <v-dialog v-model="dialogExoneration" max-width="1400px" persistent>
         <v-card class="flexcard" height="100%">
-          <h1 class="black-secondary text-center mt-4 mb-4">
-            Agregar detalle
-          </h1>
+          <h1 class="black-secondary text-center mt-4 mb-4">Agregar detalle</h1>
           <v-card-text>
             <v-container>
               <v-row v-if="editedItem.type_instrument_name != 'Convenio'">
                 <br />
                 <h5>Información de: {{ editedItem.type_instrument_name }}</h5>
-                <hr/>
+                <hr />
                 <!-- Concept != agreement -->
                 <v-col cols="12" xs="12" sm="12" md="12">
                   <base-input
@@ -424,7 +440,7 @@
               </v-row>
               <v-container v-if="editedItem.type_instrument_name == 'Convenio'">
                 <h5>Información del espacio</h5>
-                <hr/>
+                <hr />
               </v-container>
               <v-row v-if="editedItem.type_instrument_name == 'Convenio'">
                 <!-- Space: National -->
@@ -455,15 +471,15 @@
               <v-container v-if="editedItem.type_instrument_name == 'Convenio'">
                 <br /><br />
                 <h5>Información de la exoneración</h5>
-                <hr/>
+                <hr />
               </v-container>
               <v-checkbox
-                  v-if="editedItem.type_instrument_name == 'Convenio'"
-                  class="mb-3"
-                  @click="hidden = !hidden"
-                  label="Monto no tarifado"
-                  >
-                </v-checkbox>
+                v-if="editedItem.type_instrument_name == 'Convenio'"
+                class="mb-3"
+                @click="hidden = !hidden"
+                label="Monto no tarifado"
+              >
+              </v-checkbox>
               <v-row v-if="editedItem.type_instrument_name == 'Convenio'">
                 <!-- Exoneracion: date -->
                 <v-col cols="12" sm="12" md="6">
@@ -484,65 +500,65 @@
                     validationTextType="default"
                   />
                 </v-col>
-                  <!-- not Tariff Dependence-->
-                  <v-col cols="12" xs="12" sm="12" md="4" v-show="hidden">
-                    <base-input
-                      label="Tarifa de dependencia"
-                      v-model.trim="$v.editedItem.not_charged_hour.$model"
-                      :validation="$v.editedItem.not_charged_hour"
-                      type="number"
-                    />
-                  </v-col>
-                  <!-- Space: Tariff Dependence-->
-                  <v-col cols="12" sm="12" md="4" v-show="!hidden">
-                    <base-select-search
-                      label="Tarifa de dependencia"
-                      v-model.trim="$v.editedItem.tariff_hour.$model"
-                      :items="tariffs"
-                      item="type_charge"
-                      :validation="$v.editedItem.tariff_hour"
-                    />
-                  </v-col>
-                  <!-- Exoneracion: Exempted hours -->
-                    <v-col cols="12" sm="12" md="4">
-                      <base-input
-                        label="Horas evento/alquiler"
-                        v-model="$v.editedItem.hour.$model"
-                        :validation="$v.editedItem.hour"
-                        type="number"
-                        v-mask="'#'"
-                      />
-                    </v-col>
-                  <!-- Exoneracion: exonerated amount -->
-                    <v-col cols="12" sm="12" md="4">
-                      <base-input
-                        label="Monto"
-                        v-model="$v.editedItem.amount_hour.$model.amountHourResult"
-                        :validation="$v.editedItem.amount_hour"
-                        type="number"
-                        readonly
-                      />
-                    </v-col>
-                
+                <!-- not Tariff Dependence-->
+                <v-col cols="12" xs="12" sm="12" md="4" v-show="hidden">
+                  <base-input
+                    label="Tarifa de dependencia"
+                    v-model.trim="$v.editedItem.not_charged_hour.$model"
+                    :validation="$v.editedItem.not_charged_hour"
+                    type="number"
+                  />
+                </v-col>
+                <!-- Space: Tariff Dependence-->
+                <v-col cols="12" sm="12" md="4" v-show="!hidden">
+                  <base-select-search
+                    label="Tarifa de dependencia"
+                    v-model.trim="$v.editedItem.tariff_hour.$model"
+                    :items="tariffs"
+                    item="type_charge"
+                    :validation="$v.editedItem.tariff_hour"
+                  />
+                </v-col>
+                <!-- Exoneracion: Exempted hours -->
+                <v-col cols="12" sm="12" md="4">
+                  <base-input
+                    label="Horas evento/alquiler"
+                    v-model="$v.editedItem.hour.$model"
+                    :validation="$v.editedItem.hour"
+                    type="number"
+                    v-mask="'#'"
+                  />
+                </v-col>
+                <!-- Exoneracion: exonerated amount -->
+                <v-col cols="12" sm="12" md="4">
+                  <base-input
+                    label="Monto"
+                    v-model="$v.editedItem.amount_hour.$model.amountHourResult"
+                    :validation="$v.editedItem.amount_hour"
+                    type="number"
+                    readonly
+                  />
+                </v-col>
+
                 <!-- not Tariff People-->
-                  <v-col cols="12" xs="12" sm="12" md="4" v-show="hidden">
-                    <base-input
-                      label="Tarifa de personas"
-                      v-model.trim="$v.editedItem.not_charged_people.$model"
-                      :validation="$v.editedItem.not_charged_people"
-                      type="number"
-                    />
-                  </v-col>
-                  <!-- Space: Tariff People-->
-                  <v-col cols="12" sm="12" md="4" v-show="!hidden">
-                    <base-select-search
-                      label="Tarifa de personas"
-                      v-model.trim="$v.editedItem.tariff_people.$model"
-                      :items="tariffs"
-                      item="type_charge"
-                      :validation="$v.editedItem.tariff_people"
-                    />
-                  </v-col>
+                <v-col cols="12" xs="12" sm="12" md="4" v-show="hidden">
+                  <base-input
+                    label="Tarifa de personas"
+                    v-model.trim="$v.editedItem.not_charged_people.$model"
+                    :validation="$v.editedItem.not_charged_people"
+                    type="number"
+                  />
+                </v-col>
+                <!-- Space: Tariff People-->
+                <v-col cols="12" sm="12" md="4" v-show="!hidden">
+                  <base-select-search
+                    label="Tarifa de personas"
+                    v-model.trim="$v.editedItem.tariff_people.$model"
+                    :items="tariffs"
+                    item="type_charge"
+                    :validation="$v.editedItem.tariff_people"
+                  />
+                </v-col>
                 <!-- Exoneracion: number of people -->
                 <v-col cols="12" sm="12" md="4">
                   <base-input
@@ -707,7 +723,7 @@ export default {
   //Validations
   validations: {
     editedItem: {
-        instrument_name: {
+      instrument_name: {
         required,
         minLength: minLength(1),
         maxLength: maxLength(150),
@@ -793,12 +809,12 @@ export default {
       return this.editedIndex === -1 ? "Nuevo registro" : "Editar registro";
     },
     isUsuarioRole() {
-    return this.roles.some(role => role.name === 'Usuario');
+      return this.roles.some((role) => role.name === "Usuario");
     },
-    amountPeopleResult: function(){
+    amountPeopleResult: function () {
       return this.editedItem.tariff_people * this.editedItem.people;
     },
-    amountHourResult: function(){
+    amountHourResult: function () {
       return this.editedItem.tariff_hour * this.editedItem.hour;
     },
   },
@@ -820,7 +836,6 @@ export default {
 
   created() {
     this.initialize();
-    
   },
 
   methods: {
@@ -960,11 +975,10 @@ export default {
       this.editedItem.amount_people = 0;
       this.editedItem.hour = "";
       this.editedItem.exonerated_description = "";
-      this.editedItem.concept = "",
-      this.editedItem.worth = "",
-      this.editedItem.concept_amount = "",
-
-      this.$v.editedItem.$reset();
+      (this.editedItem.concept = ""),
+        (this.editedItem.worth = ""),
+        (this.editedItem.concept_amount = ""),
+        this.$v.editedItem.$reset();
     },
 
     clearFields() {
@@ -986,11 +1000,19 @@ export default {
         return;
       }
 
-      const selectedTariffHour = this.tariffs.find(tariff => tariff.type_charge === this.editedItem.tariff_hour)
-      const tariffAmountHour = selectedTariffHour ? selectedTariffHour.amount : 0
+      const selectedTariffHour = this.tariffs.find(
+        (tariff) => tariff.type_charge === this.editedItem.tariff_hour
+      );
+      const tariffAmountHour = selectedTariffHour
+        ? selectedTariffHour.amount
+        : 0;
 
-      const selectedTariffPeople = this.tariffs.find(tariff => tariff.type_charge === this.editedItem.tariff_people)
-      const tariffAmountPeople = selectedTariffPeople ? selectedTariffPeople.amount : 0
+      const selectedTariffPeople = this.tariffs.find(
+        (tariff) => tariff.type_charge === this.editedItem.tariff_people
+      );
+      const tariffAmountPeople = selectedTariffPeople
+        ? selectedTariffPeople.amount
+        : 0;
 
       const newExoneration = {
         exonerated_description: this.editedItem.exonerated_description,
@@ -1003,8 +1025,12 @@ export default {
         not_charged_hour: this.editedItem.not_charged_hour,
         tariff_people: this.editedItem.tariff_people,
         not_charged_people: this.editedItem.not_charged_people,
-        amount_hour: this.editedItem.hour * (this.editedItem.not_charged_hour || tariffAmountHour),
-        amount_people: this.editedItem.people * (this.editedItem.not_charged_people || tariffAmountPeople),
+        amount_hour:
+          this.editedItem.hour *
+          (this.editedItem.not_charged_hour || tariffAmountHour),
+        amount_people:
+          this.editedItem.people *
+          (this.editedItem.not_charged_people || tariffAmountPeople),
         concept: this.editedItem.concept,
         worth: this.editedItem.worth,
         concept_amount: this.editedItem.concept_amount,

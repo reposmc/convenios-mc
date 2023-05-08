@@ -33,16 +33,16 @@ Route::get('/', function () {
     return view('auth/login');
 });
 
-Auth::routes(['verify' => true, 'remember_me'=>false]);
+Auth::routes(['verify' => true, 'remember_me' => false]);
 
-Route::group(['middleware'=> ['auth', 'verified']], function () {
-    Route::group(['middleware'=>['has.role:Administrador']], function () {
+Route::group(['middleware' => ['auth', 'verified']], function () {
+    Route::group(['middleware' => ['has.role:Administrador']], function () {
         // Apis
         Route::resource('/api/web/department', DepartmentController::class);
         Route::resource('/api/web/municipality', MunicipalityController::class);
         Route::resource('/api/web/instrument', InstrumentController::class);
         Route::resource('/api/web/exoneration', ExonerationController::class);
-        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']); 
+        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']);
         Route::resource('/api/web/type', TypeInstrumentController::class);
         Route::resource('/api/web/entity', EntityController::class);
         Route::resource('/api/web/tariff', TariffController::class);
@@ -94,7 +94,7 @@ Route::group(['middleware'=> ['auth', 'verified']], function () {
         Route::get('/types', function () {
             return view('type.index');
         });
-        
+
         Route::get('/exonerations', function () {
             return view('exoneration.index');
         });
@@ -116,17 +116,16 @@ Route::group(['middleware'=> ['auth', 'verified']], function () {
         Route::get('/home', [HomeController::class, 'index'])->name('home');
     });
 
-    Route::group(['middleware'=>['has.role:Administrador,Usuario']], function () {
+    Route::group(['middleware' => ['has.role:Administrador,Usuario']], function () {
         // Apis
-        
+
         Route::resource('/api/web/instrument', InstrumentController::class);
         Route::resource('/api/web/exoneration', ExonerationController::class);
-        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']); 
+        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']);
         Route::resource('/api/web/type', TypeInstrumentController::class);
         Route::resource('/api/web/entity', EntityController::class);
         Route::resource('/api/web/tariff', TariffController::class);
         Route::resource('/api/web/place', ServicePlaceController::class);
-        Route::get('api/tariff/byDependenceName/{dependences}', [TariffController::class, 'byDependenceName']);
         Route::resource('/api/web/dependence', DependenceController::class);
         Route::resource('/api/web/direction', NationalDirectionController::class);
         Route::resource('/api/web/exonerationDetail', ExonerationDetailController::class);
@@ -156,5 +155,8 @@ Route::group(['middleware'=> ['auth', 'verified']], function () {
         Route::get('/home', [HomeController::class, 'index'])->name('home');
     });
 });
+
+Route::get('/api/web/tariff/byTariffTypeCharge/{tariffTypeCharge}', [TariffController::class, 'byTariffTypeCharge']);
+Route::get('api/web/tariff/byDependencyName/{dependencies}', [TariffController::class, 'byDependencyName']);
 
 Route::post('import', [ExcelController::class, 'import']);

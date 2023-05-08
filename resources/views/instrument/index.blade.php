@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <instrument />
-    </div>
+<div class="container">
+    <instrument-dos />
+</div>
 @endsection

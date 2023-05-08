@@ -185,11 +185,11 @@
       editedIndex: -1,
       editedItem: {
         entity_name: "",
-        num_ent: "",
+        num_ent: 0,
       },
       defaultItem: {
         entity_name: "",
-        num_ent: "",
+        num_ent: 0,
       },
       textAlert: "",
       alertEvent: "success",
