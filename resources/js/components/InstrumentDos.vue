@@ -70,7 +70,7 @@
                   <h5>Información del instrumento</h5>
                   <hr />
                   <v-row>
-                    <!-- Instrument type -->
+                    <!-- type_instrument_name -->
                     <v-col cols="12" sm="12" md="6">
                       <base-select-search
                         label="Tipo de instrumento"
@@ -80,8 +80,8 @@
                         :validation="$v.editedItem.type_instrument_name"
                       />
                     </v-col>
-                    <!-- Instrument type -->
-                    <!-- Instrument Name -->
+                    <!-- type_instrument_name -->
+                    <!-- instrument_name -->
                     <v-col cols="12" sm="12" md="6">
                       <base-input
                         label="Nombre"
@@ -90,10 +90,10 @@
                         validationTextType="default"
                       />
                     </v-col>
-                    <!-- Instrument Name -->
+                    <!-- instrument_name -->
                   </v-row>
                   <v-row>
-                    <!-- Instrument:Entity -->
+                    <!-- entity_name -->
                     <v-col cols="12" sm="12" md="6">
                       <base-select-search
                         label="Entidad"
@@ -103,8 +103,8 @@
                         :validation="$v.editedItem.entity_name"
                       />
                     </v-col>
-                    <!-- Instrument:Entity -->
-                    <!-- Instrument:Sector -->
+                    <!-- entity_name -->
+                    <!-- sector_name -->
                     <v-col cols="12" sm="12" md="6">
                       <base-select-search
                         label="Sector"
@@ -114,10 +114,10 @@
                         :validation="$v.editedItem.sector_name"
                       />
                     </v-col>
-                    <!-- Instrument:Sector -->
+                    <!-- sector_name -->
                   </v-row>
                   <v-row>
-                    <!-- Instrument description -->
+                    <!-- description -->
                     <v-col cols="12" sm="12" md="12">
                       <v-textarea
                         label="Descripción del instrumento"
@@ -127,7 +127,7 @@
                         rows="3"
                       ></v-textarea>
                     </v-col>
-                    <!-- Instrument description -->
+                    <!-- description -->
                   </v-row>
                   <!-- Form -->
                   <!-- Dependencies -->
@@ -180,6 +180,7 @@
                     </v-simple-table>
                   </template>
                   <!-- Dependencies -->
+                  <!-- save buttons -->
                   <v-row>
                     <v-col align="center">
                       <v-btn
@@ -198,36 +199,11 @@
                       </v-btn>
                     </v-col>
                   </v-row>
+                  <!-- save buttons -->
                 </v-container>
               </v-card-text>
             </v-card>
           </v-dialog>
-          <!-- <v-dialog v-model="dialogDelete" max-width="400px">
-            <v-card class="h-100">
-              <v-container>
-                <h3 class="black-secondary text-center mt-3 mb-3">
-                  Eliminar registro
-                </h3>
-                <v-row>
-                  <v-col align="center">
-                    <v-btn
-                      color="btn-normal no-uppercase mt-3 mb-3 pr-5 pl-5 mx-auto"
-                      rounded
-                      @click="deleteItemOfTable()"
-                      >Confirmar</v-btn
-                    >
-                    <v-btn
-                      color="btn-normal-close no-uppercase mt-3 mb-3"
-                      rounded
-                      @click="closeDelete"
-                    >
-                      Cancelar
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card>
-          </v-dialog> -->
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
@@ -254,7 +230,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              playlist_add
+              post_add
             </v-icon>
           </template>
           <span>Agregar exoneración</span>
@@ -322,23 +298,6 @@
                 type="number"
               />
             </v-col>
-            <!-- <v-col cols="12" sm="12" md="4">
-              <base-input
-                label="Fecha evento"
-                v-model="$v.formExonerations.date_event.$model"
-                :validation="$v.formExonerations.date_event"
-                validationTextType="none"
-                type="date"
-              />
-            </v-col> -->
-            <!-- <v-col cols="12" sm="12" md="12">
-              <base-text-area
-                label="Descripción"
-                v-model="$v.formExonerations.exonerated_description.$model"
-                :validation="$v.formExonerations.exonerated_description"
-                rows="3"
-              ></base-text-area>
-            </v-col> -->
           </v-row>
           <!-- Diferente de convenio -->
 
@@ -450,8 +409,9 @@
                 AGREGAR EXONERACIÓN
               </a>
             </v-col>
-
+            <!-- table exoneration  -->
             <v-simple-table class="mt-2">
+              <!-- header -->
               <thead>
                 <tr>
                   <th v-if="this.formExonerations.date_event">Fecha</th>
@@ -474,6 +434,8 @@
                   <th>Acción</th>
                 </tr>
               </thead>
+              <!-- header -->
+              <!-- body -->
               <tbody>
                 <tr
                   v-for="(assigned, index) in editedItem.assignedExonerations"
@@ -511,7 +473,9 @@
                   </td>
                 </tr>
               </tbody>
+              <!-- body -->
             </v-simple-table>
+            <!-- table exoneration  -->
           </template>
           <!-- Exonerations -->
         </v-container>
@@ -540,233 +504,6 @@
         <!-- save exoneration -->
       </v-card>
     </v-dialog>
-    <!-- <v-dialog v-model="dialogExoneration" max-width="1400px" persistent>
-      <v-card class="flexcard" height="100%">
-        <h1 class="black-secondary text-center mt-4 mb-4">Agregar detalle</h1>
-        <v-card-text>
-          <v-container>
-            <v-row v-if="editedItem.type_instrument_name != 'Convenio'">
-              <br />
-              <h5>Información de: {{ editedItem.type_instrument_name }}</h5>
-              <hr />
-              <v-col cols="12" xs="12" sm="12" md="12">
-                <base-input
-                  label="Concepto"
-                  v-model.trim="$v.editedItem.concept.$model"
-                  :validation="$v.editedItem.concept"
-                  validationTextType="default"
-                />
-              </v-col>
-              <v-col cols="12" xs="12" sm="12" md="4">
-                <base-input
-                  label="Valor"
-                  v-model.trim="$v.editedItem.worth.$model"
-                  :validation="$v.editedItem.worth"
-                  type="number"
-                  v-mask="'####'"
-                />
-              </v-col>
-              <v-col cols="12" xs="12" sm="12" md="4">
-                <base-input
-                  label="Monto"
-                  v-model.trim="$v.editedItem.concept_amount.$model"
-                  :validation="$v.editedItem.concept_amount"
-                  type="number"
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <base-input
-                  label="Fecha"
-                  v-model="$v.editedItem.date.$model"
-                  :validation="$v.editedItem.date"
-                  validationTextType="none"
-                  type="date"
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="12">
-                <v-textarea
-                  label="Descripción"
-                  v-model="$v.editedItem.exonerated_description.$model"
-                  :validation="$v.editedItem.exonerated_description"
-                  clearable
-                  clear-icon="mdi-backspace"
-                  auto-grow
-                  outlined
-                  rows="3"
-                  dense
-                ></v-textarea>
-              </v-col>
-            </v-row>
-            <v-row v-if="editedItem.type_instrument_name != 'Convenio'">
-              <v-col align="center">
-                <v-btn class="btn btn-normal mb-3 mt-1">Guardar</v-btn>
-                <v-btn
-                  color="btn-normal-close mb-3 mt-1"
-                  rounded
-                  @click="closeExoneration"
-                >
-                  Cancelar
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-container v-if="editedItem.type_instrument_name == 'Convenio'">
-              <h5>Información del espacio</h5>
-              <hr />
-            </v-container>
-            <v-row v-if="editedItem.type_instrument_name == 'Convenio'">
-              <v-col cols="12" sm="12" md="6">
-                <base-select-search
-                  label="Dirección Nacional"
-                  v-model.trim="$v.editedItem.national_direction_name.$model"
-                  :items="directions"
-                  item="national_direction_name"
-                  :validation="$v.editedItem.national_direction_name"
-                  @change="changeDirection()"
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="6">
-                <base-select-search
-                  label="Dependencia"
-                  v-model.trim="$v.editedItem.dependence_name.$model"
-                  :items="dependences"
-                  item="dependence_name"
-                  :validation="$v.editedItem.dependence_name"
-                  @change="changeDependence()"
-                />
-              </v-col>
-            </v-row>
-            <v-container v-if="editedItem.type_instrument_name == 'Convenio'">
-              <br /><br />
-              <h5>Información de la exoneración</h5>
-              <hr />
-            </v-container>
-            <v-checkbox
-              v-if="editedItem.type_instrument_name == 'Convenio'"
-              class="mb-3"
-              @click="hidden = !hidden"
-              label="Monto no tarifado"
-            >
-            </v-checkbox>
-            <v-row v-if="editedItem.type_instrument_name == 'Convenio'">
-              <v-col cols="12" sm="12" md="6">
-                <base-input
-                  label="Fecha de evento"
-                  v-model="$v.editedItem.date.$model"
-                  :validation="$v.editedItem.date"
-                  validationTextType="none"
-                  type="date"
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="6">
-                <base-input
-                  label="Espacio de Servicio"
-                  v-model.trim="$v.editedItem.service_place_name.$model"
-                  :validation="$v.editedItem.service_place_name"
-                  validationTextType="default"
-                />
-              </v-col>
-              <v-col cols="12" xs="12" sm="12" md="4" v-show="hidden">
-                <base-input
-                  label="Tarifa de dependencia"
-                  v-model.trim="$v.editedItem.not_charged_hour.$model"
-                  :validation="$v.editedItem.not_charged_hour"
-                  type="number"
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="4" v-show="!hidden">
-                <base-select-search
-                  label="Tarifa de dependencia"
-                  v-model.trim="$v.editedItem.tariff_hour.$model"
-                  :items="tariffs"
-                  item="type_charge"
-                  :validation="$v.editedItem.tariff_hour"
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <base-input
-                  label="Horas evento/alquiler"
-                  v-model="$v.editedItem.hour.$model"
-                  :validation="$v.editedItem.hour"
-                  type="number"
-                  v-mask="'#'"
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <base-input
-                  label="Monto"
-                  v-model="$v.editedItem.amount_hour.$model.amountHourResult"
-                  :validation="$v.editedItem.amount_hour"
-                  type="number"
-                  readonly
-                />
-              </v-col>
-
-              <v-col cols="12" xs="12" sm="12" md="4" v-show="hidden">
-                <base-input
-                  label="Tarifa de personas"
-                  v-model.trim="$v.editedItem.not_charged_people.$model"
-                  :validation="$v.editedItem.not_charged_people"
-                  type="number"
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="4" v-show="!hidden">
-                <base-select-search
-                  label="Tarifa de personas"
-                  v-model.trim="$v.editedItem.tariff_people.$model"
-                  :items="tariffs"
-                  item="type_charge"
-                  :validation="$v.editedItem.tariff_people"
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <base-input
-                  label="Número de personas"
-                  v-model="$v.editedItem.people.$model"
-                  :validation="$v.editedItem.people"
-                  type="number"
-                  v-mask="'#####'"
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <base-input
-                  label="Monto"
-                  v-model="$v.editedItem.amount_people.$model"
-                  :validation="$v.editedItem.amount_people"
-                  type="number"
-                  readonly
-                />
-              </v-col>
-              <v-col cols="12" sm="12" md="12">
-                <v-textarea
-                  label="Descripción de la exoneración"
-                  v-model="$v.editedItem.exonerated_description.$model"
-                  :validation="$v.editedItem.exonerated_description"
-                  clearable
-                  clear-icon="mdi-backspace"
-                  auto-grow
-                  outlined
-                  rows="3"
-                  dense
-                ></v-textarea>
-              </v-col>
-            </v-row>
-            <v-row v-if="editedItem.type_instrument_name == 'Convenio'">
-              <v-col align="center">
-                <v-btn class="btn btn-normal mb-3 mt-1">Guardar</v-btn>
-                <v-btn
-                  color="btn-normal-close mb-3 mt-1"
-                  rounded
-                  @click="closeExoneration"
-                >
-                  Cancelar
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-      </v-card>
-    </v-dialog> -->
-
     <!--form detail-->
   </div>
 </template>
@@ -806,7 +543,7 @@ export default {
         { text: "TIPO DE INSTRUMENTO", value: "type_instrument_name" },
         { text: "ENTIDAD", value: "entity_name" },
         { text: "SECTOR", value: "sector_name" },
-        { text: "DESCRIPCIÓN", value: "description" },
+        // { text: "DESCRIPCIÓN", value: "description" },
         { text: "ACCIONES", value: "actions", sortable: false },
       ],
       options: {},
@@ -855,7 +592,6 @@ export default {
         concept: "",
         worth: "",
         concept_amount: "",
-        //
         dependence_name: "",
         date_event: "",
         service_place_name: "",
@@ -871,7 +607,6 @@ export default {
         concept: "",
         worth: "",
         concept_amount: "",
-        //
         dependence_name: "",
         date_event: "",
         service_place_name: "",
@@ -969,7 +704,6 @@ export default {
       concept_amount: {
         minLength: minLength(1),
       },
-      //
       dependence_name: { required },
       date_event: { required },
       service_place_name: {},
@@ -1033,16 +767,6 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete();
     },
-    // "formExonerations.tariff_amount": function () {
-    //   this.formExonerations.tafiff_total_amount =
-    //     parseFloat(this.formExonerations.tariff_amount) *
-    //     parseFloat(this.formExonerations.number_people);
-    // },
-    // "formExonerations.number_people": function () {
-    //   this.formExonerations.tafiff_total_amount =
-    //     parseFloat(this.formExonerations.tariff_amount) *
-    //     parseFloat(this.formExonerations.number_people);
-    // },
   },
 
   created() {
@@ -1091,13 +815,6 @@ export default {
       this.$v.$reset();
     },
 
-    // totalAmount() {
-    //   // console.log(this.formExonerations);
-    //   this.formExonerations.tafiff_total_amount =
-    //     parseFloat(this.formExonerations.tariff_amount) *
-    //     parseFloat(this.formExonerations.number_people);
-    // },
-
     async save() {
       this.$v.editedItem.$touch();
 
@@ -1106,6 +823,7 @@ export default {
         return;
       }
 
+      //Update instrument
       if (this.editedIndex > -1) {
         const res = await instrumentApi
           .put(`/${this.editedItem.id}`, this.editedItem)
@@ -1130,7 +848,7 @@ export default {
           );
         }
       } else {
-        //Creating instrument
+        //Create instrument
         const res = await instrumentApi
           .post(null, this.editedItem)
           .catch((error) => {
@@ -1249,7 +967,6 @@ export default {
           );
         });
 
-      // console.log(parseFloat(data.tariff_amount));
       this.tariff_value = parseFloat(data.tariff_amount);
     },
 
@@ -1280,7 +997,9 @@ export default {
       }, 500);
     },
 
-    async addExoneration() {},
+    async addExoneration() {
+      
+    },
 
     assingExoneration() {
       this.$v.formExonerations.$touch();
@@ -1291,12 +1010,14 @@ export default {
 
       this.formExonerations.tariff_amount = this.tariff_value;
 
+      //setting tariff value if true/false
       if (this.formExonerations.is_tariffed == true) {
         this.formExonerations.is_tariffed = "No tarifado";
       } else {
         this.formExonerations.is_tariffed = "Tarifado";
       }
 
+      //total by number hour/number people
       if (this.formExonerations.number_hour !== "") {
         this.formExonerations.tafiff_total_amount =
           this.formExonerations.tariff_amount *
@@ -1316,6 +1037,7 @@ export default {
       this.formExonerations = this.defaultFormExonerations;
       this.tariff_value = 0;
 
+      //reset alerts
       this.$v.formExonerations.$reset();
     },
 
