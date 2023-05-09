@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('instruments', function (Blueprint $table) {
             $table->id();
-            $table->string('instrument_name');
-            $table->text('description');
             $table->foreignId('type_instrument_id')->constrained('type_instruments');
+            $table->string('instrument_name');
             $table->foreignId('sector_id')->constrained('sectors');
-            $table->text('entity');;
+            $table->foreignId('entity_id')->constrained('entities');
+            $table->text('description')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

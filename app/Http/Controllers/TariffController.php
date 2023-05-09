@@ -12,7 +12,7 @@ class TariffController extends Controller
     public function index()
     {
         $tariffs = Tariff::all();
-        
+
         foreach ($tariffs as $tariff) {
             $tariff->dependence_name = $tariff->dependences->dependence_name;
         }
@@ -21,9 +21,10 @@ class TariffController extends Controller
         $tariffs = Encrypt::encryptObject($tariffs, "id");
 
         return response()->json([
-            "status"=>"success",
-            "message"=>"Registro creado correctamente.",
-            "tariffs"=>$tariffs]);
+            "status" => "success",
+            "message" => "Registro creado correctamente.",
+            "tariffs" => $tariffs
+        ]);
     }
 
     public function store(Request $request)
@@ -34,8 +35,9 @@ class TariffController extends Controller
         Tariff::insert($data);
 
         return response()->json([
-            "status"=>"success",
-            "message"=>"Registro creado correctamente."]);
+            "status" => "success",
+            "message" => "Registro creado correctamente."
+        ]);
     }
 
     public function update(Request $request)
@@ -47,8 +49,9 @@ class TariffController extends Controller
 
         tariff::where("id", $data)->update($data);
         return response()->json([
-            "status"=>"success",
-            "message"=>"Registro editado correctamente."]);
+            "status" => "success",
+            "message" => "Registro editado correctamente."
+        ]);
     }
 
     public function destroy($id)
@@ -57,21 +60,44 @@ class TariffController extends Controller
 
         Tariff::where('id', $id)->delete();
         return response()->json([
-            "status"=>"success",
-            "message"=>"Registro eliminado correctamente."
+            "status" => "success",
+            "message" => "Registro eliminado correctamente."
         ]);
     }
 
-    public function byDependenceName(Request $request)
+    /**
+     * Get tariff amount by tariff type charge
+     *
+     * @param  \App\Models\Dependence  $dependence
+     * @return \Illuminate\Http\Response
+     */
+    public function byDependencyName(Request $request)
     {
         $tariffs = Tariff::select("*")
-        ->join("dependences", "tariffs.dependence_id", "=", "dependences.id")
-        ->where("dependences.dependence_name", $request->dependences)
-        ->get();
+            ->join("dependences", "tariffs.dependence_id", "=", "dependences.id")
+            ->where("dependences.dependence_name", $request->dependencies)
+            ->get();
 
         return response()->json([
             "message" => "success",
             "tariffs" => $tariffs
         ]);
+    }
+
+    /**
+     * Get tariff amount by tariff type charge
+     *
+     * @param  \App\Models\Dependence  $dependence
+     * @return \Illuminate\Http\Response
+     */
+    public function byTariffTypeCharge(Request $request)
+    {
+        $tariffAmount = Tariff::select('tariffs.amount')
+            ->where('type_charge', $request->tariffTypeCharge)
+            ->first();
+
+        // dd($tariffAmount);
+
+        return response()->json(['message' => 'success', 'tariff_amount' => $tariffAmount->amount]);
     }
 }

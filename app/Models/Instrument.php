@@ -18,11 +18,11 @@ class Instrument extends Model
 
     protected $fillable = [
         'id',
-        'instrument_name',
-        'description',
         'type_instrument_id',
+        'instrument_name',
         'sector_id',
-        'entity',
+        'entity_id',
+        'description',
     ];
 
     public $hidden = [
@@ -32,6 +32,31 @@ class Instrument extends Model
     ];
 
     public $timestamps = true;
+
+    public static function allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage)
+    {
+        return Instrument::select('instruments.*', 'ti.type_instrument_name', 'e.entity_name', 's.sector_name')
+            ->join('type_instruments as ti', 'instruments.type_instrument_id', '=', 'ti.id')
+            ->join('entities as e', 'instruments.entity_id', '=', 'e.id')
+            ->join('sectors as s', 'instruments.sector_id', '=', 's.id')
+            ->where('instruments.instrument_name', 'like', $search)
+
+            ->skip($skip)
+            ->take($itemsPerPage)
+            ->orderBy("instruments.$sortBy", $sort)
+            ->get();
+    }
+
+    public static function counterPagination($search)
+    {
+        return Instrument::select('instruments.*', 'ti.type_instrument_name', 'e.entity_name', 's.sector_name')
+            ->join('type_instruments as ti', 'instruments.type_instrument_id', '=', 'ti.id')
+            ->join('entities as e', 'instruments.entity_id', '=', 'e.id')
+            ->join('sectors as s', 'instruments.sector_id', '=', 's.id')
+            ->where('instruments.instrument_name', 'like', $search)
+
+            ->count();
+    }
 
     public function sector()
     {
