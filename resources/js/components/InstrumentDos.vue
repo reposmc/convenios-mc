@@ -282,6 +282,15 @@
                 validationTextType="default"
               />
             </v-col>
+            <v-col cols="12" sm="12" md="4">
+              <base-input
+                label="Fecha de evento"
+                v-model="$v.formExonerations.date_event.$model"
+                :validation="$v.formExonerations.date_event"
+                validationTextType="none"
+                type="date"
+              />
+            </v-col>
             <v-col cols="12" xs="12" sm="12" md="4">
               <base-input
                 label="Valor"
@@ -298,6 +307,14 @@
                 :validation="$v.formExonerations.concept_amount"
                 type="number"
               />
+            </v-col>
+            <v-col cols="12" sm="12" md="12">
+              <base-text-area
+                label="Descripción de la exoneración"
+                v-model.trim="$v.formExonerations.exonerated_description.$model"
+                :validation="$v.formExonerations.exonerated_description"
+                :rows="3"
+              ></base-text-area>
             </v-col>
           </v-row>
           <!-- Diferente de convenio -->
@@ -415,23 +432,22 @@
               <!-- header -->
               <thead>
                 <tr>
-                  <th v-if="this.formExonerations.date_event">Fecha</th>
-                  <th v-if="this.formExonerations.service_place_name">
-                    Espacio
-                  </th>
-                  <th v-if="this.formExonerations.is_tariffed">¿Tarifado?</th>
-                  <th v-if="this.formExonerations.exonerated_description">
-                    Descripción
-                  </th>
-                  <th v-if="this.formExonerations.tariff_type_charge">
+                  <th>Fecha</th>
+                  <th v-if="editedItem.type_instrument_name == 'Convenio'">Espacio</th>
+                  <th v-if="editedItem.type_instrument_name == 'Convenio'">¿Tarifado?</th>
+                  <th v-if="editedItem.type_instrument_name != 'Convenio'">Concepto</th>
+                  <th v-if="editedItem.type_instrument_name != 'Convenio'">Valor</th>
+                  <th>Descripción</th>
+                  <th v-if="editedItem.type_instrument_name != 'Convenio'">Monto</th>
+                  <th v-if="editedItem.type_instrument_name == 'Convenio'">
                     Descripción tarifa
                   </th>
-                  <th v-if="this.formExonerations.tariff_amount">Tarifa</th>
-                  <th v-if="this.formExonerations.number_hour">Cant. Horas</th>
-                  <th v-if="this.formExonerations.number_people">
+                  <th v-if="editedItem.type_instrument_name == 'Convenio'">Tarifa</th>
+                  <th v-if="editedItem.type_instrument_name == 'Convenio'">Cant. Horas/Personas</th>
+                  <!-- <th>
                     Cant. Personas
-                  </th>
-                  <th>Total</th>
+                  </th> -->
+                  <th v-if="editedItem.type_instrument_name == 'Convenio'">Total</th>
                   <th>Acción</th>
                 </tr>
               </thead>
@@ -445,28 +461,38 @@
                   <td v-if="assigned.date_event">
                     {{ assigned.date_event }}
                   </td>
-                  <td v-if="assigned.service_place_name">
+                  <td v-if="assigned.service_place_name ">
                     {{ assigned.service_place_name }}
                   </td>
-                  <td v-if="assigned.is_tariffed">
+                  <td v-if="assigned.is_tariffed ">
                     {{ assigned.is_tariffed }}
                   </td>
-                  <td v-if="assigned.tariff_type_charge">
-                    {{ assigned.tariff_type_charge }}
+                  <td v-if="assigned.concept ">
+                    {{ assigned.concept }}
+                  </td>
+                  <td v-if="assigned.worth ">
+                    {{ assigned.worth }}
                   </td>
                   <td v-if="assigned.exonerated_description">
                     {{ assigned.exonerated_description }}
                   </td>
-                  <td v-if="assigned.tariff_amount">
+                  <td v-if="assigned.concept_amount ">
+                    {{ assigned.concept_amount }}
+                  </td>
+                  <td v-if="assigned.tariff_type_charge ">
+                    {{ assigned.tariff_type_charge }}
+                  </td>
+                  <td v-if="assigned.tariff_amount ">
                     {{ assigned.tariff_amount }}
                   </td>
-                  <td v-if="assigned.number_hour">
+                  <td v-if="assigned.number_hour ">
                     {{ assigned.number_hour }}
                   </td>
-                  <td v-if="assigned.number_people">
+                  <td v-if="assigned.number_people ">
                     {{ assigned.number_people }}
                   </td>
-                  <td>{{ assigned.tafiff_total_amount }}</td>
+                  <td >
+                    {{ assigned.tafiff_total_amount }}</td>
                   <td>
                     <v-icon @click="deleteAssignedExoneration(index)">
                       delete
