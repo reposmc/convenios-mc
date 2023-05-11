@@ -50,7 +50,7 @@
                 <!-- Agreement -->
                 <li class="text-center pb-1">
                     <a href="{{ url('/instruments') }}" class="text-center">
-                        <i class="material-icons md-18 mx-auto">handshake</i>
+                        <i class="material-icons md-18 mx-auto">dashboard_customize</i>
                     </a>
                     <a href="{{ url('/instruments') }}">
                         <p class="link mx-auto">Instrumentos</p>

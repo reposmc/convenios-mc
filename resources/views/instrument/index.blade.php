@@ -2,6 +2,6 @@
 
 @section('content')
 <div class="container">
-    <instrument-dos />
+    <instrument />
 </div>
 @endsection
