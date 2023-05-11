@@ -24,10 +24,10 @@
       :footer-props="{ 'items-per-page-options': [15, 30, 50, 100] }"
       class="elevation-3 shadow p-3 mt-3"
     >
-    <h1></h1>
+      <h1></h1>
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>Instrumentos 2</v-toolbar-title>
+          <v-toolbar-title>Instrumentos</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="800px" persistent>
             <template v-slot:activator="{}">
@@ -131,10 +131,12 @@
                     <!-- description -->
                   </v-row>
                   <!-- Form -->
+
                   <!-- Dependencies -->
                   <template>
                     <h5 class="pt-3">Dependencias</h5>
                     <hr />
+                    <!-- dependence_name -->
                     <v-col cols="12" md="6">
                       <base-select-search
                         label="Dependencia"
@@ -146,6 +148,8 @@
                         :validation="$v.formDependencies.dependence_name"
                       />
                     </v-col>
+                    <!-- dependence_name -->
+                    <!-- assignDependency -->
                     <v-col cols="12" md="6">
                       <a
                         href="#"
@@ -155,7 +159,9 @@
                         Agregar
                       </a>
                     </v-col>
+                    <!-- assignDependency -->
 
+                    <!-- dependency table -->
                     <v-simple-table class="mt-2">
                       <thead>
                         <tr>
@@ -179,8 +185,10 @@
                         </tr>
                       </tbody>
                     </v-simple-table>
+                    <!-- dependency table -->
                   </template>
                   <!-- Dependencies -->
+
                   <!-- save buttons -->
                   <v-row>
                     <v-col align="center">
@@ -260,6 +268,7 @@
               <h5>Detalle del instrumento</h5>
               <hr />
             </v-col>
+            <!-- instrument_name -->
             <v-col cols="12" sm="12" md="12">
               <base-input
                 label="Instrumento"
@@ -269,20 +278,16 @@
                 :disabled="true"
               />
             </v-col>
+            <!-- instrument_name -->
           </v-row>
           <!-- title -->
-
-          <!-- Diferente de convenio -->
-          <v-row v-if="editedItem.type_instrument_name != 'Convenio'">
-            <v-col cols="12" xs="12" sm="12" md="12">
-              <base-input
-                label="Concepto"
-                v-model.trim="$v.formExonerations.concept.$model"
-                :validation="$v.formExonerations.concept"
-                validationTextType="default"
-              />
+          <v-row>
+            <v-col cols="12" sm="12" md="12">
+              <h5>Detalle de la exoneración</h5>
+              <hr />
             </v-col>
-            <v-col cols="12" sm="12" md="4">
+            <!-- date_event -->
+            <v-col cols="12" sm="12" md="6">
               <base-input
                 label="Fecha de evento"
                 v-model="$v.formExonerations.date_event.$model"
@@ -291,40 +296,50 @@
                 type="date"
               />
             </v-col>
-            <v-col cols="12" xs="12" sm="12" md="4">
+            <!-- date_event -->
+          </v-row>
+
+          <!-- Diferente de convenio -->
+          <v-row v-if="editedItem.type_instrument_name != 'Convenio'">
+            <!-- concept -->
+            <v-col cols="12" xs="12" sm="12" md="12">
               <base-input
-                label="Valor"
-                v-model.trim="$v.formExonerations.worth.$model"
-                :validation="$v.formExonerations.worth"
-                type="number"
-                v-mask="'####'"
+                label="Concepto"
+                v-model.trim="$v.formExonerations.concept.$model"
+                :validation="$v.formExonerations.concept"
+                validationTextType="default"
               />
             </v-col>
-            <v-col cols="12" xs="12" sm="12" md="4">
+            <!-- concept -->
+
+            <!-- quantity -->
+            <v-col cols="12" xs="12" sm="12" md="6">
               <base-input
-                label="Monto"
-                v-model.trim="$v.formExonerations.concept_amount.$model"
-                :validation="$v.formExonerations.concept_amount"
+                label="Cantidad"
+                v-model.trim="$v.formExonerations.quantity.$model"
+                :validation="$v.formExonerations.quantity"
                 type="number"
               />
             </v-col>
-            <v-col cols="12" sm="12" md="12">
-              <base-text-area
-                label="Descripción de la exoneración"
-                v-model.trim="$v.formExonerations.exonerated_description.$model"
-                :validation="$v.formExonerations.exonerated_description"
-                :rows="3"
-              ></base-text-area>
+            <!-- quantity -->
+
+            <!-- estimated_price -->
+            <v-col cols="12" xs="12" sm="12" md="6">
+              <base-input
+                label="Precio estimado"
+                v-model.trim="$v.formExonerations.estimated_price.$model"
+                :validation="$v.formExonerations.estimated_price"
+                type="number"
+              />
             </v-col>
+            <!-- estimated_price -->
           </v-row>
           <!-- Diferente de convenio -->
 
+          <!-- Igual a convenio -->
           <v-row v-if="editedItem.type_instrument_name == 'Convenio'">
-            <v-col cols="12" sm="12" md="12">
-              <h5>Detalle de la exoneración</h5>
-              <hr />
-            </v-col>
-            <v-col cols="12" sm="12" md="12">
+            <!-- dependence_name -->
+            <v-col cols="12" sm="12" md="6">
               <base-select-search
                 label="Dependencia"
                 v-model.trim="$v.formExonerations.dependence_name.$model"
@@ -334,15 +349,9 @@
                 @change="changeDependency()"
               />
             </v-col>
-            <v-col cols="12" sm="12" md="6">
-              <base-input
-                label="Fecha de evento"
-                v-model="$v.formExonerations.date_event.$model"
-                :validation="$v.formExonerations.date_event"
-                validationTextType="none"
-                type="date"
-              />
-            </v-col>
+            <!-- dependence_name -->
+
+            <!-- service_place_name -->
             <v-col cols="12" sm="12" md="6">
               <base-input
                 label="Espacio de servicio"
@@ -351,15 +360,58 @@
                 validationTextType="default"
               />
             </v-col>
+            <!-- service_place_name -->
+
+            <!-- is_tariffed -->
             <v-col cols="12" sm="12" md="12">
               <v-checkbox
-                class="mb-3"
                 v-model="$v.formExonerations.is_tariffed.$model"
-                label="Monto no tarifado"
+                label="No tarifado"
               >
               </v-checkbox>
             </v-col>
-            <v-col cols="12" sm="12" md="12">
+            <!-- is_tariffed -->
+
+            <!-- non_tariff_concept -->
+            <v-col
+              cols="12"
+              xs="12"
+              sm="12"
+              md="12"
+              v-show="formExonerations.is_tariffed != false"
+            >
+              <base-input
+                label="Concepto no tarifado"
+                v-model.trim="$v.formExonerations.non_tariff_concept.$model"
+                :validation="$v.formExonerations.non_tariff_concept"
+                validationTextType="none"
+              />
+            </v-col>
+            <!-- non_tariff_concept -->
+
+            <!-- non_tariff_amount -->
+            <v-col
+              cols="12"
+              sm="12"
+              md="3"
+              v-show="formExonerations.is_tariffed != false"
+            >
+              <base-input
+                label="Monto no tarifado"
+                v-model.number="$v.formExonerations.non_tariff_amount.$model"
+                :validation="$v.formExonerations.non_tariff_amount"
+                type="number"
+              />
+            </v-col>
+            <!-- non_tariff_amount -->
+
+            <!-- tariff_type_charge -->
+            <v-col
+              cols="12"
+              sm="12"
+              md="12"
+              v-show="formExonerations.is_tariffed != true"
+            >
               <base-select-search
                 label="Tarifa de dependencia"
                 v-model.trim="$v.formExonerations.tariff_type_charge.$model"
@@ -369,11 +421,22 @@
                 @change="getTariffAmount()"
               />
             </v-col>
-            <v-col cols="12" sm="12" md="3">
+            <!-- tariff_type_charge -->
+
+            <!-- tariff_value -->
+            <v-col
+              cols="12"
+              sm="12"
+              md="3"
+              v-show="formExonerations.is_tariffed != true"
+            >
               <h5 class="mb-0 mt-2 text-primary">
                 Tarifa: ${{ this.tariff_value }}
               </h5>
             </v-col>
+            <!-- tariff_value -->
+
+            <!-- number_hour -->
             <v-col cols="12" sm="12" md="3">
               <base-input
                 label="Evento/alquiler"
@@ -383,6 +446,9 @@
                 :disabled="this.formExonerations.number_people != ''"
               />
             </v-col>
+            <!-- number_hour -->
+
+            <!-- number_people -->
             <v-col cols="12" sm="12" md="3">
               <base-input
                 label="Número de personas"
@@ -392,29 +458,69 @@
                 :disabled="this.formExonerations.number_hour != ''"
               />
             </v-col>
+            <!-- number_people -->
+
             <v-col cols="12" sm="12" md="3">
+              <!-- totalTariffNumberPeople -->
               <h5
                 class="mb-0 text-primary"
-                v-if="this.formExonerations.number_people"
+                v-if="
+                  this.formExonerations.number_people &&
+                  formExonerations.is_tariffed != true
+                "
               >
                 Total por personas: ${{ totalTariffNumberPeople }}
               </h5>
+              <!-- totalTariffNumberPeople -->
+              <!-- totalTariffNumberHour -->
               <h5
                 class="mb-0 text-primary"
-                v-if="this.formExonerations.number_hour"
+                v-if="
+                  this.formExonerations.number_hour &&
+                  formExonerations.is_tariffed != true
+                "
               >
                 Total por evento/alquiler: ${{ totalTariffNumberHour }}
-              </h5></v-col
-            >
+              </h5>
+              <!-- totalTariffNumberHour -->
+              <!-- totalNonTariffNumberPeople -->
+              <h5
+                class="mb-0 text-primary"
+                v-if="
+                  this.formExonerations.number_people &&
+                  formExonerations.is_tariffed != false
+                "
+              >
+                Total por personas: ${{ totalNonTariffNumberPeople }}
+              </h5>
+              <!-- totalNonTariffNumberPeople -->
+              <!-- totalNonTariffNumberHour -->
+              <h5
+                class="mb-0 text-primary"
+                v-if="
+                  this.formExonerations.number_hour &&
+                  formExonerations.is_tariffed != false
+                "
+              >
+                Total por evento/alquiler: ${{ totalNonTariffNumberHour }}
+              </h5>
+              <!-- totalNonTariffNumberHour -->
+            </v-col>
+          </v-row>
+          <!-- Igual a convenio -->
+
+          <!-- exonerated_description -->
+          <v-row>
             <v-col cols="12" sm="12" md="12">
               <base-text-area
-                label="Descripción de la exoneración"
+                label="Descripción"
                 v-model.trim="$v.formExonerations.exonerated_description.$model"
                 :validation="$v.formExonerations.exonerated_description"
-                :rows="3"
+                :rows="5"
               ></base-text-area>
             </v-col>
           </v-row>
+          <!-- exonerated_description -->
 
           <!-- Exonerations -->
           <template>
@@ -433,21 +539,42 @@
               <thead>
                 <tr>
                   <th>Fecha</th>
-                  <th v-if="editedItem.type_instrument_name == 'Convenio'">Espacio</th>
-                  <th v-if="editedItem.type_instrument_name == 'Convenio'">¿Tarifado?</th>
-                  <th v-if="editedItem.type_instrument_name != 'Convenio'">Concepto</th>
-                  <th v-if="editedItem.type_instrument_name != 'Convenio'">Valor</th>
-                  <th>Descripción</th>
-                  <th v-if="editedItem.type_instrument_name != 'Convenio'">Monto</th>
                   <th v-if="editedItem.type_instrument_name == 'Convenio'">
-                    Descripción tarifa
+                    Espacio
                   </th>
-                  <th v-if="editedItem.type_instrument_name == 'Convenio'">Tarifa</th>
-                  <th v-if="editedItem.type_instrument_name == 'Convenio'">Cant. Horas/Personas</th>
-                  <!-- <th>
-                    Cant. Personas
-                  </th> -->
-                  <th v-if="editedItem.type_instrument_name == 'Convenio'">Total</th>
+                  <th v-if="editedItem.type_instrument_name == 'Convenio'">
+                    ¿Tarifado?
+                  </th>
+                  <th v-if="editedItem.type_instrument_name != 'Convenio'">
+                    Concepto
+                  </th>
+                  <th>Descripción</th>
+                  <th
+                    v-if="
+                      editedItem.type_instrument_name == 'Convenio' &&
+                      formExonerations.is_tariffed != true
+                    "
+                  >
+                    Descripción Tarifada/No tarifada
+                  </th>
+                  <th
+                    v-if="
+                      editedItem.type_instrument_name == 'Convenio' &&
+                      formExonerations.is_tariffed != true
+                    "
+                  >
+                    Monto Tarifado/No tarifado
+                  </th>
+                  <th v-if="editedItem.type_instrument_name == 'Convenio'">
+                    Cant. Horas/Personas
+                  </th>
+                  <th v-if="editedItem.type_instrument_name != 'Convenio'">
+                    Cantidad
+                  </th>
+                  <th v-if="editedItem.type_instrument_name != 'Convenio'">
+                    Precio estimado
+                  </th>
+                  <th>Total</th>
                   <th>Acción</th>
                 </tr>
               </thead>
@@ -461,38 +588,45 @@
                   <td v-if="assigned.date_event">
                     {{ assigned.date_event }}
                   </td>
-                  <td v-if="assigned.service_place_name ">
+                  <td v-if="assigned.service_place_name">
                     {{ assigned.service_place_name }}
                   </td>
-                  <td v-if="assigned.is_tariffed ">
+                  <td v-if="assigned.is_tariffed">
                     {{ assigned.is_tariffed }}
                   </td>
-                  <td v-if="assigned.concept ">
+                  <td v-if="assigned.concept">
                     {{ assigned.concept }}
                   </td>
-                  <td v-if="assigned.worth ">
-                    {{ assigned.worth }}
+                  <td v-if="assigned.quantity">
+                    {{ assigned.quantity }}
                   </td>
                   <td v-if="assigned.exonerated_description">
                     {{ assigned.exonerated_description }}
                   </td>
-                  <td v-if="assigned.concept_amount ">
-                    {{ assigned.concept_amount }}
+                  <td v-if="assigned.estimated_price">
+                    {{ assigned.estimated_price }}
                   </td>
-                  <td v-if="assigned.tariff_type_charge ">
+                  <td v-if="assigned.tariff_type_charge">
                     {{ assigned.tariff_type_charge }}
                   </td>
-                  <td v-if="assigned.tariff_amount ">
+                  <td v-if="assigned.non_tariff_concept">
+                    {{ assigned.non_tariff_concept }}
+                  </td>
+                  <td v-if="assigned.tariff_amount">
                     {{ assigned.tariff_amount }}
                   </td>
-                  <td v-if="assigned.number_hour ">
+                  <td v-if="assigned.non_tariff_amount">
+                    {{ assigned.non_tariff_amount }}
+                  </td>
+                  <td v-if="assigned.number_hour">
                     {{ assigned.number_hour }}
                   </td>
-                  <td v-if="assigned.number_people ">
+                  <td v-if="assigned.number_people">
                     {{ assigned.number_people }}
                   </td>
-                  <td >
-                    {{ assigned.tafiff_total_amount }}</td>
+                  <td v-if="assigned.total_amount">
+                    {{ assigned.total_amount }}
+                  </td>
                   <td>
                     <v-icon @click="deleteAssignedExoneration(index)">
                       delete
@@ -502,6 +636,21 @@
               </tbody>
               <!-- body -->
             </v-simple-table>
+            <!-- total table -->
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 16px;
+              "
+            >
+              <span colspan="6" class="fw-bold">
+                Total de exoneraciones por instrumento:
+              </span>
+              <span class="fw-bold">${{ this.total_value }}</span>
+            </div>
+            <!-- total table -->
             <!-- table exoneration  -->
           </template>
           <!-- Exonerations -->
@@ -532,19 +681,48 @@
       </v-card>
     </v-dialog>
     <!--form detail-->
+
+    <!-- close confirm -->
+    <v-dialog v-model="dialogCloseConfirm" max-width="500px">
+      <v-card class="h-100">
+        <v-container>
+          <h3 class="black-secondary text-center mt-3 mb-3">
+            ¿Esta seguro de salir?
+          </h3>
+          <h5 class="black-secondary text-center mt-3 mb-3">
+            Si sales antes de guardar los cambios se perderán.
+          </h5>
+          <v-row>
+            <v-col align="center">
+              <v-btn
+                color="btn-normal no-uppercase mt-3 mb-3 pr-5 pl-5 mx-auto"
+                rounded
+                @click="dialogExonerationCloseConfirm"
+                >Confirmar</v-btn
+              >
+              <v-btn
+                color="btn-normal-close no-uppercase mt-3 mb-3"
+                rounded
+                @click="dialogExonerationCloseCancel"
+              >
+                Cancelar
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-dialog>
+    <!-- close confirm -->
   </div>
 </template>
 
 <script>
 import instrumentApi from "../apis/instrumentApi";
 import entityApi from "../apis/entityApi";
-import roleApi from "../apis/roleApi";
 import typeApi from "../apis/typeApi";
 import directionApi from "../apis/directionApi";
 import dependenceApi from "../apis/dependenceApi";
-import placeApi from "../apis/placeApi";
 import sectorApi from "../apis/sectorApi";
-import tariffApi from "../apis/tariffApi";
 import exonerationApi from "../apis/exonerationApi";
 import lib from "../libs/function";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
@@ -558,19 +736,14 @@ export default {
     return {
       search: "",
       dialog: false,
-      showExoneration: false,
       dialogExoneration: false,
-      viewExonerations: false,
-      hidden: false,
-      showModal: false,
+      dialogCloseConfirm: false,
       dialogDelete: false,
-      dialogAddPlace: false,
       headers: [
         { text: "INSTRUMENTO", value: "instrument_name" },
         { text: "TIPO DE INSTRUMENTO", value: "type_instrument_name" },
         { text: "ENTIDAD", value: "entity_name" },
         { text: "SECTOR", value: "sector_name" },
-        // { text: "DESCRIPCIÓN", value: "description" },
         { text: "ACCIONES", value: "actions", sortable: false },
       ],
       options: {},
@@ -584,14 +757,7 @@ export default {
         description: "",
         type_instrument_name: "",
         entity_name: "",
-        amount_people: "",
-        not_charged_hour: "",
-        tariff_people: "",
-        not_charged_people: "",
         sector_name: "",
-        concept: "",
-        worth: "",
-        concept_amount: "",
         assignedDependencies: [],
         assignedExonerations: [],
       },
@@ -601,14 +767,7 @@ export default {
         type_instrument_name: "",
         entity_name: "",
         national_direction_name: "",
-        amount_people: "",
-        not_charged_hour: "",
-        tariff_people: "",
-        not_charged_people: "",
         sector_name: "",
-        concept: "",
-        worth: "",
-        concept_amount: "",
         assignedDependencies: [],
         assignedExonerations: [],
       },
@@ -617,32 +776,19 @@ export default {
       },
       formExonerations: {
         concept: "",
-        worth: "",
-        concept_amount: "",
+        quantity: "",
+        estimated_price: "",
         dependence_name: "",
         date_event: "",
         service_place_name: "",
         is_tariffed: false,
+        non_tariff_concept: "",
+        non_tariff_amount: 0,
         tariff_type_charge: "",
         tariff_amount: 0,
         number_hour: "",
         number_people: "",
-        tafiff_total_amount: 0,
-        exonerated_description: "",
-      },
-      defaultFormExonerations: {
-        concept: "",
-        worth: "",
-        concept_amount: "",
-        dependence_name: "",
-        date_event: "",
-        service_place_name: "",
-        is_tariffed: false,
-        tariff_type_charge: "",
-        tariff_amount: 0,
-        number_hour: "",
-        number_people: "",
-        tafiff_total_amount: 0,
+        total_amount: 0,
         exonerated_description: "",
       },
       textAlert: "",
@@ -661,6 +807,7 @@ export default {
       debounce: 0,
       selectedTab: 0,
       tariff_value: 0,
+      total_value: 0,
     };
   },
 
@@ -689,29 +836,11 @@ export default {
         minLength: minLength(1),
         maxLength: maxLength(150),
       },
-      not_charged_hour: {
-        minLength: minLength(1),
-        maxLength: maxLength(150),
-      },
-      tariff_people: {
-        minLength: minLength(1),
-        maxLength: maxLength(150),
-      },
-      not_charged_people: {
-        minLength: minLength(1),
-        maxLength: maxLength(150),
-      },
-      amount_hour: {
-        minLength: minLength(1),
-      },
-      amount_people: {
-        minLength: minLength(1),
-      },
       assignedDependencies: {
         required,
       },
       assignedExonerations: {
-        required,
+        // required,
       },
     },
     formDependencies: {
@@ -724,23 +853,28 @@ export default {
         minLength: minLength(1),
         maxLength: maxLength(150),
       },
-      worth: {
+      quantity: {
         minLength: minLength(1),
         maxLength: maxLength(150),
       },
-      concept_amount: {
+      estimated_price: {
         minLength: minLength(1),
       },
-      dependence_name: { required },
-      date_event: { required },
+      dependence_name: {},
+      date_event: {},
       service_place_name: {},
       is_tariffed: {},
-      tariff_type_charge: { required },
+      non_tariff_concept: {},
+      non_tariff_amount: {},
+      tariff_type_charge: {},
       tariff_amount: {},
       number_hour: {},
-      tafiff_total_amount: {},
+      total_amount: {},
       number_people: {},
-      exonerated_description: { required },
+      exonerated_description: {
+        minLength: minLength(1),
+        maxLength: maxLength(500),
+      },
     },
   },
 
@@ -748,9 +882,6 @@ export default {
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "Nuevo registro" : "Editar registro";
-    },
-    isUsuarioRole() {
-      return this.roles.some((role) => role.name === "Usuario");
     },
     totalTariffNumberPeople: function () {
       if (
@@ -772,6 +903,32 @@ export default {
       ) {
         return (
           parseFloat(this.tariff_value) *
+          parseFloat(this.formExonerations.number_hour)
+        );
+      } else {
+        return 0;
+      }
+    },
+    totalNonTariffNumberPeople: function () {
+      if (
+        !isNaN(parseFloat(this.formExonerations.non_tariff_amount)) &&
+        !isNaN(parseFloat(this.formExonerations.number_people))
+      ) {
+        return (
+          parseFloat(this.formExonerations.non_tariff_amount) *
+          parseFloat(this.formExonerations.number_people)
+        );
+      } else {
+        return 0;
+      }
+    },
+    totalNonTariffNumberHour: function () {
+      if (
+        !isNaN(parseFloat(this.formExonerations.non_tariff_amount)) &&
+        !isNaN(parseFloat(this.formExonerations.number_hour))
+      ) {
+        return (
+          parseFloat(this.formExonerations.non_tariff_amount) *
           parseFloat(this.formExonerations.number_hour)
         );
       } else {
@@ -813,7 +970,6 @@ export default {
         entityApi.get(),
         dependenceApi.get(),
         sectorApi.get(),
-        roleApi.get(),
       ];
       let responses = await Promise.all(requests).catch((error) => {
         this.updateAlert(true, "No fue posible obtener los registros.", "fail");
@@ -828,7 +984,6 @@ export default {
       this.entities = responses[3].data.entities;
       this.dependences = responses[4].data.dependences;
       this.sectors = responses[5].data.sectors;
-      this.roles = responses[6].data.roles;
 
       this.recordsFiltered = this.records;
       this.loading = false;
@@ -912,12 +1067,22 @@ export default {
     },
 
     closeExoneration() {
+      this.dialogCloseConfirm = true;
+    },
+
+    dialogExonerationCloseConfirm() {
       this.$nextTick(() => {
         this.editedItem = this.defaultItem;
         this.editedIndex = -1;
       });
+
+      this.dialogCloseConfirm = false;
+      this.total_value = 0;
       this.$v.formExonerations.$reset();
       this.dialogExoneration = false;
+    },
+    dialogExonerationCloseCancel() {
+      this.dialogCloseConfirm = false;
     },
 
     addNewExoneration(item) {
@@ -1024,9 +1189,7 @@ export default {
       }, 500);
     },
 
-    async addExoneration() {
-      
-    },
+    async addExoneration() {},
 
     assingExoneration() {
       this.$v.formExonerations.$touch();
@@ -1035,33 +1198,73 @@ export default {
         return;
       }
 
-      this.formExonerations.tariff_amount = this.tariff_value;
+      if (this.editedItem.type_instrument_name == "Convenio") {
+        //setting tariff value if true/false
+        if (this.formExonerations.is_tariffed == true) {
+          this.formExonerations.is_tariffed = "No";
+        } else {
+          this.formExonerations.is_tariffed = "Sí";
+        }
 
-      //setting tariff value if true/false
-      if (this.formExonerations.is_tariffed == true) {
-        this.formExonerations.is_tariffed = "No tarifado";
-      } else {
-        this.formExonerations.is_tariffed = "Tarifado";
+        if (this.formExonerations.is_tariffed == "Sí") {
+          //set tariff value
+          this.formExonerations.tariff_amount = this.tariff_value;
+
+          //total by number hour/people
+          if (this.formExonerations.number_hour !== "") {
+            this.formExonerations.total_amount =
+              this.formExonerations.tariff_amount *
+              this.formExonerations.number_hour;
+          } else {
+            this.formExonerations.total_amount =
+              this.formExonerations.tariff_amount *
+              this.formExonerations.number_people;
+          }
+        } else {
+          //total non tariff by number hour/people
+          if (this.formExonerations.number_hour !== "") {
+            this.formExonerations.total_amount =
+              this.formExonerations.non_tariff_amount *
+              this.formExonerations.number_hour;
+          } else {
+            this.formExonerations.total_amount =
+              this.formExonerations.non_tariff_amount *
+              this.formExonerations.number_people;
+          }
+        }
       }
 
-      //total by number hour/number people
-      if (this.formExonerations.number_hour !== "") {
-        this.formExonerations.tafiff_total_amount =
-          this.formExonerations.tariff_amount *
-          this.formExonerations.number_hour;
-      } else {
-        this.formExonerations.tafiff_total_amount =
-          this.formExonerations.tariff_amount *
-          this.formExonerations.number_people;
+      if (this.editedItem.type_instrument_name != "Convenio") {
+        // total by quantity * estimated price
+        this.formExonerations.total_amount =
+          this.formExonerations.quantity *
+          this.formExonerations.estimated_price;
       }
 
+      //total table
+      this.total_value += this.formExonerations.total_amount;
+
+      console.log(this.formExonerations);
       //push
       this.editedItem.assignedExonerations.push({
         ...this.formExonerations,
       });
 
       //clear inputs
-      this.formExonerations = this.defaultFormExonerations;
+      this.formExonerations.concept = "";
+      this.formExonerations.quantity = "";
+      this.formExonerations.estimated_price = "";
+      this.formExonerations.dependence_name = "";
+      this.formExonerations.date_event = "";
+      this.formExonerations.service_place_name = "";
+      this.formExonerations.is_tariffed = false;
+      this.formExonerations.non_tariff_concept = "";
+      this.formExonerations.non_tariff_amount = 0;
+      this.formExonerations.tariff_type_charge = "";
+      this.formExonerations.tariff_amount = 0;
+      this.formExonerations.number_hour = "";
+      this.formExonerations.number_people = "";
+      this.formExonerations.exonerated_description = "";
       this.tariff_value = 0;
 
       //reset alerts
