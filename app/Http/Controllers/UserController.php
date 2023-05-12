@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UsersDependenciesDetail;
+use App\Models\Dependence;
 use DB;
 use Hash;
 use Spatie\Permission\Models\Role;
@@ -22,7 +24,7 @@ class UserController extends Controller
         $limit = $request->take - $skip; // the limit
 
         $users = User::skip($skip)->take($limit)
-        ->get();
+            ->get();
 
         $users->makeVisible(["password"]);
 
@@ -30,13 +32,23 @@ class UserController extends Controller
             $user->rol = $user->getRoleNames()[0];
         }
 
+        foreach ($users as $item) {
+            $item->assignedDependencies = UsersDependenciesDetail::select(
+                'users_dependecies_detail.*',
+                'd.dependence_name'
+            )
+                ->join('dependences as d', 'users_dependecies_detail.dependency_id', '=', 'd.id')
+                ->where('user_id', $item->id)->get()->pluck('dependence_name');
+        }
+
         $users = Encrypt::encryptObject($users, "id");
+
 
         $total = User::count();
 
         return response()->json([
             "status" => "success",
-            "message"=>"Registros obtenidos correctamente.",
+            "message" => "Registros obtenidos correctamente.",
             "users" => $users,
             "total" => $total,
         ]);
@@ -50,12 +62,12 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = count(User::where(["email"=>$request->email])->get());
+        $user = count(User::where(["email" => $request->email])->get());
 
         if ($user > 0) {
             return response()->json([
-                "status"=>"fail",
-                "message"=>"Este email ya existe."
+                "status" => "fail",
+                "message" => "Este email ya existe."
             ]);
         }
 
@@ -64,19 +76,31 @@ class UserController extends Controller
         $user = new User();
         $user->name = $request->name;
         $user->last_name = $request->last_name;
-        $user->dui = $request->dui;
+        // $user->dui = $request->dui;
         $user->email = $request->email;
         $user->email_verified_at = now();
         $user->password = $password;
 
         $user->save();
 
-        $role = Role::where("name", $request->rol)->first();
-        $user->assignRole($role);
+        //Create detail
+        foreach ($request->assignedDependencies as $key => $dependence_name) {
+
+            $dependency = Dependence::where(['dependence_name' => $dependence_name])->first();
+
+            UsersDependenciesDetail::create([
+                'dependency_id' => $dependency->id,
+                'user_id' => $user->id,
+            ]);
+        }
+
+        //Assing role to user
+        $roleUser = Role::where("name", $request->rol)->first()->id;
+        $user->assignRole($roleUser);
 
         return response()->json([
-            "status"=>"success",
-            "message"=>"Registro creado correctamente."
+            "status" => "success",
+            "message" => "Registro creado correctamente."
         ]);
     }
 
@@ -112,18 +136,30 @@ class UserController extends Controller
             "password" => $password,
         ];
 
+        //Create detail
+        UsersDependenciesDetail::where('user_id', $user->id)->delete();
+        foreach ($request->assignedDependencies as $key => $dependence_name) {
+
+            $dependency = Dependence::where(['dependence_name' => $dependence_name])->first();
+
+            UsersDependenciesDetail::create([
+                'dependency_id' => $dependency->id,
+                'user_id' => $user->id,
+            ]);
+        }
+
         if (isset($request->rol)) {
             $oldRole = DB::table("model_has_roles")->where("model_id", $user->id)->delete();
 
-            $role = Role::where("name", $request->rol)->first();
+            $role = Role::where("name", $request->rol)->first()->id;
             $user->assignRole($role);
         }
 
         $user->update($data);
 
         return response()->json([
-            "status"=>"success",
-            "message"=>"Registro creado correctamente."
+            "status" => "success",
+            "message" => "Registro creado correctamente."
         ]);
     }
 
@@ -137,8 +173,8 @@ class UserController extends Controller
     {
         $user->delete();
         return response()->json([
-            "status"=>"success",
-            "message"=>"Registro creado correctamente."
+            "status" => "success",
+            "message" => "Registro creado correctamente."
         ]);
     }
 
@@ -153,9 +189,9 @@ class UserController extends Controller
         $user = User::find(auth()->user()->id);
 
         return response()->json([
-            "status"=>"success",
-            "message"=>"Registro creado correctamente.",
-            "user"=> $user
+            "status" => "success",
+            "message" => "Registro creado correctamente.",
+            "user" => $user
         ]);
     }
 }

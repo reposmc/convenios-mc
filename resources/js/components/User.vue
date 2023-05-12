@@ -29,7 +29,7 @@
         <v-toolbar flat>
           <v-toolbar-title>Usuarios</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="600px" persistent>
+          <v-dialog v-model="dialog" max-width="700px" persistent>
             <template v-slot:activator="{ on, attrs }">
               <v-row>
                 <v-col align="right">
@@ -159,6 +159,62 @@
                       />
                     </v-col>
                     <!-- Password -->
+                    <!-- Dependencies -->
+                    <template>
+                      <h5 class="pt-3">Dependencias</h5>
+                      <hr />
+                      <!-- dependence_name -->
+                      <v-col cols="12" md="6">
+                        <base-select-search
+                          label="Dependencia"
+                          v-model.trim="
+                            $v.formDependencies.dependence_name.$model
+                          "
+                          :items="dependencies"
+                          item="dependence_name"
+                          :validation="$v.formDependencies.dependence_name"
+                        />
+                      </v-col>
+                      <!-- dependence_name -->
+                      <!-- assignDependency -->
+                      <v-col cols="12" md="6">
+                        <a
+                          href="#"
+                          class="btn btn-normal"
+                          @click="assignDependency"
+                        >
+                          Agregar
+                        </a>
+                      </v-col>
+                      <!-- assignDependency -->
+
+                      <!-- dependency table -->
+                      <v-simple-table class="mt-2">
+                        <thead>
+                          <tr>
+                            <th>Dependencia</th>
+                            <th>Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            v-for="(
+                              assigned, index
+                            ) in editedItem.assignedDependencies"
+                            :key="index"
+                          >
+                            <td>{{ assigned }}</td>
+                            <td>
+                              <v-icon @click="deleteAssignedDependency(index)">
+                                delete
+                              </v-icon>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </v-simple-table>
+                      <!-- dependency table -->
+                    </template>
+                    <!-- Dependencies -->
                   </v-row>
                   <!-- Form -->
                   <v-row>
@@ -204,6 +260,7 @@
 <script>
 import roleApi from "../apis/roleApi";
 import userApi from "../apis/userApi";
+import dependenceApi from "../apis/dependenceApi";
 import lib from "../libs/function";
 
 import {
@@ -243,6 +300,7 @@ export default {
         password: "",
         dui: "",
         rol: "Administrator",
+        assignedDependencies: [],
       },
       defaultItem: {
         name: "",
@@ -251,10 +309,15 @@ export default {
         password: "",
         dui: "",
         rol: "Administrator",
+        assignedDependencies: [],
+      },
+      formDependencies: {
+        dependence_name: "",
       },
       textAlert: "",
       alertEvent: "success",
       roles: [],
+      dependencies: [],
       redirectSessionFinished: false,
       showAlert: false,
       typePassword: "password",
@@ -290,9 +353,17 @@ export default {
       rol: {
         required,
       },
-      dui: {
-        required,
-        isValidDui: helpers.regex("isValidDui", /[0-9]{8}-[0-9]/),
+      // dui: {
+      //   required,
+      //   isValidDui: helpers.regex("isValidDui", /[0-9]{8}-[0-9]/),
+      // },
+      assignedDependencies: {
+        // required,
+      },
+    },
+    formDependencies: {
+      dependence_name: {
+        // required,
       },
     },
   },
@@ -335,10 +406,11 @@ export default {
           params: { skip: this.skip, take: this.take },
         }),
         roleApi.get(),
+        dependenceApi.get(),
       ];
 
       const responses = await Promise.all(requests).catch((error) => {
-        this.updateAlert(true, "No fue posible eliminar el registros.", "fail");
+        this.updateAlert(true, "No fue posible obtener el registros.", "fail");
         this.redirectSessionFinished = lib.verifySessionFinished(
           error.response.status,
           419
@@ -347,6 +419,7 @@ export default {
 
       this.records = responses[0].data.users;
       this.recordsFiltered = responses[0].data.users;
+      this.dependencies = responses[2].data.dependences;
       this.total = responses[0].data.total;
 
       this.roles = responses[1].data.roles;
@@ -511,8 +584,8 @@ export default {
 
     newUser() {
       this.dialog = true;
-
       this.editedItem.rol = this.roles[0].name;
+      this.$v.$reset();
     },
 
     updateAlert(show = false, text = "Alerta", event = "success") {
@@ -527,6 +600,26 @@ export default {
 
     showPassword(e) {
       this.typePassword = e.show;
+    },
+
+    assignDependency() {
+      this.$v.formDependencies.$touch();
+
+      if (this.$v.formDependencies.$invalid) {
+        return;
+      }
+
+      this.editedItem.assignedDependencies.push(
+        this.formDependencies.dependence_name
+      );
+      this.formDependencies.dependence_name = "";
+
+      this.$v.formDependencies.$reset();
+    },
+
+    deleteAssignedDependency(index) {
+      this.editedItem.assignedDependencies.splice(index, 1);
+      this.formDependencies.dependence_name = "";
     },
   },
 };
