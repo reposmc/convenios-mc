@@ -42,17 +42,20 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::resource('/api/web/municipality', MunicipalityController::class);
         Route::resource('/api/web/instrument', InstrumentController::class);
         Route::resource('/api/web/exoneration', ExonerationController::class);
-        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']);
         Route::resource('/api/web/type', TypeInstrumentController::class);
         Route::resource('/api/web/entity', EntityController::class);
         Route::resource('/api/web/tariff', TariffController::class);
         Route::resource('/api/web/place', ServicePlaceController::class);
-        Route::get('api/tariff/byDependenceName/{dependences}', [TariffController::class, 'byDependenceName']);
         Route::resource('/api/web/dependence', DependenceController::class);
         Route::resource('/api/web/direction', NationalDirectionController::class);
         Route::resource('/api/web/sector', SectorController::class);
         Route::resource('/api/web/user', UserController::class);
         Route::resource('/api/web/role', RoleController::class);
+
+        Route::post('/api/web/user/actualUser', [UserController::class, 'actualUser']);
+
+        //User dependencies
+        Route::post('/api/web/dependence/dependenciesByUser', [DependenceController::class, 'dependenciesByUser']);
 
         // Views
         Route::get('/departments', function () {
@@ -106,54 +109,39 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::get('/sectors', function () {
             return view('sector.index');
         });
-
-        //Reports
-        Route::get('generate-pdf', [PDFController::class, 'generatePDF']);
-        Route::get('pdf/reports', [PDFController::class, 'generatePDF']);
-
-        //Excel
-        Route::get('export', [ExcelController::class, 'export']);
-        Route::get('/home', [HomeController::class, 'index'])->name('home');
     });
 
     Route::group(['middleware' => ['has.role:Administrador,Usuario']], function () {
-        // Apis
-
+        //Apis
         Route::resource('/api/web/instrument', InstrumentController::class);
-        Route::resource('/api/web/exoneration', ExonerationController::class);
-        Route::get('api/dependence/byDirectionName/{national_directions}', [DependenceController::class, 'byDirectionName']);
         Route::resource('/api/web/type', TypeInstrumentController::class);
         Route::resource('/api/web/entity', EntityController::class);
         Route::resource('/api/web/tariff', TariffController::class);
-        Route::resource('/api/web/place', ServicePlaceController::class);
         Route::resource('/api/web/dependence', DependenceController::class);
         Route::resource('/api/web/direction', NationalDirectionController::class);
-        Route::resource('/api/web/exonerationDetail', ExonerationDetailController::class);
         Route::resource('/api/web/sector', SectorController::class);
         Route::resource('/api/web/user', UserController::class);
         Route::resource('/api/web/role', RoleController::class);
 
-        // Views
+        Route::post('/api/web/user/actualUser', [UserController::class, 'actualUser']);
+
+        //User dependencies
+        Route::post('/api/web/dependence/dependenciesByUser', [DependenceController::class, 'dependenciesByUser']);
+
+        //Views
         Route::get('/instruments', function () {
             return view('instrument.index');
         });
-
-        Route::get('/reports', function () {
-            return view('reports.index');
-        });
-
-        Route::get('/places', function () {
-            return view('place.index');
-        });
-
-        //Reports
-        Route::get('generate-pdf', [PDFController::class, 'generatePDF']);
-        Route::get('pdf/reports', [PDFController::class, 'generatePDF']);
-
-        //Excel
-        Route::get('export', [ExcelController::class, 'export']);
-        Route::get('/home', [HomeController::class, 'index'])->name('home');
     });
+
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+    //Reports
+    Route::get('generate-pdf', [PDFController::class, 'generatePDF']);
+    Route::get('pdf/reports', [PDFController::class, 'generatePDF']);
+
+    //Excel
+    Route::get('export', [ExcelController::class, 'export']);
 });
 
 Route::get('/api/web/tariff/byTariffTypeCharge/{tariffTypeCharge}', [TariffController::class, 'byTariffTypeCharge']);

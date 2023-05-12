@@ -38,6 +38,7 @@
                     @click="addRecord()"
                     :disabled="loading != false"
                     rounded
+                    v-if="actualUser.role == 'Administrador'"
                   >
                     Agregar
                   </v-btn>
@@ -216,7 +217,7 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-tooltip top>
+        <v-tooltip top v-if="actualUser.role == 'Administrador'">
           <template v-slot:activator="{ on, attrs }">
             <v-icon
               small
@@ -714,6 +715,8 @@ import directionApi from "../apis/directionApi";
 import dependenceApi from "../apis/dependenceApi";
 import sectorApi from "../apis/sectorApi";
 import exonerationApi from "../apis/exonerationApi";
+import roleApi from "../apis/roleApi";
+import userApi from "../apis/userApi";
 import lib from "../libs/function";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
 import axios from "axios";
@@ -798,6 +801,7 @@ export default {
       selectedTab: 0,
       tariff_value: 0,
       total_value: 0,
+      actualUser: {},
     };
   },
 
@@ -958,8 +962,11 @@ export default {
         typeApi.get(),
         directionApi.get(),
         entityApi.get(),
-        dependenceApi.get(),
         sectorApi.get(),
+        // roleApi.post(`/userRole`),
+        userApi.post("/actualUser"),
+        dependenceApi.get(),
+        // dependenceApi.post(`/dependenciesByUser`),
       ];
       let responses = await Promise.all(requests).catch((error) => {
         this.updateAlert(true, "No fue posible obtener los registros.", "fail");
@@ -969,11 +976,13 @@ export default {
         );
       });
 
+      console.log(responses);
       this.types = responses[1].data.types;
       this.directions = responses[2].data.directions;
       this.entities = responses[3].data.entities;
-      this.dependences = responses[4].data.dependences;
-      this.sectors = responses[5].data.sectors;
+      this.sectors = responses[4].data.sectors;
+      this.actualUser = responses[5].data.user;
+      this.dependences = responses[6].data.dependences;
 
       this.recordsFiltered = this.records;
       this.loading = false;

@@ -58,6 +58,7 @@
                 </li>
                 <!-- Agreement -->
 
+                @if (auth()->user()->hasRole('Administrador') == 'Administrador')
                 <!-- report -->
                 <li class="text-center pb-1">
                     <a href="{{ url('/reports') }}" class="text-center">
@@ -68,7 +69,7 @@
                     </a>
                 </li>
                 <!-- report -->
-
+                @endif
 
 
                 <!-- Settings -->
@@ -92,18 +93,6 @@
                         {{-- <li><a href="{{ url('/departments ') }}">Departamentos</a></li> --}}
                         {{-- <li><a href="{{ url('/municipalities') }}">Municipios</a></li> --}}
                         {{-- <li><a href="{{ url('/places') }}">Espacios de servicio</a></li> --}}
-                    </ul>
-                </li>
-                @elseif(auth()->user()->hasRole('Usuario') == 'Usuario')
-                <li>
-                    <div class="icon-link pb-1">
-                        <a href="#" class="arrow text-center">
-                            <i class="material-icons md-18 mx-auto">settings</i>
-                        </a>
-                        <p class="link">Administración</p>
-                    </div>
-                    <ul class="sub-menu">
-                        <li><a href="{{ url('/places') }}">Espacios de Servicio</a></li>
                     </ul>
                 </li>
                 @endif

@@ -39,6 +39,7 @@
                     v-on="on"
                     rounded
                     @click="newUser()"
+                    :disabled="loading != false"
                   >
                     Agregar
                   </v-btn>
@@ -223,6 +224,7 @@
                         color="btn-normal no-uppercase mt-3"
                         rounded
                         @click="save"
+                        :disabled="loading != false"
                       >
                         Guardar
                       </v-btn>
@@ -275,6 +277,7 @@ export default {
   data() {
     return {
       search: "",
+      loading: false,
       dialog: false,
       headers: [
         { text: "USUARIO", value: "name" },
@@ -397,6 +400,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       this.$v.$reset();
       this.records = [];
       this.recordsFiltered = [];
@@ -423,6 +427,7 @@ export default {
       this.total = responses[0].data.total;
 
       this.roles = responses[1].data.roles;
+      this.loading = false;
     },
 
     editItem(item) {

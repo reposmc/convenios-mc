@@ -8,6 +8,7 @@ use App\Models\TypeInstrument;
 use App\Models\Entity;
 use App\Models\Sector;
 use App\Models\InstrumentsDependeciesDetail;
+use App\Models\UsersDependenciesDetail;
 use App\Models\Exoneration;
 use App\Models\Dependence;
 use App\Models\ServicePlace;
@@ -39,7 +40,7 @@ class InstrumentController extends Controller
         $search = (isset($request->search)) ? "%$request->search%" : '%%';
 
         $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
-
+        
         foreach ($instruments as $item) {
             $item->assignedDependencies = InstrumentsDependeciesDetail::select(
                 'instruments_dependecies_detail.*',

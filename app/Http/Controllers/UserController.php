@@ -187,11 +187,12 @@ class UserController extends Controller
     public function actualUser(Request $request)
     {
         $user = User::find(auth()->user()->id);
+        // Getting the role of the user
+        $role = auth()->user()->getRoleNames()[0];
+        $user->role = $role;
 
-        return response()->json([
-            "status" => "success",
-            "message" => "Registro creado correctamente.",
-            "user" => $user
-        ]);
+        $user->id = Encrypt::encryptValue($user, 'id');
+
+        return response()->json(['message' => 'success', 'user' => $user]);
     }
 }

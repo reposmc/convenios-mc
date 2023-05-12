@@ -19,9 +19,40 @@ class RoleController extends Controller
         $roles = Encrypt::encryptObject($roles, "id");
 
         return response()->json([
-            "status"=>"success",
-            "message"=>"Registro creado correctamente.",
+            "status" => "success",
+            "message" => "Registro creado correctamente.",
             "roles" => $roles
         ]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Gets the specified rol from user.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getActualUserRoles()
+    {
+        $roles = auth()->user()->getRoleNames();
+
+        return response()->json(['message' => 'success', 'roles' => $roles]);
+    }
+
+    public static function getAllowedRoles()
+    {
+        $roles = auth()->user()->getRoleNames();
+
+        return $roles;
     }
 }
