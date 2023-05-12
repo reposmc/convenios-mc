@@ -72,7 +72,6 @@ class InstrumentController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
         $instruments = new Instrument;
 
         $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
@@ -94,7 +93,7 @@ class InstrumentController extends Controller
         }
 
         return response()->json([
-            "status" => 200,
+            "status" => "success",
             "message" => "Registro creado correctamente.",
             "success" => true,
         ]);
@@ -118,19 +117,29 @@ class InstrumentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $type = TypeInstrument::where("type_instrument_name", $request->type_instrument_name)->first();
-        $sector = Sector::where("sector_name", $request->sector_name)->first();
-        $entity = Entity::where("entity_name", $request->entity_name)->first();
+        $id = Encrypt::decryptValue($request->id);
+        $instruments = Instrument::find($id);
 
-        $data = Encrypt::decryptArray($request->except(["type_instrument_name", "sector_name", "exonerations"]), "id");
+        $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
+        $instruments->instrument_name = $request->instrument_name;
+        $instruments->sector_id = Sector::where('sector_name', $request->sector_name)->first()->id;
+        $instruments->entity_id = Entity::where('entity_name', $request->entity_name)->first()->id;
+        $instruments->description = $request->description;
 
-        $data["type_instrument_id"] = $type->id;
-        $data["sector_id"] = $sector->id;
-        $data["entity_id"] = $entity->id;
+        $instruments->save();
 
-        Instrument::where("id", $data)->update($data);
+        InstrumentsDependeciesDetail::where('instrument_id', $instruments->id)->delete();
+        foreach ($request->assignedDependencies as $key => $dependence_name) {
+
+            $dependency = Dependence::where(['dependence_name' => $dependence_name])->first();
+
+            InstrumentsDependeciesDetail::create([
+                'instrument_id' => $instruments->id,
+                'dependency_id' => $dependency->id,
+            ]);
+        }
 
         return response()->json([
             "status" => "success",

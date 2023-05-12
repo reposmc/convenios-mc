@@ -1013,6 +1013,10 @@ export default {
           });
 
         if (res.data.status == "success") {
+          this.redirectSessionFinished = lib.verifySessionFinished(
+            res.status,
+            200
+          );
           this.updateAlert(
             true,
             "Registro modificado correctamente.",
@@ -1032,14 +1036,17 @@ export default {
             );
           });
 
-        if (res.success) {
-          this.updateAlert(true, data.message, "success");
+        if (res.data.status == "success") {
+          this.redirectSessionFinished = lib.verifySessionFinished(
+            res.status,
+            200
+          );
+          this.updateAlert(true, res.data.message, "success");
         }
-
-        this.close();
-        this.initialize();
-        return;
       }
+      this.close();
+      this.initialize();
+      return;
     },
 
     editItem(item) {
@@ -1286,9 +1293,9 @@ export default {
     },
 
     updateAlert(show = false, text = "Alerta", event = "success") {
+      this.showAlert = show;
       this.textAlert = text;
       this.alertEvent = event;
-      this.showAlert = show;
     },
 
     updateTimeOut(event) {
