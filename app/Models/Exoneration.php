@@ -20,21 +20,22 @@ class Exoneration extends Model
         'id',
         'exonerated_description',
         'instrument_id',
-        'hour',
-        'people',
-        'is_tariffed',
-        'date_event',
-        'amount_hour',
-        'amount_people',
         'service_place_name',
-        'tariff_id',
-        'tariff_hour',
-        'tariff_people',
-        'not_charged_hour',
-        'not_charged_people',
+        //'dependence_id',
+        'number_hour',
+        'number_people',
+        'non_tariff_concept',
+        'non_tariff_amount',
+        'amount_people',
+        'date_event',
+        'is_tariffed',
+        //'tariff_id',
+        'tariff_amount',
+        'total_amount',
+        //'total_value',
         'concept',
-        'worth',
-        'concept_amount',
+        'quantity',
+        'estimated_price',
     ];
 
     public $hidden = [
@@ -55,8 +56,8 @@ class Exoneration extends Model
         return $this->belongsTo(Tariff::class, "tariff_id_hour", "id");
     }
 
-    /* public function place()
+    /* public function dependence()
     {
-        return $this->belongsTo(ServicePlace::class, "service_place_id", "id");
+        return $this->belongsTo(Dependence::class, "dependence_id", "id");
     } */
 }

@@ -549,6 +549,9 @@
                   <th v-if="editedItem.type_instrument_name != 'Convenio'">
                     Concepto
                   </th>
+                  <th v-if="editedItem.type_instrument_name != 'Convenio'">
+                    Cantidad
+                  </th>
                   <th>Descripción</th>
                   <th v-if="editedItem.type_instrument_name == 'Convenio'">
                     Descripción Tarifada/No tarifada
@@ -559,9 +562,7 @@
                   <th v-if="editedItem.type_instrument_name == 'Convenio'">
                     Cant. Horas/Personas
                   </th>
-                  <th v-if="editedItem.type_instrument_name != 'Convenio'">
-                    Cantidad
-                  </th>
+                  
                   <th v-if="editedItem.type_instrument_name != 'Convenio'">
                     Precio estimado
                   </th>
@@ -718,7 +719,7 @@ import exonerationApi from "../apis/exonerationApi";
 import roleApi from "../apis/roleApi";
 import userApi from "../apis/userApi";
 import lib from "../libs/function";
-import { required, minLength, maxLength } from "vuelidate/lib/validators";
+import { required, minLength, maxLength, requiredIf } from "vuelidate/lib/validators";
 import axios from "axios";
 import BaseInput from "./base-components/BaseInput.vue";
 import { title } from "process";
@@ -844,28 +845,57 @@ export default {
     },
     formExonerations: {
       concept: {
+        required: requiredIf(function(editedItem){
+        return this.editedItem.type_instrument_name != "Convenio"
+      }),
         minLength: minLength(1),
         maxLength: maxLength(150),
       },
       quantity: {
+        required: requiredIf(function(editedItem){
+        return this.editedItem.type_instrument_name != "Convenio"
+      }),
         minLength: minLength(1),
         maxLength: maxLength(150),
       },
       estimated_price: {
+        required: requiredIf(function(editedItem){
+        return this.editedItem.type_instrument_name != "Convenio"
+      }),
         minLength: minLength(1),
       },
-      dependence_name: {},
-      date_event: {},
-      service_place_name: {},
+      dependence_name: { },
+      date_event: { required },
+      service_place_name: { required: requiredIf(function(editedItem){
+        return this.editedItem.type_instrument_name == "Convenio"
+      }) },
       is_tariffed: {},
-      non_tariff_concept: {},
-      non_tariff_amount: {},
-      tariff_type_charge: {},
-      tariff_amount: {},
-      number_hour: {},
-      total_amount: {},
-      number_people: {},
+      non_tariff_concept: { required: requiredIf(function(editedItem, formExonerations){
+        return this.editedItem.type_instrument_name == "Convenio" && this.formExonerations.tariff_type_charge == ""
+      }) },
+      non_tariff_amount: { required: requiredIf(function(editedItem){
+        return this.editedItem.type_instrument_name == "Convenio"
+      }) },
+      tariff_type_charge: { required: requiredIf(function(editedItem){
+        return this.editedItem.type_instrument_name == "Convenio" && this.formExonerations.non_tariff_concept == ""
+      }) },
+      tariff_amount: {required: requiredIf(function(editedItem){
+        return this.editedItem.type_instrument_name == "Convenio"
+      }) },
+      number_hour: {required: requiredIf(function(editedItem, formExonerations){
+        return this.editedItem.type_instrument_name == "Convenio" && this.formExonerations.number_people == ""
+      }) },
+      total_amount: { required: requiredIf(function(editedItem){
+        return this.editedItem.type_instrument_name == "Convenio"
+      }) },
+      number_people: { required: requiredIf(function(editedItem){
+        return this.editedItem.type_instrument_name == "Convenio" && this.formExonerations.number_hour == ""
+      })},
       exonerated_description: {
+        required,
+        /* required: requiredIf(function(editedItem){
+        return this.editedItem.type_instrument_name == "Convenio"
+      }), */
         minLength: minLength(1),
         maxLength: maxLength(500),
       },
@@ -976,7 +1006,7 @@ export default {
         );
       });
 
-      console.log(responses);
+      //console.log(responses);
       this.types = responses[1].data.types;
       this.directions = responses[2].data.directions;
       this.entities = responses[3].data.entities;
@@ -1097,7 +1127,7 @@ export default {
       this.dialogExoneration = true;
     },
 
-    async saveExoneration() {
+    /* async saveExoneration() {
       this.$v.$touch();
       if (this.$v.$invalid) {
         this.updateAlert(true, "Campos obligatorios.", "fail");
@@ -1115,7 +1145,7 @@ export default {
       }
 
       this.close();
-    },
+    }, */
 
     async changeDirection() {
       let { data } = await axios
@@ -1195,7 +1225,28 @@ export default {
       }, 500);
     },
 
-    async addExoneration() {},
+    closeReset(){
+      this.dialogExoneration = false;
+      this.total_value = 0;
+    },
+
+    async addExoneration() {
+      const res = await exonerationApi
+        .post(null, this.editedItem, this.editedItem.assignedExonerations) 
+        .catch((error) => {
+          this.updateAlert(true, "No fue posible crear el registro.", "fail");
+        });
+        //console.log(editedItem);
+
+      if (res.data.status == "success") {
+        this.updateAlert(true, "Registro almacenado correctamente.", "success");
+      }
+
+      this.closeReset();
+      this.initialize();
+      return;
+    },
+
 
     assingExoneration() {
       this.$v.formExonerations.$touch();
@@ -1250,11 +1301,12 @@ export default {
       //total table
       this.total_value += this.formExonerations.total_amount;
 
-      console.log(this.formExonerations);
+      
       //push
       this.editedItem.assignedExonerations.push({
         ...this.formExonerations,
       });
+      console.log(this.editedItem.assignedExonerations);
 
       //clear inputs
       this.formExonerations.concept = "";

@@ -24,53 +24,42 @@ class ExonerationController extends Controller
     }
 
     public function store(Request $request)
-    {   //dd($request->exonerations);
+    {      
         $instrument_id = Instrument::where("instrument_name", $request->instrument_name)->first()->id;
-        //$dependence_id = Dependence::where("dependence_name", $request->dependence_name)->first()->id;
-        //$place_id = ServicePlace::where("place_name", $request->place_name)->first()->id;
-        
-        $exonerations = $request->exonerations;
 
-        foreach ($exonerations as $exoneration) {
-            $tariff_id = null;
-            $tariff_hour = null;
-            $tariff_people = null;
-            $not_charged_hour = null;
-            $not_charged_people = null;
+        $exonerations = $request->assignedExonerations;
 
-            if ($exoneration["tariff_hour"] != null && $exoneration["tariff_hour"] != "" && $exoneration["tariff_people"] != null && $exoneration["tariff_people"] != "") {
-                $tariff_hour = Tariff::where("amount", $exoneration["tariff_hour"])->first()->id;
-                $tariff_people = Tariff::where("amount", $exoneration["tariff_people"])->first()->id;
-                $tariff_id = Tariff::where("type_charge", $request->tariff_hour)->first()->id;
+        foreach($exonerations as $exoneration){
 
-            } else {
-                $not_charged_hour = $exoneration["not_charged_hour"];
-                $not_charged_people = $exoneration["not_charged_people"];
+            $is_tariffed_response = $exoneration['is_tariffed'];
+
+            if($is_tariffed_response == null && $is_tariffed_response == ""){
+                $is_tariffed = null;
+            }else if($is_tariffed_response == "Sí"){
+                $is_tariffed = 1;
+            }else{
+                $is_tariffed = 0;
             }
-
-            //$dependence_id = null;
-
+            
             Exoneration::create([
-                'exonerated_description' => $exoneration["exonerated_description"],
+                'exonerated_description' => $exoneration['exonerated_description'],
                 'instrument_id' => $instrument_id,
-                //'dependence_id' => $dependence_id,
-                'tariff_id' => $tariff_id,
-                'hour'=> $exoneration["hour"],
-                'people'=> $exoneration["people"],
-                'date'=> $exoneration["date"],
-                'amount_hour' => $exoneration["amount_hour"],
-                'amount_people' => $exoneration["amount_people"],
-                //'service_place_id' => $place_id,
                 'service_place_name' => $exoneration["service_place_name"],
-                'tariff_hour' => $tariff_hour,
-                'tariff_people' => $tariff_people,
-                'not_charged_hour' => $not_charged_hour,
-                'not_charged_people' => $not_charged_people,
+                //'dependence_id' => $dependence_id,
+                'number_hour'=> $exoneration["number_hour"],
+                'number_people'=> $exoneration["number_people"],
+                'non_tariff_concept' => $exoneration["non_tariff_concept"],
+                'non_tariff_amount' => $exoneration["non_tariff_amount"],
+                'date_event'=> $exoneration["date_event"],
+                'is_tariffed' => $is_tariffed,
+                'tariff_amount' => $exoneration["tariff_amount"],
+                'total_amount' => $exoneration["total_amount"],
+                //'total_value' => $exoneration["total_value"],
                 'concept' => $exoneration["concept"],
-                'worth' => $exoneration["worth"],
-                'concept_amount' => $exoneration["concept_amount"],
+                'quantity' => $exoneration["quantity"],
+                'estimated_price' => $exoneration["estimated_price"], 
             ]);
-    }
+        }
 
     return response()->json([
         "status" => "success",
