@@ -81,7 +81,7 @@ import instrumentApi from "../apis/instrumentApi"
 import sectorApi from '../apis/sectorApi';
 import BaseInput from "./base-components/BaseInput.vue";
 import lib from "../libs/function";
-import { required, minLength, maxLength } from "vuelidate/lib/validators";
+import { required, minLength, maxLength, requiredIf } from "vuelidate/lib/validators";
 import axios from "axios";
 
 export default {
@@ -91,12 +91,6 @@ export default {
         recordsFiltered: [],
         editedIndex: -1,
         parameters: {
-            instrument_name: "",
-            sector_name: "",
-            dateOne: "",
-            dateTwo: "",
-        },
-        parametersDefault: {
             instrument_name: "",
             sector_name: "",
             dateOne: "",
@@ -116,7 +110,9 @@ export default {
     validations: {
         parameters: {
             instrument_name: {
-                required,
+                required: requiredIf(function (parameters) {
+                    return this.parameters.instrument_name != ""
+                }),
             },
             sector_name: {
                 required,
@@ -136,9 +132,6 @@ export default {
 
     methods: {
         async initialize() {
-            this.records = [];
-            this.recordsFiltered = [];
-
             let requests = [instrumentApi.get(), sectorApi.get()];
             let responses = await Promise.all(requests).catch((error) => {
                 this.updateAlert(true, "No fue posible obtener los registros.", "fail");
@@ -150,19 +143,17 @@ export default {
 
             this.instruments = responses[0].data.instruments;
             this.sectors = responses[1].data.sectors;
-            this.recordsFiltered = this.records;
         },
 
         async generateReport() {
             console.log(this.parameters);
             if(this.parameters){
                 window.open(`/pdf/reports?instrument_name=${this.parameters.instrument_name}&&sector_name=${this.parameters.sector_name}&&dateOne=${this.parameters.dateOne}&&dateTwo=${this.parameters.dateTwo}`);
+                this.parameters.instrument_name = '';
+                this.parameters.dateOne = '';
+                this.parameters.dateTwo = '';
                 return;
-                
             }
-            this.parameters.instrument_name = "";
-
-            this.$v.parameters.$reset();
         },
     },
 };

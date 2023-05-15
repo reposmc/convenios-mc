@@ -77,7 +77,7 @@
         </tbody>
     </table>
     <br>
-    @if($d->instrument_name == 'Convenio')
+    @if($d->type_instrument_name == 'Convenio')
         <table>
             <tbody> 
                 <tr>
