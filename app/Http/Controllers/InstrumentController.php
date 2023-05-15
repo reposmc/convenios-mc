@@ -25,44 +25,63 @@ class InstrumentController extends Controller
      */
     public function index(Request $request)
     {
-        $itemsPerPage = $request->itemsPerPage;
-        $skip = ($request->page - 1) * $request->itemsPerPage;
+        if($request->itemsPerPage == null || $request->itemsPerPage == null){
+            $instruments = Instrument::all();
 
-        // Getting all the records
-        if (($request->itemsPerPage == -1)) {
-            $itemsPerPage =  Instrument::count();
-            $skip = 0;
+            foreach ($instruments as $instrument)
+            {
+                $instrument->sector_name = Sector::find($instrument->sector_id)->sector_name;
+                $instrument->entity_name = Entity::find($instrument->entity_id)->entity_name;
+                $instrument->type_instrument_name = TypeInstrument::find($instrument->type_instrument_id)->type_instrument_name;
+            }
+
+            $instruments = Encrypt::encryptObject($instruments, "id");
+            
+            return response()->json([
+                "status"=>"success", 
+                "message"=>"Registro obtenido correctamente.", 
+                "instruments"=>$instruments]);
         }
+        else{
+            $itemsPerPage = $request->itemsPerPage;
+            $skip = ($request->page - 1) * $request->itemsPerPage;
 
-        $sortBy = (isset($request->sortBy[0])) ? $request->sortBy[0] : 'id';
-        $sort = (isset($request->sortDesc[0])) ? "asc" : 'desc';
+            // Getting all the records
+            if (($request->itemsPerPage == -1)) {
+                $itemsPerPage =  Instrument::count();
+                $skip = 0;
+            }
 
-        $search = (isset($request->search)) ? "%$request->search%" : '%%';
+            $sortBy = (isset($request->sortBy[0])) ? $request->sortBy[0] : 'id';
+            $sort = (isset($request->sortDesc[0])) ? "asc" : 'desc';
 
-        $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
-        
-        foreach ($instruments as $item) {
-            $item->assignedDependencies = InstrumentsDependeciesDetail::select(
-                'instruments_dependecies_detail.*',
-                'd.dependence_name'
-            )
-                ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
-                ->where('instrument_id', $item->id)->get()->pluck('dependence_name');
+            $search = (isset($request->search)) ? "%$request->search%" : '%%';
 
-            $item->assignedExonerations = [];
+            $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
+            
+            foreach ($instruments as $item) {
+                $item->assignedDependencies = InstrumentsDependeciesDetail::select(
+                    'instruments_dependecies_detail.*',
+                    'd.dependence_name'
+                )
+                    ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
+                    ->where('instrument_id', $item->id)->get()->pluck('dependence_name');
+
+                $item->assignedExonerations = [];
+            }
+
+            $instruments = Encrypt::encryptObject($instruments, "id");
+
+            $total = Instrument::counterPagination($search);
+
+            return response()->json([
+                "status" => 200,
+                "message" => "Registros obtenidos correctamente.",
+                "records" => $instruments,
+                "total" => $total,
+                "success" => true,
+            ]);
         }
-
-        $instruments = Encrypt::encryptObject($instruments, "id");
-
-        $total = Instrument::counterPagination($search);
-
-        return response()->json([
-            "status" => 200,
-            "message" => "Registros obtenidos correctamente.",
-            "records" => $instruments,
-            "total" => $total,
-            "success" => true,
-        ]);
     }
 
     /**

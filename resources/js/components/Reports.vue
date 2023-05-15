@@ -21,8 +21,8 @@
                     </v-col>
                     <!-- Instrument -->
                 </v-row>
-                <v-row class="mx-auto">
-                        <!-- Instrument -->
+                <!-- Sector -->
+                <!-- <v-row class="mx-auto">
                         <v-col cols="12" sm="12" md="12">
                             <base-select-search
                                 label="Sector"
@@ -31,9 +31,9 @@
                                 item="sector_name"
                                 :validation="$v.parameters.sector_name"
                             />
-                        </v-col>
-                        <!-- Instrument -->
-                    </v-row>
+                        </v-col>     
+                    </v-row> -->
+                 <!-- Sector -->
                 <v-row class="mx-auto">
                     <!-- Date -->
                         <v-col cols="12" sm="12" md="6" v-show="hidden"> 
@@ -77,12 +77,12 @@
 </template>
 
 <script>
-import instrumentApi from "../apis/instrumentApi";
+import instrumentApi from "../apis/instrumentApi"
+import sectorApi from '../apis/sectorApi';
 import BaseInput from "./base-components/BaseInput.vue";
 import lib from "../libs/function";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
 import axios from "axios";
-import sectorApi from '../apis/sectorApi';
 
 export default {
     components: { BaseInput },
@@ -91,6 +91,12 @@ export default {
         recordsFiltered: [],
         editedIndex: -1,
         parameters: {
+            instrument_name: "",
+            sector_name: "",
+            dateOne: "",
+            dateTwo: "",
+        },
+        parametersDefault: {
             instrument_name: "",
             sector_name: "",
             dateOne: "",
@@ -152,7 +158,11 @@ export default {
             if(this.parameters){
                 window.open(`/pdf/reports?instrument_name=${this.parameters.instrument_name}&&sector_name=${this.parameters.sector_name}&&dateOne=${this.parameters.dateOne}&&dateTwo=${this.parameters.dateTwo}`);
                 return;
+                
             }
+            this.parameters.instrument_name = "";
+
+            this.$v.parameters.$reset();
         },
     },
 };
