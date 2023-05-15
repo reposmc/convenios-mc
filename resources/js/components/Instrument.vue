@@ -656,6 +656,7 @@
                 color="btn-normal no-uppercase mt-3 mb-3 pr-5 pl-5 mx-auto"
                 rounded
                 @click="addExoneration()"
+                :disabled="!thereAreData"
               >
                 Guardar
               </v-btn>
@@ -958,6 +959,9 @@ export default {
       } else {
         return 0;
       }
+    },
+    thereAreData(){
+      return this.editedItem.assignedExonerations.length > 0;
     },
   },
 
