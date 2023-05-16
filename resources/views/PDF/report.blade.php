@@ -84,9 +84,10 @@
                     <th colspan="8">Exoneraciones</th>
                 </tr>
                 <tr >
-                    <td><strong>Espacio de servicio</strong></td>
+                    {{-- <td><strong>Espacio de servicio</strong></td> --}}
                     <td><strong>Fecha</strong></td>
-                    <td><strong>Descripción</strong></td>
+                    <td><strong>¿Tarifado?</strong></td>
+                    <td><strong>Descripción tarifada/No tarifada</strong></td>
                     <td><strong>Monto tarifado/No tarifado</strong></td>
                     <td><strong>Cantidad Horas/Personas</strong></td>
                     <td><strong>Total</strong></td>
@@ -94,9 +95,22 @@
 
                 @foreach($d->exonerations as $exo)
                     <tr>
-                        <td>{{ $exo->service_place_name }}</td>
+                        {{-- <td>{{ $exo->service_place_name }}</td> --}}
                         <td>{{ $exo->date_event }}</td>
-                        <td>{{ $exo->exonerated_description }}</td>
+
+                         <?php if($exo->is_tariffed == 0) { ?>
+                            <td> <?php echo 'No'; ?> </td>
+                        <?php } else { ?>
+                            <td> <?php echo 'Si'; ?> </td>
+                        <?php } ?>
+
+                        {{-- <td>{{ $exo->exonerated_description }}</td> --}}
+                        
+                        <?php if($exo->tariff_amount == 0) { ?>
+                            <td>{{ $exo->non_tariff_concept }}</td>
+                        <?php } else { ?>
+                            <td>{{ $exo->exonerated_description }}</td>
+                        <?php } ?> 
 
                         <?php if($exo->non_tariff_amount == 0) { ?>
                             <td>{{ $exo->tariff_amount }}</td>

@@ -25,7 +25,7 @@ class InstrumentController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->itemsPerPage == null || $request->itemsPerPage == null){
+        if($request->itemsPerPage == null || $request->itemsPerPage == ''){
             $instruments = Instrument::all();
 
             foreach ($instruments as $instrument)

@@ -7,6 +7,7 @@ use PDF;
 use DB;
 use App\Models\Exoneration;
 use App\Models\Instrument;
+use App\Models\Tariff;
 
 class PDFController extends Controller
 {
@@ -30,10 +31,6 @@ class PDFController extends Controller
                                 ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
                                 ->where('instruments.id', $instrument_id)
                                 ->get();
-
-           /*  $data = Exoneration::selectRaw('SUM(exonerations.exonerated_amount) AS Total')
-                    ->where('exonerations.agreement_id', $agreement_id)
-                    ->value('Total'); */
 
             foreach($data as $item){
                 $item->exonerations = Exoneration::select('exonerations.*')

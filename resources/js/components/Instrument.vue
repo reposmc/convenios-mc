@@ -1133,8 +1133,9 @@ export default {
     },
 
     deleteAssignedExoneration(index) {
-      this.editedItem.assignedExonerations.splice(index, 1);
-
+      //this.editedItem.assignedExonerations.splice(index, 1);
+      const deletedRow = this.editedItem.assignedExonerations.splice(index, 1)[0];
+      this.total_value -= deletedRow.total_amount;
     },
 
     assignDependency() {
