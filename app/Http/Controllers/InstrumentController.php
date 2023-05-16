@@ -67,7 +67,25 @@ class InstrumentController extends Controller
                     ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
                     ->where('instrument_id', $item->id)->get()->pluck('dependence_name');
 
-                $item->assignedExonerations = [];
+                //$item->assignedExonerations = [];
+                $item->assignedExonerations = Exoneration::select(
+                    'exonerations.date_event',
+                    'exonerations.service_place_name',
+                    DB::raw('CASE WHEN exonerations.is_tariffed = 1 THEN "Sí" ELSE "No" END AS is_tariffed'),
+                    'exonerations.concept',
+                    'exonerations.quantity',
+                    'exonerations.exonerated_description',
+                    'exonerations.estimated_price',
+                    //'exonerations.tariff_type_charge',
+                    'exonerations.non_tariff_concept',
+                    'exonerations.tariff_amount',
+                    'exonerations.non_tariff_amount',
+                    'exonerations.number_hour',
+                    'exonerations.number_people',
+                    'exonerations.total_amount')
+                    ->join('exonerations as e', 'exonerations.instrument_id', '=', 'e.id')
+                    //->join('tariffs as t', 'exonerations.tariff_type_charge', '=', 't.id')
+                    ->where('exonerations.instrument_id', $item->id)->get();
             }
 
             $instruments = Encrypt::encryptObject($instruments, "id");

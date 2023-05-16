@@ -41,7 +41,7 @@
     <div>
         <table>
             <tr>
-                <td><h3>DIRECCIÓN GENERAL DE COMUNICACIONES</h3></td>
+                <td><h3>DIRECCIÓN GENERAL DE RELACIONES INTERNACIONALES Y COOPERACIÓN</h3></td>
                 <td><img src="img/logo.jpg" width="200" height="130"></td>
             </tr>
         </table>

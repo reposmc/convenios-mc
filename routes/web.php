@@ -120,6 +120,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::resource('/api/web/dependence', DependenceController::class);
         Route::resource('/api/web/direction', NationalDirectionController::class);
         Route::resource('/api/web/sector', SectorController::class);
+        Route::resource('/api/web/exoneration', ExonerationController::class);
         Route::resource('/api/web/user', UserController::class);
         Route::resource('/api/web/role', RoleController::class);
 
