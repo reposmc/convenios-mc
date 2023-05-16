@@ -21,6 +21,7 @@ return new class extends Migration
             //$table->unsignedBigInteger('dependence_id')->constrained('dependences')->nullable();
             $table->integer('number_hour')->nullable();
             $table->integer('number_people')->nullable();
+            //$table->unsignedBigInteger('tariff_type_charge')->constrained('tariffs')->nullable();
             $table->string('non_tariff_concept')->nullable();
             $table->decimal('non_tariff_amount', 8, 2)->nullable();
             $table->date('date_event')->nullable();
@@ -28,7 +29,7 @@ return new class extends Migration
             //$table->unsignedBigInteger('tariff_id')->constrained('tariffs')->nullable();
             $table->decimal('tariff_amount', 8, 2)->nullable();
             $table->decimal('total_amount', 8, 2)->nullable();
-            $table->decimal('total_value', 8, 2)->nullable();
+            //$table->decimal('total_value', 8, 2)->nullable();
             $table->string('concept')->nullable();
             $table->integer('quantity')->nullable();
             $table->decimal('estimated_price', 8, 2)->nullable();

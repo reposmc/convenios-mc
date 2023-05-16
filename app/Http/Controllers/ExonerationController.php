@@ -33,9 +33,8 @@ class ExonerationController extends Controller
 
             $is_tariffed_response = $exoneration['is_tariffed'];
 
-            if($is_tariffed_response == null && $is_tariffed_response == ""){
-                $is_tariffed = null;
-            }else if($is_tariffed_response == "Sí"){
+            
+            if($is_tariffed_response == "Sí"){
                 $is_tariffed = 1;
             }else{
                 $is_tariffed = 0;

@@ -25,44 +25,84 @@ class InstrumentController extends Controller
      */
     public function index(Request $request)
     {
-        $itemsPerPage = $request->itemsPerPage;
-        $skip = ($request->page - 1) * $request->itemsPerPage;
+        if($request->itemsPerPage == null || $request->itemsPerPage == ''){
+            $instruments = Instrument::all();
 
-        // Getting all the records
-        if (($request->itemsPerPage == -1)) {
-            $itemsPerPage =  Instrument::count();
-            $skip = 0;
+            foreach ($instruments as $instrument)
+            {
+                $instrument->sector_name = Sector::find($instrument->sector_id)->sector_name;
+                $instrument->entity_name = Entity::find($instrument->entity_id)->entity_name;
+                $instrument->type_instrument_name = TypeInstrument::find($instrument->type_instrument_id)->type_instrument_name;
+            }
+
+            $instruments = Encrypt::encryptObject($instruments, "id");
+            
+            return response()->json([
+                "status"=>"success", 
+                "message"=>"Registro obtenido correctamente.", 
+                "instruments"=>$instruments]);
         }
+        else{
+            $itemsPerPage = $request->itemsPerPage;
+            $skip = ($request->page - 1) * $request->itemsPerPage;
 
-        $sortBy = (isset($request->sortBy[0])) ? $request->sortBy[0] : 'id';
-        $sort = (isset($request->sortDesc[0])) ? "asc" : 'desc';
+            // Getting all the records
+            if (($request->itemsPerPage == -1)) {
+                $itemsPerPage =  Instrument::count();
+                $skip = 0;
+            }
 
-        $search = (isset($request->search)) ? "%$request->search%" : '%%';
+            $sortBy = (isset($request->sortBy[0])) ? $request->sortBy[0] : 'id';
+            $sort = (isset($request->sortDesc[0])) ? "asc" : 'desc';
 
-        $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
-        
-        foreach ($instruments as $item) {
-            $item->assignedDependencies = InstrumentsDependeciesDetail::select(
-                'instruments_dependecies_detail.*',
-                'd.dependence_name'
-            )
-                ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
-                ->where('instrument_id', $item->id)->get()->pluck('dependence_name');
+            $search = (isset($request->search)) ? "%$request->search%" : '%%';
 
-            $item->assignedExonerations = [];
+            $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
+            
+            foreach ($instruments as $item) {
+                $item->assignedDependencies = InstrumentsDependeciesDetail::select(
+                    'instruments_dependecies_detail.*',
+                    'd.dependence_name'
+                )
+                    ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
+                    ->where('instrument_id', $item->id)->get()->pluck('dependence_name');
+
+                    $item->assignedExonerations = [];
+                    
+                /* $item->assignedExonerations = Exoneration::select(
+                    'exonerations.date_event',
+                    'exonerations.service_place_name',
+                    DB::raw('CASE WHEN exonerations.is_tariffed = 1 THEN "Sí" ELSE "No" END AS is_tariffed'),
+                    'exonerations.concept',
+                    'exonerations.quantity',
+                    'exonerations.exonerated_description',
+                    'exonerations.estimated_price',
+                    'exonerations.tariff_type_charge',
+                    'exonerations.non_tariff_concept',
+                    'exonerations.tariff_amount',
+                    'exonerations.non_tariff_amount',
+                    'exonerations.number_hour',
+                    'exonerations.number_people',
+                    'exonerations.total_amount',
+                )
+                    ->join('exonerations as e', 'exonerations.instrument_id', '=', 'e.id')
+                    //->join('tariffs as t', 'exonerations.tariff_type_charge', '=', 't.id')
+                    ->where('exonerations.instrument_id', $item->id)->get(); */
+            }
+            //dd($item);
+
+            $instruments = Encrypt::encryptObject($instruments, "id");
+
+            $total = Instrument::counterPagination($search);
+
+            return response()->json([
+                "status" => 200,
+                "message" => "Registros obtenidos correctamente.",
+                "records" => $instruments,
+                "total" => $total,
+                "success" => true,
+            ]);
         }
-
-        $instruments = Encrypt::encryptObject($instruments, "id");
-
-        $total = Instrument::counterPagination($search);
-
-        return response()->json([
-            "status" => 200,
-            "message" => "Registros obtenidos correctamente.",
-            "records" => $instruments,
-            "total" => $total,
-            "success" => true,
-        ]);
     }
 
     /**
