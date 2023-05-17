@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Exoneration extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = 'exonerations';
 
@@ -18,24 +18,22 @@ class Exoneration extends Model
 
     protected $fillable = [
         'id',
-        'exonerated_description',
         'instrument_id',
+        'date_event',
         'service_place_name',
-        //'dependence_id',
         'number_hour',
         'number_people',
         'non_tariff_concept',
+        'tariff_type_charge',
         'non_tariff_amount',
         'amount_people',
-        'date_event',
         'is_tariffed',
-        //'tariff_id',
         'tariff_amount',
         'total_amount',
-        //'total_value',
         'concept',
         'quantity',
         'estimated_price',
+        'exonerated_description',
     ];
 
     public $hidden = [
