@@ -39,18 +39,18 @@ class InstrumentController extends Controller
 
         $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
 
-
+        // dd($instruments);
         foreach ($instruments as $item) {
             $item->assignedDependencies = InstrumentsDependeciesDetail::select(
                 'instruments_dependecies_detail.*',
                 'd.dependence_name'
             )
                 ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
-                ->where('instrument_id', $item->id)->get()->pluck('dependence_name');
+                ->where('instrument_id', $item->instrument_id)->get()->pluck('dependence_name');
 
             // dd($item);
             $item->assignedExonerations = Exoneration::select('exonerations.*')
-                ->where('instrument_id', $item->id)
+                ->where('instrument_id', $item->instrument_id)
                 ->get();
 
             foreach ($item->assignedExonerations as  $value) {
