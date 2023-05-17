@@ -273,174 +273,6 @@
       </template>
     </v-data-table>
 
-    <!-- view Exonerations -->
-    <template>
-      <v-dialog v-model="viewExonerations" max-width="1400px" persistent>
-        <v-card class="flexcard" height="100%">
-          <h1 class="black-secondary text-center mt-4 mb-4">Exoneraciones</h1>
-          <v-card-text>
-            <v-container>
-              <h5>Detalle del instrumento</h5>
-              <v-divider></v-divider>
-              <v-form disabled>
-                <v-row>
-                  <!-- instrument_name -->
-                  <v-col cols="12" sm="12" md="4">
-                    <base-input
-                      label="Nombre"
-                      v-model="$v.editedItem.instrument_name.$model"
-                      :validation="$v.editedItem.instrument_name"
-                      validationTextType="default"
-                    />
-                  </v-col>
-                  <!-- instrument_name -->
-                  <!-- type_instrument_name -->
-                  <v-col cols="12" sm="12" md="4">
-                    <base-input
-                      label="Tipo de instrumento"
-                      v-model.trim="$v.editedItem.type_instrument_name.$model"
-                      :items="types"
-                      item="type_instrument_name"
-                      :validation="$v.editedItem.type_instrument_name"
-                    />
-                  </v-col>
-                  <!-- type_instrument_name -->
-                </v-row>
-              </v-form>
-            </v-container>
-            <v-row>
-              <v-col cols="12" lg="12" md="12" xs="12">
-                <!-- Academic Level -->
-                <div class="table-responsive-md">
-                  <v-simple-table class="mt-2">
-                    <thead>
-                      <tr>
-                        <th>Fecha</th>
-                        <th
-                          v-if="editedItem.type_instrument_name == 'Convenio'"
-                        >
-                          Espacio
-                        </th>
-                        <th
-                          v-if="editedItem.type_instrument_name == 'Convenio'"
-                        >
-                          ¿Tarifado?
-                        </th>
-                        <th
-                          v-if="editedItem.type_instrument_name != 'Convenio'"
-                        >
-                          Concepto
-                        </th>
-                        <th
-                          v-if="editedItem.type_instrument_name != 'Convenio'"
-                        >
-                          Cantidad
-                        </th>
-                        <th>Descripción</th>
-                        <th
-                          v-if="editedItem.type_instrument_name == 'Convenio'"
-                        >
-                          Descripción Tarifada/No tarifada
-                        </th>
-                        <th
-                          v-if="editedItem.type_instrument_name == 'Convenio'"
-                        >
-                          Monto Tarifado/No tarifado
-                        </th>
-                        <th
-                          v-if="editedItem.type_instrument_name == 'Convenio'"
-                        >
-                          Cant. Alquiler/Personas
-                        </th>
-
-                        <th
-                          v-if="editedItem.type_instrument_name != 'Convenio'"
-                        >
-                          Precio estimado
-                        </th>
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr
-                        v-for="(
-                          assigned, index
-                        ) in editedItem.assignedExonerations"
-                        :key="index"
-                      >
-                        <td>
-                          {{ assigned.date_event }}
-                        </td>
-                        <td
-                          v-if="editedItem.type_instrument_name == 'Convenio'"
-                        >
-                          {{ assigned.service_place_name }}
-                        </td>
-                        <td
-                          v-if="editedItem.type_instrument_name == 'Convenio'"
-                        >
-                          {{ assigned.is_tariffed }}
-                        </td>
-                        <td
-                          v-if="editedItem.type_instrument_name != 'Convenio'"
-                        >
-                          {{ assigned.concept }}
-                        </td>
-                        <td
-                          v-if="editedItem.type_instrument_name != 'Convenio'"
-                        >
-                          {{ assigned.quantity }}
-                        </td>
-                        <td>
-                          {{ assigned.exonerated_description }}
-                        </td>
-                        <td
-                          v-if="editedItem.type_instrument_name != 'Convenio'"
-                        >
-                          {{ assigned.estimated_price }}
-                        </td>
-                        <td
-                          v-if="editedItem.type_instrument_name == 'Convenio'"
-                        >
-                          {{ assigned.tariff_type_charge }}
-                          {{ assigned.non_tariff_concept }}
-                        </td>
-                        <td
-                          v-if="editedItem.type_instrument_name == 'Convenio'"
-                        >
-                          {{ assigned.tariff_amount }}
-                          {{ assigned.non_tariff_amount }}
-                        </td>
-                        <td
-                          v-if="editedItem.type_instrument_name == 'Convenio'"
-                        >
-                          {{ assigned.number_hour }}
-                          {{ assigned.number_people }}
-                        </td>
-                        <td>${{ assigned.total_amount }}</td>
-                      </tr>
-                    </tbody>
-                  </v-simple-table>
-                </div>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col align="center">
-                <v-btn
-                  color="btn-normal-close no-uppercase mt-3 mb-3"
-                  rounded
-                  @click="closeViewExonerations"
-                >
-                  Cerrar
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-    </template>
-    <!-- view Exonerations -->
-
     <v-dialog v-model="dialogExoneration" max-width="900px">
       <v-card class="h-100 p-3">
         <v-container>
@@ -816,7 +648,7 @@
               <!-- body -->
             </v-simple-table>
             <!-- total table -->
-            <!-- <div
+            <div
               style="
                 display: flex;
                 justify-content: space-between;
@@ -827,8 +659,8 @@
               <span colspan="6" class="fw-bold">
                 Total de exoneraciones por instrumento:
               </span>
-              <span class="fw-bold">${{ this.total_value }}</span>
-            </div> -->
+              <span class="fw-bold">${{ total_value }}</span>
+            </div>
             <!-- total table -->
             <!-- table exoneration  -->
           </template>
@@ -927,7 +759,6 @@ export default {
       dialogExoneration: false,
       dialogCloseConfirm: false,
       dialogDelete: false,
-      viewExonerations: false,
       headers: [
         { text: "INSTRUMENTO", value: "instrument_name" },
         { text: "TIPO DE INSTRUMENTO", value: "type_instrument_name" },
@@ -1201,9 +1032,6 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete();
     },
-    viewExonerations(val) {
-      val || this.closeViewExonerations();
-    },
   },
 
   created() {
@@ -1222,10 +1050,8 @@ export default {
         directionApi.get(),
         entityApi.get(),
         sectorApi.get(),
-        // roleApi.post(`/userRole`),
         userApi.post("/actualUser"),
         dependenceApi.get(),
-        // dependenceApi.post(`/dependenciesByUser`),
       ];
       let responses = await Promise.all(requests).catch((error) => {
         this.updateAlert(true, "No fue posible obtener los registros.", "fail");
@@ -1235,7 +1061,6 @@ export default {
         );
       });
 
-      //console.log(responses);
       this.types = responses[1].data.types;
       this.directions = responses[2].data.directions;
       this.entities = responses[3].data.entities;
@@ -1344,7 +1169,6 @@ export default {
       });
 
       this.dialogCloseConfirm = false;
-      this.total_value = 0;
       this.$v.formExonerations.$reset();
       this.dialogExoneration = false;
     },
@@ -1357,24 +1181,6 @@ export default {
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogExoneration = true;
-    },
-
-    viewExonerationItem(item) {
-      this.viewExonerations = true;
-      this.editedIndex = this.recordsFiltered.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-
-      this.$v.editedItem.type_agreement_name.$model =
-        this.editedItem.type_agreement_name;
-      this.$v.editedItem.entity_name.$model = this.editedItem.entity_name;
-    },
-
-    closeViewExonerations() {
-      this.viewExonerations = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
     },
 
     async changeDirection() {
@@ -1457,7 +1263,7 @@ export default {
 
     closeReset() {
       this.dialogExoneration = false;
-      this.total_value = 0;
+      // this.total_value = 0;
     },
 
     async addExoneration() {
@@ -1525,20 +1331,18 @@ export default {
           this.formExonerations.estimated_price;
       }
 
-      //total table
-      this.total_value += this.formExonerations.total_amount;
-
       //push
       this.editedItem.assignedExonerations.push({
         ...this.formExonerations,
       });
+
+      this.calculateTotalValue();
 
       //clear inputs
       this.formExonerations.concept = "";
       this.formExonerations.quantity = "";
       this.formExonerations.estimated_price = "";
       this.formExonerations.dependence_name = "";
-      // this.formExonerations.date_event = "";
       this.formExonerations.service_place_name = "";
       this.formExonerations.is_tariffed = false;
       this.formExonerations.non_tariff_concept = "";
@@ -1555,11 +1359,8 @@ export default {
     },
 
     deleteAssignedExoneration(index) {
-      const deletedRow = this.editedItem.assignedExonerations.splice(
-        index,
-        1
-      )[0];
-      this.total_value -= deletedRow.total_amount;
+      this.editedItem.assignedExonerations.splice(index, 1);
+      this.calculateTotalValue();
     },
 
     assignDependency() {
@@ -1584,6 +1385,13 @@ export default {
 
     clearAssignedDependency() {
       this.editedItem.assignedDependencies.splice(0);
+    },
+
+    calculateTotalValue() {
+      this.total_value = 0;
+      this.editedItem.assignedExonerations.forEach((element) => {
+        this.total_value += element.total_amount;
+      });
     },
 
     updateAlert(show = false, text = "Alerta", event = "success") {
