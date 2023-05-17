@@ -29,10 +29,10 @@ class ExonerationController extends Controller
     {
         $instrument_id = Encrypt::decryptValue($request->id);
 
+        //Delete existing records
         Exoneration::where('instrument_id', $instrument_id)->delete();
 
         $exonerations = $request->assignedExonerations;
-
 
         foreach ($exonerations as $exoneration) {
 
