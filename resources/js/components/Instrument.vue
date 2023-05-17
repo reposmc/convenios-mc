@@ -659,7 +659,7 @@
               <span colspan="6" class="fw-bold">
                 Total de exoneraciones por instrumento:
               </span>
-              <span class="fw-bold">${{ total_value }}</span>
+              <span class="fw-bold">$ {{ total_value.toFixed(2) }}</span>
             </div>
             <!-- total table -->
             <!-- table exoneration  -->
@@ -1180,6 +1180,7 @@ export default {
     addNewExoneration(item) {
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
+      this.calculateTotalValue();
       this.dialogExoneration = true;
     },
 
@@ -1263,7 +1264,6 @@ export default {
 
     closeReset() {
       this.dialogExoneration = false;
-      // this.total_value = 0;
     },
 
     async addExoneration() {
@@ -1390,7 +1390,7 @@ export default {
     calculateTotalValue() {
       this.total_value = 0;
       this.editedItem.assignedExonerations.forEach((element) => {
-        this.total_value += element.total_amount;
+        parseFloat((this.total_value += element.total_amount));
       });
     },
 
