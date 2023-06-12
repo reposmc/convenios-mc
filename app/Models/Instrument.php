@@ -47,6 +47,8 @@ class Instrument extends Model
                     ->pluck('dependency_id')
                     ->toArray();
 
+                // dd($userDependencies);
+
                 return InstrumentsDependeciesDetail::select(
                     'dependency_id',
                     'inst.*',
@@ -68,7 +70,7 @@ class Instrument extends Model
                     ->orderBy("inst.$sortBy", $sort)
                     ->get();
             } else {
-                return Instrument::select('instruments.*', 'ti.type_instrument_name', 'e.entity_name', 's.sector_name')
+                return Instrument::select('instruments.*', 'ti.type_instrument_name', 'e.entity_name', 's.sector_name', 'instruments.id as instrument_id')
                     ->join('type_instruments as ti', 'instruments.type_instrument_id', '=', 'ti.id')
                     ->join('entities as e', 'instruments.entity_id', '=', 'e.id')
                     ->join('sectors as s', 'instruments.sector_id', '=', 's.id')
@@ -84,7 +86,7 @@ class Instrument extends Model
 
     public static function counterPagination($search)
     {
-        return Instrument::select('instruments.*', 'ti.type_instrument_name', 'e.entity_name', 's.sector_name')
+        return Instrument::select('instruments.*', 'ti.type_instrument_name', 'e.entity_name', 's.sector_name', 'instruments.id as instrument_id')
             ->join('type_instruments as ti', 'instruments.type_instrument_id', '=', 'ti.id')
             ->join('entities as e', 'instruments.entity_id', '=', 'e.id')
             ->join('sectors as s', 'instruments.sector_id', '=', 's.id')

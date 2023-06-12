@@ -15,24 +15,22 @@ return new class extends Migration
     {
         Schema::create('exonerations', function (Blueprint $table) {
             $table->id();
-            $table->string('exonerated_description')->nullable();
-            $table->foreignId('instrument_id')->constrained('instruments')->nullable();
+            $table->foreignId('instrument_id')->constrained('instruments');
+            $table->date('date_event');
             $table->string('service_place_name')->nullable();
-            //$table->unsignedBigInteger('dependence_id')->constrained('dependences')->nullable();
             $table->integer('number_hour')->nullable();
             $table->integer('number_people')->nullable();
             $table->string('non_tariff_concept')->nullable();
-            $table->decimal('non_tariff_amount', 8, 2)->nullable();
-            $table->date('date_event')->nullable();
-            $table->tinyInteger('is_tariffed')->nullable()->comment('0 = No Tarifado, 1 = Tarifado');
-            //$table->unsignedBigInteger('tariff_id')->constrained('tariffs')->nullable();
-            $table->decimal('tariff_amount', 8, 2)->nullable();
-            $table->decimal('total_amount', 8, 2)->nullable();
-            //$table->decimal('total_value', 8, 2)->nullable();
+            $table->string('tariff_type_charge')->nullable();
+            $table->double('non_tariff_amount', 8, 2)->nullable()->default(null);
+            $table->tinyInteger('is_tariffed')->nullable()->comment('0 = Tarifado, 1 = No Tarifado')->default(null);
+            $table->double('tariff_amount', 8, 2)->nullable()->default(null);
+            $table->double('total_amount', 8, 2)->nullable()->default(null);
             $table->string('concept')->nullable();
             $table->integer('quantity')->nullable();
-            $table->decimal('estimated_price', 8, 2)->nullable();
-            $table->softDeletes();
+            $table->double('estimated_price', 8, 2)->nullable()->default(null);
+            $table->string('exonerated_description')->nullable();
+            // $table->softDeletes();
             $table->timestamps();
         });
     }

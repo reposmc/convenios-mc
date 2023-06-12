@@ -58,6 +58,17 @@
                 </li>
                 <!-- Agreement -->
 
+                 <!-- manual -->
+                <li class="text-center pb-1">
+                    <a target="_blank" href="{{asset('img/ManualDeUsuario.pdf')}}" class="text-center">
+                        <i class="material-icons md-18 mx-auto">book</i>
+                    </a>
+                    <a target="_blank" href="{{asset('img/ManualDeUsuario.pdf')}}">
+                        <p class="link mx-auto">Manual</p>
+                    </a>
+                </li>
+                <!-- manual -->
+
                 @if (auth()->user()->hasRole('Administrador') == 'Administrador')
                 <!-- report -->
                 <li class="text-center pb-1">
@@ -87,7 +98,7 @@
                         <li><a href="{{ url('/entities') }}">Entidades</a></li>
                         <li><a href="{{ url('/dependences') }}">Dependencias</a></li>
                         <li><a href="{{ url('/tariffs') }}">Tarifario</a></li>
-                        <li><a href="{{ url('/types') }}">Tipos de instrumentos</a></li>
+                        <li><a href="{{ url('/types') }}">Tipos de instrumento</a></li>
                         <li><a href="{{ url('/sectors') }}">Sectores</a></li>
                         <li><a href="{{ url('/users') }}">Usuarios</a></li>
                         {{-- <li><a href="{{ url('/departments ') }}">Departamentos</a></li> --}}
@@ -164,11 +175,11 @@
                             <!-- Institution Name -->
                             <div class=" col-sm-4 col-md-6 d-none d-md-block d-lg-block d-xl-block">
                                 <div class="col-4 col-sm-12">
-                                    <a class="navbar-brand" href="{{ url('/') }}">
+                                    {{-- <a class="navbar-brand" href="{{ url('/') }}"> --}}
                                         <h3 class="pt-4 fw-bold color-secondary mb-0">Sistema de
                                             Desarrollo Cooperación
                                         </h3>
-                                    </a>
+                                    {{-- </a> --}}
                                 </div>
                             </div>
                             <!-- Institution Name -->

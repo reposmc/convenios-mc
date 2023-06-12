@@ -19,6 +19,9 @@ class Entity extends Model
     protected $fillable = [
         'id',
         'entity_name',
+        'representative_name',
+        'phone',
+        'mail',
     ];
 
     public $hidden = [

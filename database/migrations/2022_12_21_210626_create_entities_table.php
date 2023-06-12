@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('entities', function (Blueprint $table) {
             $table->id();
             $table->string('entity_name');
-            $table->string('num_ent');
+            $table->string('representative_name')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('mail')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

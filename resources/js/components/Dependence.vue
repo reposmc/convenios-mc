@@ -77,16 +77,10 @@
                       <!-- Municipality Name-->
                       <v-col cols="12" sm="6" md="6">
                         <base-input
-                          label="Nombre lugar"
+                          label="Nombre"
                           v-model="$v.editedItem.dependence_name.$model"
                           :validation="$v.editedItem.dependence_name"
                           validationTextType="default"
-                          :validationsInput="{
-                            required: true,
-                            format: false,
-                            minLength: true,
-                            maxLength: true,
-                          }"
                         />
                       </v-col>
                       <!-- Municipality Name-->
@@ -144,8 +138,22 @@
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-          <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+          <v-tooltip bottom>
+            <template #activator="{ on }">
+              <v-btn icon v-on="on">
+                <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+              </v-btn>
+            </template>
+            <span>Editar</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ on }">
+              <v-btn icon v-on="on">
+                <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+              </v-btn>
+            </template>
+            <span>Eliminar</span>
+          </v-tooltip>
         </template>
         <template v-slot:no-data>
           <a
@@ -190,7 +198,7 @@
       textAlert: "",
       alertEvent: "success",
       showAlert: false,
-      departments: [],
+      directions: [],
       redirectSessionFinished: false,
       alertTimeOut: 0,
     }),
@@ -205,6 +213,8 @@
         },
         national_direction_name: {
           required,
+          minLength: minLength(1),
+          maxLength: maxLength(150),
         },
       },
     },
@@ -291,8 +301,6 @@
         
         this.initialize();
         this.closeDelete();
-
-        this.activateAlert();
       },
   
       close() {
@@ -314,8 +322,8 @@
       },
   
       async save() {
-        this.$v.$touch();
-        if (this.$v.$invalid || this.editedItem.national_direction_name == "") {
+        this.$v.editedItem.$touch();
+        if (this.$v.editedItem.$invalid) {
           this.updateAlert(true, "Campos obligatorios.", "fail");
           return;
         }
@@ -345,9 +353,17 @@
             .catch((error) => {
               this.updateAlert(true, "No fue posible crear el registro.", "fail");
               this.close();
+              this.redirectSessionFinished = lib.verifySessionFinished(
+                error.response.status,
+                419
+              );
             });
   
           if (res.data.status == "success") {
+            this.redirectSessionFinished = lib.verifySessionFinished(
+              res.status,
+              200
+            );
             this.updateAlert(
               true,
               "Registro almacenado correctamente.",
@@ -356,6 +372,7 @@
           }
         }
         this.close();
+        this.$v.editedItem.$reset();
         this.initialize();
         return;
       },

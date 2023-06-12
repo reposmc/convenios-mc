@@ -13,6 +13,7 @@ use App\Http\Controllers\DependenceController;
 use App\Http\Controllers\ExonerationController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PDFController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -68,5 +69,6 @@ Route::group(
         Route::resource('/sector', SectorController::class);
         Route::resource('/dependence', DependenceController::class);
         Route::resource('/role', RoleController::class);
+        Route::resource('/reports', PDFController::class);
     }
 );

@@ -51,6 +51,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::resource('/api/web/sector', SectorController::class);
         Route::resource('/api/web/user', UserController::class);
         Route::resource('/api/web/role', RoleController::class);
+        Route::resource('/api/web/reports', PDFController::class);
 
         Route::post('/api/web/user/actualUser', [UserController::class, 'actualUser']);
 
@@ -147,5 +148,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
 Route::get('/api/web/tariff/byTariffTypeCharge/{tariffTypeCharge}', [TariffController::class, 'byTariffTypeCharge']);
 Route::get('api/web/tariff/byDependencyName/{dependencies}', [TariffController::class, 'byDependencyName']);
+Route::get('api/web/exonerations/byEntityName/{entity_name}', [ExonerationController::class, 'filterByEntity']);
+/* Route::get('api/web/exoneration/byEntityName/{entity_name}', [ExonerationController::class, 'filterByEntity']); */
 
 Route::post('import', [ExcelController::class, 'import']);

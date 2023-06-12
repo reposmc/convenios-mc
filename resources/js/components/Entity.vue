@@ -54,7 +54,7 @@
                 </v-row>
               </template>
               
-              <v-card class="flexcard" height="100%">
+              <v-card class="flexcard" height="150%">
                 <v-card-title>
                   <h1 class="mx-auto pt-3 mb-3 text-center black-secondary">
                     {{ formTitle }}
@@ -65,37 +65,48 @@
                   <v-container>
                     <!-- Form -->
                     <v-row>
-                      <!-- Code Entity -->
-                      <v-col cols="12" sm="12" md="4">
+                      <v-col cols="12" sm="12" md="6">
                         <base-input
-                          label="Número de registro"
-                          v-model="$v.editedItem.num_ent.$model"
-                          :validation="$v.editedItem.num_ent"
-                          validationTextType="number"
-                          :validationsInput="{
-                            required: true,
-                            minLength: true,
-                            maxLength: true,
-                          }"
-                        />
-                      </v-col>
-                      <!-- Code Entity -->
-                      <!-- Entity Name -->
-                      <v-col cols="12" sm="12" md="8">
-                        <base-input
-                          label="Nombre"
+                          label="Nombre de la entidad"
                           v-model="$v.editedItem.entity_name.$model"
                           :validation="$v.editedItem.entity_name"
                           validationTextType="default"
-                          :validationsInput="{
-                            required: true,
-                            minLength: true,
-                            maxLength: true,
-                          }"
                         />
                       </v-col>
-                      <!-- Department Name -->
+                      <v-col cols="12" sm="12" md="6">
+                          <base-input
+                            label="Representante"
+                            v-model="$v.editedItem.representative_name.$model"
+                            :validation="$v.editedItem.representative_name"
+                            validationTextType="default"
+                          />
+                        </v-col>
                     </v-row>
+                    <v-row>
+                        <!-- Entity Name -->
+                        <v-col cols="12" sm="12" md="6">
+                          <base-input
+                            label="Teléfono"
+                            v-model="$v.editedItem.phone.$model"
+                            :validation="$v.editedItem.phone"
+                            type="number"
+                            mask="########"
+                          />
+                        </v-col>
+                        <v-col cols="12" sm="12" md="6">
+                            <base-input
+                              label="Correo Electrónico"
+                              v-model="$v.editedItem.mail.$model"
+                              :validation="$v.editedItem.mail"
+                              validationTextType="none"
+                              :validationsInput="{
+                                required: true,
+                                email: true,
+                              }"
+                            />
+                          </v-col>
+                        <!-- Department Name -->
+                      </v-row>
                     <!-- Form -->
                     <v-row>
                       <v-col align="center">
@@ -149,8 +160,22 @@
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-          <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+          <v-tooltip bottom>
+            <template #activator="{ on }">
+              <v-btn icon v-on="on">
+                <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+              </v-btn>
+            </template>
+            <span>Editar</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ on }">
+              <v-btn icon v-on="on">
+                <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+              </v-btn>
+            </template>
+            <span>Eliminar</span>
+          </v-tooltip>
         </template>
         <template v-slot:no-data>
           <a
@@ -168,7 +193,7 @@
   <script>
   import entityApi from "../apis/entityApi";
   import lib from "../libs/function";
-  import { required, minLength, maxLength } from "vuelidate/lib/validators";
+  import { required, minLength, maxLength, email, } from "vuelidate/lib/validators";
   
   export default {
     data: () => ({
@@ -176,8 +201,10 @@
       dialog: false,
       dialogDelete: false,
       headers: [
-        { text: "NÚMERO DE REGISTRO", value: "num_ent" },
         { text: "NOMBRE", value: "entity_name" },
+        { text: "REPRESENTANTE", value: "representative_name" },
+        { text: "TELÉFONO", value: "phone" },
+        { text: "CORREO ELECTRÓNICO", value: "mail" },
         { text: "ACCIONES", value: "actions", sortable: false },
       ],
       records: [],
@@ -185,11 +212,15 @@
       editedIndex: -1,
       editedItem: {
         entity_name: "",
-        num_ent: 0,
+        representative_name: "",
+        phone: "",
+        mail: "",
       },
       defaultItem: {
         entity_name: "",
-        num_ent: 0,
+        representative_name: "",
+        phone: "",
+        mail: "",
       },
       textAlert: "",
       alertEvent: "success",
@@ -206,10 +237,19 @@
           minLength: minLength(1),
           maxLength: maxLength(150),
         },
-        num_ent: {
+        representative_name: {
           required,
           minLength: minLength(1),
           maxLength: maxLength(150),
+        },
+        phone: {
+          required,
+          minLength: minLength(1),
+          maxLength: maxLength(150),
+        },
+        mail: {
+          required,
+          email,
         },
       },
     },
