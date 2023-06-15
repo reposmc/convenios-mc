@@ -108,12 +108,12 @@ class DependenceSeeder extends Seeder
         ],
         [
             "id" => 19,
-            "dependence_name" => "Parque Infantil de Diversiones",
+            "dependence_name" => "Parque Recreativo Infantil de Diversiones",
             "national_direction_id" => 3,
         ],
         [
             "id" => 20,
-            "dependence_name" => "Parque Zoológico Nacional -Resguardo y Conservación de Fauna Silvestre-",
+            "dependence_name" => "Parque Zoológico Nacional - Resguardo y Conservación de Fauna Silvestre-",
             "national_direction_id" => 3,
         ],
         [
@@ -289,6 +289,26 @@ class DependenceSeeder extends Seeder
         [
             "id" => 55,
             "dependence_name" => "Parque Arqueológico Joya de Cerén",
+            "national_direction_id" => 6,
+        ],
+        [
+            "id" => 56,
+            "dependence_name" => "Parque Arqueológico San Andres",
+            "national_direction_id" => 6,
+        ],
+        [
+            "id" => 57,
+            "dependence_name" => "Parque Arqueológico Casa Blanca",
+            "national_direction_id" => 6,
+        ],
+        [
+            "id" => 58,
+            "dependence_name" => "Parque Arqueológico Tazumal",
+            "national_direction_id" => 6,
+        ],
+        [
+            "id" => 59,
+            "dependence_name" => "Parque Arqueológico Cihuatán",
             "national_direction_id" => 6,
         ],
         ]);
