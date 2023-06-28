@@ -3,21 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use PDF;
-use DB;
-use Encrypt;
 use App\Models\Exoneration;
 use App\Models\Instrument;
 use App\Models\NationalDirection;
 use App\Models\Sector;
 use App\Models\Tariff;
 use App\Models\Entity;
+use Encrypt;
+use PDF;
+use DB;
 
 class PDFController extends Controller
 {
     public function index()
     {
-        $nationals = NationalDirection::all();
+        /* $nationals = NationalDirection::all();
 
         $nationals = Encrypt::encryptObject($nationals, 'id');
 
@@ -25,7 +25,24 @@ class PDFController extends Controller
             "status"=>"success",
             "message"=>"Registros obtenidos correctamente.",
             'nationals'=>$nationals
-        ]);
+        ]); */
+        $nationals = NationalDirection::all();
+        $instruments = Instrument::all();
+        $entities = Entity::all();
+
+        $nationals = Encrypt::encryptObject($nationals, 'id');
+        $instruments = Encrypt::encryptObject($instruments, 'id');
+        $entities = Encrypt::encryptObject($entities, 'id');
+
+        $response = [
+            "status" => "success",
+            "message" => "Registros obtenidos correctamente.",
+            'nationals' => $nationals,
+            'instruments' => $instruments,
+            'entities' => $entities
+        ];
+
+        return response()->json($response);
     }
 
     /**
@@ -35,78 +52,112 @@ class PDFController extends Controller
     */
     public function generatePDF(Request $request)
     {
+
         //dd($request);
-        //dd($data);
-            $entity_id = Entity::where("entity_name", $request->entity_name)->first()->id;
-            $entity_name = Entity::where("entity_name", $request->entity_name)->first()->entity_name;
-            
-            $date = $request->all();
-            
-            if($request->service_place_name == NULL || $request->service_place_name == ''){
+        
+        if($request->kind_of_report == "General"){
 
-                $national_direction_id = NationalDirection::where("national_direction_name", $request->national_direction_name)->first()->id;
-                $national_direction_name = NationalDirection::where("national_direction_name", $request->national_direction_name)->first()->national_direction_name;
-
-                $data = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'sectors.sector_name', 'entities.entity_name')
-                                ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
-                                ->join('entities', 'instruments.entity_id', '=', 'entities.id')
-                                ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
-                                ->join('instruments_dependecies_detail', 'instruments.id', '=', 'instruments_dependecies_detail.instrument_id')
-                                ->join('dependences', 'instruments_dependecies_detail.dependency_id', '=', 'dependences.id')
-                                ->join('national_directions', 'dependences.national_direction_id', '=', 'national_directions.id')
-                                ->where('national_directions.id', $national_direction_id)
-                                ->where('instruments.entity_id', $entity_id)
-                                ->distinct()
-                                ->get();
-
-                foreach($data as $item){
-                    
-                    $item->exonerations = Exoneration::select('exonerations.*')
-                                ->where('exonerations.instrument_id', $item->id)
-                                ->whereRaw("(exonerations.date_event = ?)", [$date['dateOne']])
-                                ->get(); 
-
-                    $item->total = Exoneration::selectRaw('SUM(exonerations.total_amount) AS Total')
-                                                ->where('exonerations.instrument_id', $item->id)
-                                                ->value('Total');
-                } 
-
-                $pdf = PDF::loadView('PDF.report', compact('data','national_direction_name'));
-                return $pdf->setPaper('a4', 'landscape')->stream('report-'.now().'.pdf');
-
-        } else {
-            $service_place_name = $request->service_place_name;
+            $instrument_name = NULL;
             $national_direction_name = NULL;
+            $date = $request->all();
+            $kind_of_report = $request->kind_of_report;
 
-            $data = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'sectors.sector_name', 'national_directions.national_direction_name')
-                                ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
-                                ->join('entities', 'instruments.entity_id', '=', 'entities.id')
-                                ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
-                                ->join('instruments_dependecies_detail', 'instruments.id', '=', 'instruments_dependecies_detail.instrument_id')
-                                ->join('dependences', 'instruments_dependecies_detail.dependency_id', '=', 'dependences.id')
-                                ->join('national_directions', 'dependences.national_direction_id', '=', 'national_directions.id')
-                                ->join('exonerations', 'exonerations.instrument_id', '=', 'instruments.id')
-                                ->where('instruments.entity_id', $entity_id)
-                                ->where('exonerations.service_place_name', $service_place_name)
-                                ->orWhere('exonerations.concept', $service_place_name)
-                                ->distinct()
-                                ->get();
-     
+            $data = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'sectors.sector_name', 'national_directions.national_direction_name', 'entities.entity_name')
+                            ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
+                            ->join('entities', 'instruments.entity_id', '=', 'entities.id')
+                            ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
+                            ->join('instruments_dependecies_detail', 'instruments.id', '=', 'instruments_dependecies_detail.instrument_id')
+                            ->join('dependences', 'instruments_dependecies_detail.dependency_id', '=', 'dependences.id')
+                            ->join('national_directions', 'dependences.national_direction_id', '=', 'national_directions.id')
+                            ->distinct()
+                            ->orderBy('national_directions.national_direction_name', 'asc')
+                            ->groupBy('national_directions.national_direction_name', 'entities.entity_name')
+                            ->get();
+
             foreach($data as $item){
-                
                 $item->exonerations = Exoneration::select('exonerations.*')
                             ->where('exonerations.instrument_id', $item->id)
-                            ->whereRaw("(exonerations.date_event = ?)", [$date['dateOne']])
+                            ->whereRaw("(exonerations.date_event >= ? AND exonerations.date_event <= ?)", [$date['dateOne'], $date['dateTwo']])
+                            ->distinct()
                             ->get(); 
-                
-                $item->total = Exoneration::selectRaw('SUM(exonerations.total_amount) AS Total')
-                                            ->where('exonerations.instrument_id', $item->id)
-                                            ->value('Total');
-            } 
-            
-            $pdf = PDF::loadView('PDF.report', compact('data','national_direction_name'));
 
+                $item->totalAmount = Exoneration::selectRaw('SUM(exonerations.total_amount) AS Total')
+                            ->where('exonerations.instrument_id', $item->id)
+                            ->whereRaw("(exonerations.date_event >= ? AND exonerations.date_event <= ?)", [$date['dateOne'], $date['dateTwo']])
+                            ->value('Total'); 
+            } 
+
+            $pdf = PDF::loadView('PDF.report', compact('data','instrument_name','national_direction_name','kind_of_report'));
             return $pdf->setPaper('a4', 'landscape')->stream('report-'.now().'.pdf');
-        }
+
+        } else if($request->instrument_name == NULL || $request->instrument_name == ''){
+
+                $instrument_name = NULL;
+                $entity_name = NULL;
+                $date = $request->all();
+                $national_id = NationalDirection::where("national_direction_name", $request->national_direction_name)->first()->id;
+                $national_direction_name = $request->national_direction_name;
+                $kind_of_report = NULL;
+
+                $data = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'sectors.sector_name', 'national_directions.national_direction_name', 'entities.entity_name')
+                                    ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
+                                    ->join('entities', 'instruments.entity_id', '=', 'entities.id')
+                                    ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
+                                    ->join('instruments_dependecies_detail', 'instruments.id', '=', 'instruments_dependecies_detail.instrument_id')
+                                    ->join('dependences', 'instruments_dependecies_detail.dependency_id', '=', 'dependences.id')
+                                    ->join('national_directions', 'dependences.national_direction_id', '=', 'national_directions.id')
+                                    ->where('national_directions.id', $national_id)
+                                    ->groupBy('instruments.id','instruments.entity_id','instruments.type_instrument_id','instruments.sector_id','type_instruments.type_instrument_name', 
+                                    'sectors.sector_name', 'national_directions.national_direction_name','instruments.instrument_name','instruments.description','instruments.deleted_at',
+                                    'instruments.created_at','instruments.updated_at', 'entities.entity_name')
+                                    ->distinct()
+                                    ->orderBy('instruments.instrument_name', 'asc')
+                                    ->get();
+
+                foreach($data as $item){
+                    $item->exonerations = Exoneration::select('exonerations.*')
+                                ->where('exonerations.instrument_id', $item->id)
+                                ->whereRaw("(exonerations.date_event >= ? AND exonerations.date_event <= ?)", [$date['dateOne'], $date['dateTwo']])
+                                ->get(); 
+                    
+                    $item->totalAmount = Exoneration::selectRaw('SUM(exonerations.total_amount) AS Total')
+                                ->where('exonerations.instrument_id', $item->id)
+                                ->whereRaw("(exonerations.date_event >= ? AND exonerations.date_event <= ?)", [$date['dateOne'], $date['dateTwo']])
+                                ->value('Total');
+                } 
+                $pdf = PDF::loadView('PDF.report', compact('data','instrument_name','national_direction_name','kind_of_report'));
+
+                return $pdf->setPaper('a4', 'landscape')->stream('report-'.now().'.pdf');  
+                
+            } else if($request->national_direction_name == NULL || $request->national_direction_name == '' ){
+
+            $national_direction_name = NULL;
+            $entity_name = NULL;
+            $date = $request->all();
+            $instrument_id = Instrument::where("instrument_name", $request->instrument_name)->first()->id;
+            $kind_of_report = NULL;
+
+            $data = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'sectors.sector_name', 'entities.entity_name')
+                                ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
+                                ->join('entities', 'instruments.entity_id', '=', 'entities.id')
+                                ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
+                                ->where('instruments.id', $instrument_id)
+                                ->get();
+
+            foreach($data as $item){
+                $item->exonerations = Exoneration::select('exonerations.*')
+                ->where('exonerations.instrument_id', $instrument_id)
+                ->whereRaw("(exonerations.date_event >= ? AND exonerations.date_event <= ?)", [$date['dateOne'], $date['dateTwo']])
+                ->get();
+
+                $item->totalAmount = Exoneration::selectRaw('SUM(exonerations.total_amount) AS Total')
+                    ->where('exonerations.instrument_id', $instrument_id)
+                    ->whereRaw("(exonerations.date_event >= ? AND exonerations.date_event <= ?)", [$date['dateOne'], $date['dateTwo']])
+                    ->value('Total');
+            } 
+
+            $pdf = PDF::loadView('PDF.report', compact('data','national_direction_name', 'kind_of_report'));
+            return $pdf->setPaper('letter', 'portrait')->stream('report-'.now().'.pdf');
+        }else{}
     }
 }

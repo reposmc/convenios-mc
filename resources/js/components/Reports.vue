@@ -10,29 +10,30 @@
             <v-container>
                 <v-row class="mx-auto">
                     <v-col cols="12" sm="12" md="12">
-                        <base-select-search label="Institución" v-model.trim="$v.parameters.entity_name.$model"
-                            :items="entities" item="entity_name" :validation="$v.parameters.entity_name"
-                            @change="changeEntity()" />
+                        <base-select-search label="Tipo de Reporte"
+                            :items="['Instrumento', 'Dirección Nacional', 'General',]"
+                            :validation="$v.parameters.kind_of_report" />
                     </v-col>
-                    <v-col cols="12" sm="12" md="6" v-show="hidden">
+                    <!-- <v-col cols="12" sm="12" md="12" v-if="parameters.kindOfReport == 'General'">
+                        <base-select-search label="Institución" v-model.trim="$v.parameters.entity_name.$model"
+                            :items="entities" item="entity_name" :validation="$v.parameters.entity_name" />
+                    </v-col> -->
+                    <v-col cols="12" sm="12" md="12" v-if="parameters.kind_of_report == 'Dirección Nacional'">
                         <base-select-search label="Dirección Nacional"
                             v-model.trim="$v.parameters.national_direction_name.$model" :items="nationals"
                             item="national_direction_name" :validation="$v.parameters.national_direction_name" />
                     </v-col>
-                    <v-col cols="12" sm="12" md="6" v-show="!hidden">
-                        <base-select-search label="Servicio" v-model.trim="$v.parameters.service_place_name.$model"
-                            :items="exonerations" item="service_place_name"
-                            :validation="$v.parameters.service_place_name" />
+                    <v-col cols="12" sm="12" md="12" v-if="parameters.kind_of_report == 'Instrumento'">
+                        <base-select-search label="Instrumento" v-model.trim="$v.parameters.instrument_name.$model"
+                            :items="instruments" item="instrument_name" :validation="$v.parameters.instrument_name" />
                     </v-col>
                     <v-col cols="12" sm="12" md="6">
-                        <base-input label="Fecha" v-model="$v.parameters.dateOne.$model" :validation="$v.parameters.dateOne"
-                            validationTextType="none" type="date" />
+                        <base-input label="Fecha inicial" v-model="$v.parameters.dateOne.$model"
+                            :validation="$v.parameters.dateOne" validationTextType="none" type="date" />
                     </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                        <v-checkbox @click="hidden = !hidden" :label="`Reporte por Dirección Nacional`">
-                        </v-checkbox>
+                    <v-col cols="12" sm="12" md="6">
+                        <base-input label="Fecha final" v-model="$v.parameters.dateTwo.$model"
+                            :validation="$v.parameters.dateTwo" validationTextType="none" type="date" />
                     </v-col>
                 </v-row>
                 <br>
@@ -46,10 +47,8 @@
     </v-card>
 </template>
 <script>
+
 import reportsApi from "../apis/reportsApi"
-import exonerationApi from "../apis/exonerationApi";
-import entityApi from "../apis/entityApi";
-import instrumentApi from "../apis/instrumentApi";
 import BaseInput from "./base-components/BaseInput.vue";
 import lib from "../libs/function";
 import { required, minLength, maxLength, requiredIf } from "vuelidate/lib/validators";
@@ -63,16 +62,17 @@ export default {
         editedIndex: -1,
         parameters: {
             national_direction_name: "",
-            service_place_name: "",
             dateOne: "",
-            entity_name: "",
+            dateTwo: "",
+            instrument_name: "",
+            kind_of_report: "",
         },
         textAlert: "",
         alertEvent: "success",
         showAlert: false,
-        nationals: [],
-        exonerations: [],
+        instruments: [],
         entities: [],
+        nationals: [],
         redirectSessionFinished: false,
         alertTimeOut: 0,
         hidden: false,
@@ -84,18 +84,9 @@ export default {
     validations: {
         parameters: {
             national_direction_name: {
-                required: requiredIf(function (parameters) {
+                required: requiredIf(function () {
                     return (
-                        this.parameters.service_place_name == ""
-                    );
-                }),
-                minLength: minLength(1),
-                maxLength: maxLength(150),
-            },
-            service_place_name: {
-                required: requiredIf(function (parameters) {
-                    return (
-                        this.parameters.national_direction_name == ""
+                        this.parameters.kind_of_report == "Dirección Nacional" && this.parameters.instrument_name == ""
                     );
                 }),
                 minLength: minLength(1),
@@ -106,10 +97,26 @@ export default {
                 minLength: minLength(1),
                 maxLength: maxLength(150),
             },
-            entity_name: {
+            dateTwo: {
                 required,
                 minLength: minLength(1),
                 maxLength: maxLength(150),
+            },
+            instrument_name: {
+                required: requiredIf(function () {
+                    return (
+                        this.parameters.kind_of_report == "Instrumento" && this.parameters.national_direction_name == ""
+                    );
+                }),
+                minLength: minLength(1),
+                maxLength: maxLength(150),
+            },
+            kind_of_report: {
+                required: requiredIf(function () {
+                    return (
+                        this.parameters.instrument_name == "" && this.parameters.national_direction_name == ""
+                    );
+                }),
             },
         },
     },
@@ -120,7 +127,7 @@ export default {
 
     methods: {
         async initialize() {
-            let requests = [reportsApi.get(), exonerationApi.get(), entityApi.get()];
+            let requests = [reportsApi.get()];
             let responses = await Promise.all(requests).catch((error) => {
                 this.updateAlert(true, "No fue posible obtener los registros.", "fail");
                 this.redirectSessionFinished = lib.verifySessionFinished(
@@ -130,8 +137,8 @@ export default {
             });
 
             this.nationals = responses[0].data.nationals;
-            this.exonerations = responses[1].data.exonerations;
-            this.entities = responses[2].data.entities;
+            this.instruments = responses[0].data.instruments;
+            this.entities = responses[0].data.entities;
         },
 
         async generateReport() {
@@ -141,53 +148,20 @@ export default {
                 return;
             }
 
-            console.log(this.parameters);
             if (this.parameters) {
-                window.open(`/pdf/reports?national_direction_name=${this.parameters.national_direction_name}&&service_place_name=${this.parameters.service_place_name}&&dateOne=${this.parameters.dateOne}&&entity_name=${this.parameters.entity_name}`);
+                window.open(`/pdf/reports?instrument_name=${this.parameters.instrument_name}&&national_direction_name=${this.parameters.national_direction_name}&&kind_of_report=${this.parameters.kind_of_report}&&dateOne=${this.parameters.dateOne}&&dateTwo=${this.parameters.dateTwo}`);
                 this.parameters.national_direction_name = '';
-                this.parameters.entity_name = '';
-                this.parameters.service_place_name = '';
+                this.parameters.instrument_name = '';
+                this.parameters.kind_of_report = '';
                 this.parameters.dateOne = '';
+                this.parameters.dateTwo = '';
+                this.parameters.selectedOrder = '';
                 window.location.reload();
                 return;
             }
         },
 
-        async changeEntity() {
-            try {
-                const response = await axios.get(`api/web/exonerations/byEntityName/${this.parameters.entity_name}`);
-                const servicePlaces = response.data.exonerations;
-
-                for (let i = 0; i < servicePlaces.length; i++) {
-                    if (!servicePlaces[i]) {
-                        servicePlaces[i] = this.parameters.concept;
-                    }
-                }
-
-                this.exonerations = servicePlaces;
-            } catch (error) {
-                this.updateAlert(true, 'No fue posible obtener la información de los espacios.', 'fail');
-            }
-        },
-
-        /* async changeEntity() {
-            let { data } = await axios
-                .get(
-                    "api/web/exoneration/byEntityName/" +
-                    this.parameters.entity_name
-                )
-                .catch((error) => {
-                    this.updateAlert(
-                        true,
-                        "No fue posible obtener la información de los espacios.",
-                        "fail"
-                    );
-                });
-
-            this.exonerations = data.exonerations;
-        }, */
-
-         updateAlert(show = false, text = "Alerta", event = "success") {
+        updateAlert(show = false, text = "Alerta", event = "success") {
             this.textAlert = text;
             this.alertEvent = event;
             this.showAlert = show;
