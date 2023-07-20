@@ -22,58 +22,80 @@ class InstrumentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {
-        $itemsPerPage = $request->itemsPerPage;
-        $skip = ($request->page - 1) * $request->itemsPerPage;
+{
+    $itemsPerPage = $request->itemsPerPage;
+    $skip = ($request->page - 1) * $request->itemsPerPage;
 
-        // Getting all the records
-        if (($request->itemsPerPage == -1)) {
-            $itemsPerPage =  Instrument::count();
-            $skip = 0;
-        }
+    // Getting all the records
+    if ($request->itemsPerPage == -1) {
+        $itemsPerPage =  Instrument::count();
+        $skip = 0;
+    }
 
-        $sortBy = (isset($request->sortBy[0])) ? $request->sortBy[0] : 'id';
-        $sort = (isset($request->sortDesc[0])) ? "asc" : 'desc';
+    $sortBy = (isset($request->sortBy[0])) ? $request->sortBy[0] : 'id';
+    $sort = (isset($request->sortDesc[0])) ? "asc" : "desc";
 
-        $search = (isset($request->search)) ? "%$request->search%" : '%%';
+    $search = (isset($request->search)) ? "%$request->search%" : '%%';
 
-        $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
+    if (auth()->user()->hasRole('Usuario')) {
+        // User with dependencies
+        $userDependencies = UsersDependenciesDetail::where('user_id', auth()->user()->id)
+            ->pluck('dependency_id')
+            ->toArray();
 
-        // dd($instruments);
-        foreach ($instruments as $item) {
-            $item->assignedDependencies = InstrumentsDependeciesDetail::select(
-                'instruments_dependecies_detail.*',
-                'd.dependence_name'
-            )
-                ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
-                ->where('instrument_id', $item->instrument_id)->get()->pluck('dependence_name');
-
-            // dd($item);
-            $item->assignedExonerations = Exoneration::select('exonerations.*')
-                ->where('instrument_id', $item->instrument_id)
+            $instruments = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'entities.entity_name', 'sectors.sector_name')
+                ->join('instruments_dependecies_detail', 'instruments.id', '=', 'instruments_dependecies_detail.instrument_id')
+                ->join('dependences', 'instruments_dependecies_detail.dependency_id', '=', 'dependences.id')
+                ->whereIn('dependences.id', $userDependencies)
+                ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
+                ->join('entities', 'instruments.entity_id', '=', 'entities.id')
+                ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
+                ->where(function ($query) use ($search) {
+                    $query->where('instruments.instrument_name', 'LIKE', $search)
+                        ->orWhere('instruments.description', 'LIKE', $search);
+                })
+                ->orderBy($sortBy, $sort)
+                ->skip($skip)
+                ->take($itemsPerPage)
                 ->get();
+    } else {
+        // All records
+        $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
+    }
 
-            foreach ($item->assignedExonerations as  $value) {
-                if (isset($value->is_tariffed) && $value->is_tariffed == 0) {
-                    $value->is_tariffed = "Sí";
-                } elseif (isset($value->is_tariffed) && $value->is_tariffed == 1) {
-                    $value->is_tariffed = "No";
-                }
+    foreach ($instruments as $item) {
+        $item->assignedDependencies = InstrumentsDependeciesDetail::select(
+            'instruments_dependecies_detail.*',
+            'd.dependence_name'
+        )
+            ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
+            ->where('instrument_id', $item->instrument_id)->get()->pluck('dependence_name');
+
+        $item->assignedExonerations = Exoneration::select('exonerations.*')
+            ->where('instrument_id', $item->instrument_id)
+            ->get();
+
+        foreach ($item->assignedExonerations as  $value) {
+            if (isset($value->is_tariffed) && $value->is_tariffed == 0) {
+                $value->is_tariffed = "Sí";
+            } elseif (isset($value->is_tariffed) && $value->is_tariffed == 1) {
+                $value->is_tariffed = "No";
             }
         }
-
-        $instruments = Encrypt::encryptObject($instruments, "id");
-
-        $total = Instrument::counterPagination($search);
-
-        return response()->json([
-            "status" => 200,
-            "message" => "Registros obtenidos correctamente.",
-            "records" => $instruments,
-            "total" => $total,
-            "success" => true,
-        ]);
     }
+
+    $instruments = Encrypt::encryptObject($instruments, "id");
+
+    $total = Instrument::counterPagination($search);
+
+    return response()->json([
+        "status" => 200,
+        "message" => "Registros obtenidos correctamente.",
+        "records" => $instruments,
+        "total" => $total,
+        "success" => true,
+    ]);
+}
 
     /**
      * Store a newly created resource in storage.

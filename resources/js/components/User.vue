@@ -368,12 +368,12 @@ export default {
       //   isValidDui: helpers.regex("isValidDui", /[0-9]{8}-[0-9]/),
       // },
       assignedDependencies: {
-        // required,
+        //required,
       },
     },
     formDependencies: {
       dependence_name: {
-        // required,
+        required,
       },
     },
   },

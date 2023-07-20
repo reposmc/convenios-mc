@@ -29,12 +29,33 @@
                     </v-col>
                     <v-col cols="12" sm="12" md="6">
                         <base-input label="Fecha inicial" v-model="$v.parameters.dateOne.$model"
-                            :validation="$v.parameters.dateOne" validationTextType="none" type="date" />
+                            :validation="$v.parameters.dateOne" validationTextType="none" type="date" v-show="hidden"/>
                     </v-col>
                     <v-col cols="12" sm="12" md="6">
                         <base-input label="Fecha final" v-model="$v.parameters.dateTwo.$model"
-                            :validation="$v.parameters.dateTwo" validationTextType="none" type="date" />
+                            :validation="$v.parameters.dateTwo" validationTextType="none" type="date" v-show="hidden"/>
                     </v-col>
+                    <v-col cols="12" sm="12" md="12" v-if="parameters.kind_of_report == 'Dirección Nacional'">
+                        <v-checkbox
+                            @click="hidden = !hidden"
+                            :label="`Por periodo de tiempo`"
+                            >
+                        </v-checkbox>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12" v-if="parameters.kind_of_report == 'Instrumento'">
+                        <v-checkbox
+                            @click="hidden = !hidden"
+                            :label="`Por periodo de tiempo`"
+                            >
+                        </v-checkbox>
+                    </v-col>
+                     <v-col cols="12" sm="12" md="12" v-if="parameters.kind_of_report == 'General'">
+                            <v-checkbox
+                                @click="hidden = !hidden"
+                                :label="`Por periodo de tiempo`"
+                                >
+                            </v-checkbox>
+                        </v-col>
                 </v-row>
                 <br>
                 <v-row class="mx-auto">
@@ -93,14 +114,14 @@ export default {
                 maxLength: maxLength(150),
             },
             dateOne: {
-                required,
+                /* required,
                 minLength: minLength(1),
-                maxLength: maxLength(150),
+                maxLength: maxLength(150), */
             },
             dateTwo: {
-                required,
+                /* required,
                 minLength: minLength(1),
-                maxLength: maxLength(150),
+                maxLength: maxLength(150), */
             },
             instrument_name: {
                 required: requiredIf(function () {
