@@ -368,7 +368,7 @@ export default {
       //   isValidDui: helpers.regex("isValidDui", /[0-9]{8}-[0-9]/),
       // },
       assignedDependencies: {
-        //required,
+        // required,
       },
     },
     formDependencies: {
@@ -448,6 +448,7 @@ export default {
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
+        this.$v.formDependencies.$reset();
       });
     },
 
@@ -461,8 +462,9 @@ export default {
     },
 
     async save() {
-      this.$v.$touch();
-      if (this.$v.$invalid) {
+      this.$v.editedItem.$touch();
+      
+      if (this.$v.editedItem.$invalid) {
         this.updateAlert(true, "Campos obligatorios.", "fail");
         return;
       }
