@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('instruments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('type_instrument_id')->constrained('type_instruments');
-            $table->string('instrument_name');
+            $table->string('instrument_name', 700);
             $table->foreignId('sector_id')->constrained('sectors');
             $table->foreignId('entity_id')->constrained('entities');
             $table->text('description')->nullable();

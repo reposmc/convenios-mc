@@ -33,7 +33,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-row>
                 <v-col align="right">
-                  <v-btn
+                  <!-- <v-btn
                     class="mb-2 btn-normal no-uppercase"
                     v-bind="attrs"
                     v-on="on"
@@ -42,7 +42,7 @@
                     :disabled="loading != false"
                   >
                     Agregar
-                  </v-btn>
+                  </v-btn> -->
                 </v-col>
                 <v-col
                   xs="6"
@@ -86,7 +86,7 @@
                         }"
                       />
                     </v-col>
-                    <v-col cols="12" sm="6" md="6">
+                    <!-- <v-col cols="12" sm="6" md="6">
                       <base-input
                         label="Apellidos"
                         v-model="$v.editedItem.last_name.$model"
@@ -98,7 +98,7 @@
                           maxLength: true,
                         }"
                       />
-                    </v-col>
+                    </v-col> -->
 
                     <!-- DUI -->
                     <!-- <v-col cols="12" sm="6" md="6">
@@ -140,7 +140,7 @@
                     </v-col>
                     <!-- E-mail -->
                     <!-- Password -->
-                    <v-col cols="12" sm="6" md="6">
+                   <!--  <v-col cols="12" sm="6" md="6">
                       <base-input
                         label="Contraseña"
                         v-model="$v.editedItem.password.$model"
@@ -158,7 +158,7 @@
                         }"
                         @update-password="showPassword($event)"
                       />
-                    </v-col>
+                    </v-col> -->
                     <!-- Password -->
                     <!-- Dependencies -->
                     <template>
@@ -305,9 +305,9 @@ export default {
       actualPage: 1,
       editedItem: {
         name: "",
-        last_name: "",
+        /* last_name: "", */
         email: "",
-        password: "",
+        /* password: "", */
         dui: "",
         rol: "Administrator",
         assignedDependencies: [],
@@ -315,8 +315,8 @@ export default {
       defaultItem: {
         name: "",
         email: "",
-        last_name: "",
-        password: "",
+        /* last_name: "", */
+        /* password: "", */
         dui: "",
         rol: "Administrator",
         assignedDependencies: [],
@@ -337,7 +337,7 @@ export default {
   // Validations
   validations: {
     editedItem: {
-      password: {
+      /* password: {
         required,
         minLength: minLength(8),
         maxLength: maxLength(13),
@@ -345,7 +345,7 @@ export default {
           "isValidPassword",
           /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,13}$/
         ),
-      },
+      }, */
       email: {
         required,
         email,
@@ -355,11 +355,11 @@ export default {
         minLength: minLength(1),
         maxLength: maxLength(500),
       },
-      last_name: {
+      /* last_name: {
         required,
         minLength: minLength(1),
         maxLength: maxLength(500),
-      },
+      }, */
       rol: {
         required,
       },

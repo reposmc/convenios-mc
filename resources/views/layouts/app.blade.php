@@ -94,15 +94,13 @@
                         <p class="link">Administración</p>
                     </div>
                     <ul class="sub-menu">
+                        <li><a href="{{ url('/dependences') }}">Dependencias</a></li>
                         <li><a href="{{ url('/directions') }}">Direcciones nacionales</a></li>
                         <li><a href="{{ url('/entities') }}">Entidades</a></li>
-                        <li><a href="{{ url('/dependences') }}">Dependencias</a></li>
+                        <li><a href="{{ url('/sectors') }}">Sectores</a></li>
                         <li><a href="{{ url('/tariffs') }}">Tarifario</a></li>
                         <li><a href="{{ url('/types') }}">Tipos de instrumento</a></li>
-                        <li><a href="{{ url('/sectors') }}">Sectores</a></li>
                         <li><a href="{{ url('/users') }}">Usuarios</a></li>
-                        {{-- <li><a href="{{ url('/departments ') }}">Departamentos</a></li> --}}
-                        {{-- <li><a href="{{ url('/municipalities') }}">Municipios</a></li> --}}
                         {{-- <li><a href="{{ url('/places') }}">Espacios de servicio</a></li> --}}
                     </ul>
                 </li>

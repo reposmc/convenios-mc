@@ -72,6 +72,18 @@
                   <h5>Información del instrumento</h5>
                   <hr />
                   <v-row>
+                    <!-- instrument_name -->
+                    <v-col cols="12" sm="12" md="12">
+                      <base-input
+                        label="Nombre"
+                        v-model="$v.editedItem.instrument_name.$model"
+                        :validation="$v.editedItem.instrument_name"
+                        validationTextType="default"
+                      />
+                    </v-col>
+                    <!-- instrument_name -->
+                  </v-row>
+                  <v-row>
                     <!-- type_instrument_name -->
                     <v-col cols="12" sm="12" md="6">
                       <base-select-search
@@ -83,16 +95,6 @@
                       />
                     </v-col>
                     <!-- type_instrument_name -->
-                    <!-- instrument_name -->
-                    <v-col cols="12" sm="12" md="6">
-                      <base-input
-                        label="Nombre"
-                        v-model="$v.editedItem.instrument_name.$model"
-                        :validation="$v.editedItem.instrument_name"
-                        validationTextType="default"
-                      />
-                    </v-col>
-                    <!-- instrument_name -->
                   </v-row>
                   <v-row>
                     <!-- entity_name -->

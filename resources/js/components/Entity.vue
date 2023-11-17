@@ -99,10 +99,6 @@
                               v-model="$v.editedItem.mail.$model"
                               :validation="$v.editedItem.mail"
                               validationTextType="none"
-                              :validationsInput="{
-                                required: true,
-                                email: true,
-                              }"
                             />
                           </v-col>
                         <!-- Department Name -->
@@ -203,8 +199,6 @@
       headers: [
         { text: "NOMBRE", value: "entity_name" },
         { text: "REPRESENTANTE", value: "representative_name" },
-        { text: "TELÉFONO", value: "phone" },
-        { text: "CORREO ELECTRÓNICO", value: "mail" },
         { text: "ACCIONES", value: "actions", sortable: false },
       ],
       records: [],
@@ -243,13 +237,10 @@
           maxLength: maxLength(150),
         },
         phone: {
-          required,
-          minLength: minLength(1),
-          maxLength: maxLength(150),
+
         },
         mail: {
-          required,
-          email,
+
         },
       },
     },
