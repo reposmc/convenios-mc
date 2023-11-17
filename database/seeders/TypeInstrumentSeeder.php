@@ -38,12 +38,16 @@ class TypeInstrumentSeeder extends Seeder
         ],
         [
             "id" => 6,
-            "type_instrument_name" => "Programa",
+            "type_instrument_name" => "Marco",
         ],
         [
             "id" => 7,
+            "type_instrument_name" => "Programa",
+        ],
+        [
+            "id" => 8,
             "type_instrument_name" => "Transferencia",
-        ],    
+        ],     
     ]);
     }
 }
