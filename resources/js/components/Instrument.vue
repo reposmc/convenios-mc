@@ -249,7 +249,7 @@
           </template>
           <span>Agregar exoneración</span>
         </v-tooltip>
-        <!-- <v-tooltip top>
+        <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon
               small
@@ -261,8 +261,8 @@
               visibility
             </v-icon>
           </template>
-          <span>Ver exoneraciones</span>
-        </v-tooltip> -->
+          <span>Ver Instrumento</span>
+        </v-tooltip>
       </template>
       <template v-slot:no-data>
         <a
@@ -274,6 +274,180 @@
         </a>
       </template>
     </v-data-table>
+
+    <v-dialog v-model="dialogVerExoneration" max-width="1000px" persistent>
+      <v-card
+        class="flexcard"
+        height="100%"
+        v-for="(item, index) in exonerationSeleccionado" :key="index"
+      >
+        <v-card-title>
+					<h1 class="mx-auto pt-3 mb-3 text-center black-secondary">
+            {{ item.instrument_name }}
+          </h1>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <!-- Form -->
+            <v-row>
+              <v-col cols="12" sm="12" md="12">
+                <v-simple-table>
+                  <template v-slot:default>
+                    <tbody>
+                      <tr>
+                        <th style="min-width: 100px">Entidad</th>
+                        <td>
+                          {{ item.entity_name }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th style="min-width: 100px">Sector</th>
+                        <td>
+                          {{ item.sector_name }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th style="min-width: 100px">Tipo de Instrumento</th>
+                        <td>
+                          {{ item.type_instrument_name }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th style="min-width: 100px">Descripción</th>
+                        <td>
+                          {{ item.description }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th style="min-width: 100px">Documento</th>
+                        <td colspan="4">
+                          <div>
+                            <v-icon small> mdi-paperclip </v-icon>
+                           <!--  <a
+                              v-for="(
+                                doc, i
+                              ) in movimientoSeleccionado.archivo"
+                              :key="i"
+                              :value="doc.archivo"
+                              :href="doc.url"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              <span>{{ doc.archivo }}</span>
+                            </a> -->
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </template>
+                </v-simple-table>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                 <v-simple-table class="mt-2">
+                  <!-- header -->
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th v-if="item.type_instrument_name == 'Convenio'">
+                        Espacio
+                      </th>
+                      <th v-if="item.type_instrument_name == 'Convenio'">
+                        ¿Tarifado?
+                      </th>
+                      <th v-if="item.type_instrument_name != 'Convenio'">
+                        Concepto
+                      </th>
+                      <th v-if="item.type_instrument_name != 'Convenio'">
+                        Cantidad
+                      </th>
+                      <th>Descripción</th>
+                      <th v-if="item.type_instrument_name == 'Convenio'">
+                        Descripción Tarifada/No tarifada
+                      </th>
+                      <th v-if="item.type_instrument_name == 'Convenio'">
+                        Monto Tarifado/No tarifado
+                      </th>
+                      <th v-if="item.type_instrument_name == 'Convenio'">
+                        Cant. Horas/Personas
+                      </th>
+
+                      <th v-if="item.type_instrument_name != 'Convenio'">
+                        Precio estimado
+                      </th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <!-- header -->
+                  <!-- body -->
+                  <tbody>
+                    <tr
+                       v-for="(item, index) in exonerationSeleccionado" :key="index"
+                    >
+                      <td>
+                        {{ item.date_event }}
+                      </td>
+                      <td v-if="item.service_place_name">
+                        {{ item.service_place_name }}
+                      </td>
+                      <td v-if="item.is_tariffed">
+                        {{ item.is_tariffed }}
+                      </td>
+                      <td v-if="item.concept">
+                        {{ item.concept }}
+                      </td>
+                      <td v-if="item.quantity">
+                        {{ item.quantity }}
+                      </td>
+                      <td v-if="item.exonerated_description">
+                        {{ item.exonerated_description }}
+                      </td>
+                      <td v-if="item.estimated_price">
+                        {{ item.estimated_price }}
+                      </td>
+                      <td v-if="item.tariff_type_charge">
+                        {{ item.tariff_type_charge }}
+                      </td>
+                      <td v-if="item.non_tariff_concept">
+                        {{ item.non_tariff_concept }}
+                      </td>
+                      <td v-if="item.tariff_amount">
+                        {{ item.tariff_amount }}
+                      </td>
+                      <td v-if="item.non_tariff_amount">
+                        {{ item.non_tariff_amount }}
+                      </td>
+                      <td v-if="item.number_hour">
+                        {{ item.number_hour }}
+                      </td>
+                      <td v-if="item.number_people">
+                        {{ item.number_people }}
+                      </td>
+                      <td v-if="item.total_amount">
+                        {{ item.total_amount }}
+                      </td>
+                    </tr>
+                  </tbody>
+                  <!-- body -->
+                </v-simple-table>
+              </v-col>
+              
+            </v-row>
+            <!-- Form -->
+            <v-row>
+              <v-col align="center">
+                <v-btn
+                  color="btn-normal-close no-uppercase mt-3"
+                  rounded
+                  @click="closeViewExoneration"
+                >
+                  Cerrar
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
 
     <v-dialog v-model="dialogExoneration" max-width="900px">
       <v-card class="h-100 p-3">
@@ -750,6 +924,7 @@ import axios from "axios";
 import BaseInput from "./base-components/BaseInput.vue";
 import { title } from "process";
 import moment from "moment";
+import { log } from 'util';
 
 export default {
   components: { BaseInput },
@@ -831,6 +1006,9 @@ export default {
       tariff_value: 0,
       total_value: 0,
       actualUser: {},
+      dialogVerExoneration: false,
+      exonerationSeleccionado: null,
+
     };
   },
 
@@ -1184,6 +1362,18 @@ export default {
     dialogExonerationCloseCancel() {
       this.dialogCloseConfirm = false;
     },
+
+    async viewExonerationItem(item) {
+      try {
+				const { data } = await instrumentApi.get('/getInstrument/' + item.id);
+				this.exonerationSeleccionado = data;
+				this.dialogVerExoneration = true;
+			} catch (error) {}
+		},
+
+		closeViewExoneration() {
+			this.dialogVerExoneration = false;
+		},
 
     addNewExoneration(item) {
       this.editedIndex = this.recordsFiltered.indexOf(item);

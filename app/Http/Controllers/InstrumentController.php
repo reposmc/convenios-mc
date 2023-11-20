@@ -124,6 +124,48 @@ class InstrumentController extends Controller
     ]);
 }
 
+    public function getInstrument(Request $request){
+        
+        $idInstrument = Encrypt::decryptValue($request->id);
+
+        $instruments = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'entities.entity_name', 'sectors.sector_name')
+            ->join('instruments_dependecies_detail', 'instruments.id', '=', 'instruments_dependecies_detail.instrument_id')
+            ->join('dependences', 'instruments_dependecies_detail.dependency_id', '=', 'dependences.id')
+            ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
+            ->join('entities', 'instruments.entity_id', '=', 'entities.id')
+            ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
+            ->where('instruments.id', $idInstrument)
+            ->distinct() 
+            ->get();
+        
+            // Load exonerations for each instrument
+
+            foreach ($instruments as $item) {
+                $item->assignedExonerations = Exoneration::select('exonerations.*')
+                    ->where('instrument_id', $item->id)
+                    ->get();
+
+                foreach ($item->assignedExonerations as $value) {
+                    if (isset($value->is_tariffed) && $value->is_tariffed == 0) {
+                        $value->is_tariffed = "Sí";
+                    } elseif (isset($value->is_tariffed) && $value->is_tariffed == 1) {
+                        $value->is_tariffed = "No";
+                    }
+                }
+            }
+            /* dd($instruments); */
+        $instruments = Encrypt::encryptObject($instruments, "id");
+
+        /* return response()->json([
+            "status" => 200,
+            "message" => "Registros obtenidos correctamente.",
+            "records" => $instruments,
+            "success" => true,
+        ]) ;*/
+
+        return $instruments;
+    }
+
     /**
      * Store a newly created resource in storage.
      *

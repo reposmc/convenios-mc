@@ -58,17 +58,6 @@
                 </li>
                 <!-- Agreement -->
 
-                 <!-- manual -->
-                <li class="text-center pb-1">
-                    <a target="_blank" href="{{asset('img/ManualDeUsuario.pdf')}}" class="text-center">
-                        <i class="material-icons md-18 mx-auto">book</i>
-                    </a>
-                    <a target="_blank" href="{{asset('img/ManualDeUsuario.pdf')}}">
-                        <p class="link mx-auto">Manual</p>
-                    </a>
-                </li>
-                <!-- manual -->
-
                 @if (auth()->user()->hasRole('Administrador') == 'Administrador')
                 <!-- report -->
                 <li class="text-center pb-1">
@@ -82,6 +71,16 @@
                 <!-- report -->
                 @endif
 
+                 <!-- manual -->
+                 <li class="text-center pb-1">
+                    <a target="_blank" href="{{asset('img/ManualDeUsuario.pdf')}}" class="text-center">
+                        <i class="material-icons md-18 mx-auto">book</i>
+                    </a>
+                    <a target="_blank" href="{{asset('img/ManualDeUsuario.pdf')}}">
+                        <p class="link mx-auto">Manual</p>
+                    </a>
+                </li>
+                <!-- manual -->
 
                 <!-- Settings -->
                 <!-- Administrative routes -->

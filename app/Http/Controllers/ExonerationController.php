@@ -112,7 +112,6 @@ class ExonerationController extends Controller
 
     public function filterByEntity(Request $request)
     {
-        //$entityName = $request->entity_name;
         $exonerations = Exoneration::select('service_place_name', 'concept')
             ->join('instruments', 'exonerations.instrument_id', '=', 'instruments.id')
             ->join('entities', 'instruments.entity_id', '=', 'entities.id')
