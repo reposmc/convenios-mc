@@ -29,6 +29,7 @@
         "javascript-obfuscator": "^4.0.0",
         "moment": "^2.29.4",
         "v-mask": "^2.3.0",
+        "vue-toastification": "^1.7.14",
         "vuelidate": "^0.7.7",
         "vuetify": "^2.6.2",
         "webpack-obfuscator": "^3.5.0"

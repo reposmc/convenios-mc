@@ -10,7 +10,9 @@ class EntityController extends Controller
 {
     public function index()
     {
-        $entities = Entity::all();
+        $entities = Entity::select('entities.*')
+                    ->orderBy('entity_name', 'asc')
+                    ->get();
         $entities = Encrypt::encryptObject($entities, 'id');
 
         return response()->json([

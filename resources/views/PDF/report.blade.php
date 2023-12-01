@@ -83,12 +83,12 @@
                         <td class="instrument-info">{{ $d->entity_name }}</td>
                     </tr>
                     <tr>
-                        <td class="instrument-info">Descripción:</td>
-                        <td class="instrument-info">{{ $d->description }}</td>
-                    </tr>
-                    <tr>
                         <td class="instrument-info">Sector:</td>
                         <td class="instrument-info">{{ $d->sector_name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="instrument-info">Descripción:</td>
+                        <td class="instrument-info">{{ $d->description }}</td>
                     </tr>
                     
                 </tbody>

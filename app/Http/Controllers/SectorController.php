@@ -10,7 +10,9 @@ class SectorController extends Controller
 {
     public function index()
     {
-        $sectors = Sector::all();
+        $sectors = Sector::select('sectors.*')
+                    ->orderBy('sector_name', 'asc')
+                    ->get();
         $sectors = Encrypt::encryptObject($sectors, 'id');
 
         return response()->json([

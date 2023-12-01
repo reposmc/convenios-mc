@@ -13,7 +13,9 @@ class DependenceController extends Controller
 {
     public function index()
     {
-        $dependences = Dependence::all();
+        $dependences = Dependence::select('dependences.*')
+                        ->orderBy('dependence_name', 'asc')
+                        ->get();
 
         foreach ($dependences as $dependence) {
             $dependence->national_direction_name = $dependence->national_directions->national_direction_name;

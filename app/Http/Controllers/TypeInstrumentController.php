@@ -10,7 +10,9 @@ class TypeInstrumentController extends Controller
 {
     public function index()
     {
-        $types = TypeInstrument::all();
+        $types = TypeInstrument::select('type_instruments.*')
+                ->orderBy('type_instrument_name', 'asc')
+                ->get();
         $types = Encrypt::encryptObject($types, 'id');
 
         return response()->json([
