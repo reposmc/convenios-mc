@@ -257,10 +257,10 @@ export default {
         .catch((error) => {
           this.updateAlert(
             true,
-            "No fue posible eliminar el registros.",
+            "No se puede eliminar este registro porque ya ha sido utilizado.",
             "fail"
           );
-          this.close();
+          this.closeDelete();
           this.redirectSessionFinished = lib.verifySessionFinished(
             error.response.status,
             419

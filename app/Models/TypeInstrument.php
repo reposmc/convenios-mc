@@ -33,4 +33,9 @@ class TypeInstrument extends Model
     {
         return $this->hasMany(Instrument::class);
     }
+
+    public function instruments()
+    {
+        return $this->hasMany(Instrument::class, "type_instrument_id")->withTrashed();
+    }
 }

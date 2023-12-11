@@ -33,4 +33,9 @@ class Sector extends Model
     {
         return $this->hasMany(Instrument::class);
     }
+
+    public function instruments()
+    {
+        return $this->hasMany(Instrument::class, "sector_id")->withTrashed();
+    }
 }

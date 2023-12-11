@@ -73,7 +73,24 @@ class DependenceController extends Controller
     {
         $id = Encrypt::decryptValue($id);
 
-        Dependence::where('id', $id)->delete();
+        $dependence = Dependence::with("instrument")->where("id", $id)->first();
+        $dependenceUser = Dependence::with("user")->where("id", $id)->first();
+        $dependenceTariff = Dependence::with("tariff")->where("id", $id)->first();
+
+        if(sizeof($dependence->instrument) > 0){
+            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+
+        } else if(sizeof($dependenceUser->user) > 0){
+            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+
+        } else if(sizeof($dependenceTariff->tariff) > 0){
+            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+        }
+        
+        $dependence->delete();
+        $dependenceUser->delete();
+        $dependenceTariff->delete();
+
         return response()->json([
             "status" => "success",
             "message" => "Registro eliminado correctamente."

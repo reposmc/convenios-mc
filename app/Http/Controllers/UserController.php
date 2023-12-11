@@ -127,13 +127,13 @@ class UserController extends Controller
         $id = Encrypt::decryptValue($request->id);
         $user = User::find($id);
 
-        $password = Hash::make($request->password);
+        /* $password = Hash::make($request->password); */
 
         $data = [
             "name" => $request->name,
             "lastName" => $request->lastName,
             "email" => $request->email,
-            "password" => $password,
+            /* "password" => $password, */
         ];
 
         //Create detail

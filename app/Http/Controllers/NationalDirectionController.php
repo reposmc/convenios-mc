@@ -10,7 +10,9 @@ class NationalDirectionController extends Controller
 {
     public function index()
     {
-        $directions = NationalDirection::all();
+        $directions = NationalDirection::select("national_directions.*")
+                        ->orderBy('national_direction_name', 'asc')
+                        ->get();
         $directions = Encrypt::encryptObject($directions, 'id');
 
         return response()->json([
@@ -44,8 +46,15 @@ class NationalDirectionController extends Controller
     public function destroy($id)
     {
         $id = Encrypt::decryptValue($id);
+        
+        $nationalDirection = NationalDirection::with("dependence")->where('id', $id)->first();
 
-        NationalDirection::where('id', $id)->delete();
+        if(sizeof($nationalDirection->dependence) > 0) {
+            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+        }
+
+        $nationalDirection->delete();
+
         return response()->json([
             "status"=>"success",
             "message"=>"Registro eliminado correctamente."

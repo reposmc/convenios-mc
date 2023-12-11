@@ -204,7 +204,7 @@
                             ) in editedItem.assignedDependencies"
                             :key="index"
                           >
-                            <td>{{ assigned }}</td>
+                            <td>{{ assigned.dependence_name }}</td>
                             <td>
                               <v-icon @click="deleteAssignedDependency(index)">
                                 delete
@@ -271,6 +271,36 @@ import roleApi from "../apis/roleApi";
 import userApi from "../apis/userApi";
 import dependenceApi from "../apis/dependenceApi";
 import lib from "../libs/function";
+import Toast, { TYPE } from '../../../node_modules/vue-toastification';
+import '../../sass/_variablesToast.scss';
+
+const options = {
+	toastDefaults: {
+		[TYPE.SUCCESS]: {
+			timeout: 2000,
+			closeOnClick: false,
+			icon: {
+				iconClass: 'material-icons',
+				iconChildren: 'check_circle',
+				iconTag: 'span',
+			},
+			maxToasts: 1,
+		},
+
+		[TYPE.WARNING]: {
+			timeout: 2000,
+			closeOnClick: false,
+			icon: {
+				iconClass: 'material-icons',
+				iconChildren: 'warning',
+				iconTag: 'span',
+			},
+			maxToasts: 1,
+		},
+	},
+};
+
+Vue.use(Toast, options);
 
 import {
   required,
@@ -322,7 +352,7 @@ export default {
         assignedDependencies: [],
       },
       formDependencies: {
-        dependence_name: "",
+        dependence_name: {},
       },
       textAlert: "",
       alertEvent: "success",
@@ -617,7 +647,7 @@ export default {
     },
 
     assignDependency() {
-      this.$v.formDependencies.$touch();
+      /* this.$v.formDependencies.$touch();
 
       if (this.$v.formDependencies.$invalid) {
         return;
@@ -628,6 +658,34 @@ export default {
       );
       this.formDependencies.dependence_name = "";
 
+      this.$v.formDependencies.$reset(); */
+      this.$v.formDependencies.$touch();
+
+      if (this.$v.formDependencies.$invalid) {
+        return;
+      }
+
+      const selectedDependence = this.formDependencies.dependence_name;
+
+			const dependenceSelectedArray = this.dependencies.find((dependence) => {
+				return dependence.dependence_name == selectedDependence;
+			});
+
+			const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === selectedDependence);
+      
+			if (dependenceSelectedArray && !exists) {
+				this.editedItem.assignedDependencies.push({
+					dependence_name: this.formDependencies.dependence_name,
+				});
+				this.$toast.success('Dependencia agregada');
+			} else {
+				this.$toast.warning('Ya ingresó ' + selectedDependence + ' al registro.');
+			} 
+
+     /*  this.editedItem.assignedDependencies.push(
+        this.formDependencies.dependence_name
+      ); */
+      this.formDependencies.dependence_name = {};
       this.$v.formDependencies.$reset();
     },
 

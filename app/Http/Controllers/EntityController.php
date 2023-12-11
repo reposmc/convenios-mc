@@ -47,7 +47,14 @@ class EntityController extends Controller
     {
         $id = Encrypt::decryptValue($id);
 
-        Entity::where("id", $id)->delete();
+        $entity = Entity::with("instruments")->where('id', $id)->first();
+
+        if(sizeof($entity->instruments) > 0){
+            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+        }
+
+        $entity->delete();
+
         return response()->json(["status"=>"success", "message"=>"Registro eliminado correctamente."]);
     }
 }

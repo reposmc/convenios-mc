@@ -52,7 +52,14 @@ class SectorController extends Controller
     {
         $id = Encrypt::decryptValue($id);
 
-        Sector::where('id', $id)->delete();
+        $sector = Sector::with("instruments")->where('id', $id)->first();
+
+        if(sizeof($sector->instruments) > 0){
+            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+        }
+
+        $sector->delete();
+
         return response()->json([
             "status"=>"success",
             "message"=>"Registro eliminado correctamente."

@@ -32,11 +32,26 @@ class Dependence extends Model
 
     public function exonerations()
     {
-        return $this->hasMany(Exonerations::class);
+        return $this->hasMany(Exoneration::class);
     }
 
     public function national_directions()
     {
         return $this->belongsTo(NationalDirection::class, 'national_direction_id', 'id');
+    }
+
+    public function instrument()
+    {
+        return $this->hasMany(InstrumentsDependeciesDetail::class, "dependency_id");
+    }
+
+    public function user()
+    {
+        return $this->hasMany(UsersDependenciesDetail::class, "dependency_id");
+    }
+
+    public function tariff()
+    {
+        return $this->hasMany(Tariff::class, "dependence_id");
     }
 }

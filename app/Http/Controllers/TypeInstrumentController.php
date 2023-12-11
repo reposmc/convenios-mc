@@ -47,7 +47,14 @@ class TypeInstrumentController extends Controller
     {
         $id = Encrypt::decryptValue($id);
 
-        TypeInstrument::where('id', $id)->delete();
+        $typeInstrument = TypeInstrument::with("instruments")->where('id', $id)->first();
+
+        if(sizeof($typeInstrument->instruments) > 0){
+            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+        }
+
+        $typeInstrument->delete();
+
         return response()->json([
             "status"=>"success",
             "message"=>"Registro eliminado correctamente."
