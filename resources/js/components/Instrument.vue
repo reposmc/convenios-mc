@@ -1237,6 +1237,9 @@ export default {
       dialogVerExoneration: false,
       dialogEditInstrument: false,
       exonerationSeleccionado: null,
+      /* listDependence: {
+        dependence_name: {},
+      }, */
       listDependence: [],
     };
   },
@@ -1568,8 +1571,8 @@ export default {
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogEditInstrument = true;
-      this.listDependence = Object.assign({}, this.editedItem.assignedDependencies);
-      console.log(this.listDependence);
+      this.listDependence.dependence_name = Object.assign({}, this.editedItem.assignedDependencies);
+      /* console.log(this.listDependence); */ 
     },
 
     closeEdit() {
@@ -1879,18 +1882,21 @@ export default {
       if (this.$v.formDependencies.$invalid) {
         return;
       }
-
-      const list = this.listDependence;
-
+      
       const selectedDependence = this.formDependencies.dependence_name;
 
+      const test = this.listDependence.find((item) => {
+        return item.dependence_name == selectedDependence;
+      });
+      
 			const dependenceSelectedArray = this.dependences.find((dependence) => {
 				return dependence.dependence_name == selectedDependence;
 			});
-
-			const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === list);
       
-			if (dependenceSelectedArray && !exists) {
+			const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === selectedDependence);
+      const ifExists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === test);
+
+			if (dependenceSelectedArray && !exists && !ifExists) {
 				this.editedItem.assignedDependencies.push({
 					dependence_name: this.formDependencies.dependence_name,
 				});
