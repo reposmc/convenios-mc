@@ -183,6 +183,8 @@ class InstrumentController extends Controller
         $instruments->instrument_name = $request->instrument_name;
         $instruments->description = $request->description;
         $instruments->date = $request->date;
+        $instruments->dateStart = $request->dateStart;
+        $instruments->dateFinish = $request->dateFinish;
         $instruments->state = Instrument::VIGENTE;
         $instruments->sector_id = Sector::where('sector_name', $request->sector_name)->first()->id;
         $instruments->entity_id = Entity::where('entity_name', $request->entity_name)->first()->id;
@@ -233,6 +235,8 @@ class InstrumentController extends Controller
         $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
         $instruments->instrument_name = $request->instrument_name;
         $instruments->date = $request->date;
+        $instruments->dateStart = $request->dateStart;
+        $instruments->dateFinish = $request->dateFinish;
         $instruments->state = Instrument::VIGENTE;
         $instruments->sector_id = Sector::where('sector_name', $request->sector_name)->first()->id;
         $instruments->entity_id = Entity::where('entity_name', $request->entity_name)->first()->id;
