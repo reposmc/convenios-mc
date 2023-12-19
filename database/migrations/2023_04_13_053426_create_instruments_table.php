@@ -17,9 +17,17 @@ return new class extends Migration
             $table->id();
             $table->foreignId('type_instrument_id')->constrained('type_instruments');
             $table->string('instrument_name', 700);
+            $table->date('date');
+            $table->date('dateStart')->nullable();
+            $table->date('dateFinish')->nullable();
+            $table->enum('state', ['Vigente', 'Prórroga', 'Finalizado']);
             $table->foreignId('sector_id')->constrained('sectors');
             $table->foreignId('entity_id')->constrained('entities');
+            $table->foreignId('direction_id')->constrained('national_directions');
             $table->text('description')->nullable();
+            $table->date('dateStartExtension')->nullable();
+            $table->date('dateFinishExtension')->nullable();
+            $table->text('descriptionExtension')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

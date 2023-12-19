@@ -20,9 +20,17 @@ class Instrument extends Model
         'id',
         'type_instrument_id',
         'instrument_name',
+        'date',
+        'dateStart',
+        'dateFinish',
+        'state',
         'sector_id',
         'entity_id',
+        'direction_id',
         'description',
+        'dateStartExtension',
+        'dateFinishExtension',
+        'descriptionExtension',
     ];
 
     public $hidden = [
@@ -32,6 +40,10 @@ class Instrument extends Model
     ];
 
     public $timestamps = true;
+
+    public const VIGENTE = "Vigente";
+    public const PRORROGA = "Prórroga";
+    public const FINALIZADO = "Finalizado";
 
     public static function allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage)
     {
@@ -56,13 +68,15 @@ class Instrument extends Model
                     'dep.*',
                     'ti.type_instrument_name',
                     'e.entity_name',
-                    's.sector_name'
+                    's.sector_name',
+                    'nd.national_direction_name',
                 )
                     ->join('instruments as inst', 'instruments_dependecies_detail.instrument_id', '=', 'inst.id')
                     ->join('dependences as dep', 'instruments_dependecies_detail.dependency_id', '=', 'dep.id')
                     ->join('type_instruments as ti', 'inst.type_instrument_id', '=', 'ti.id')
                     ->join('entities as e', 'inst.entity_id', '=', 'e.id')
                     ->join('sectors as s', 'inst.sector_id', '=', 's.id')
+                    ->join('national_directions as nd', 'inst.direction_id', '=', 'nd.id')
                     ->where('inst.instrument_name', 'like', $search)
                     ->where('dep.id', $userDependencies)
                     ->skip($skip)
@@ -70,10 +84,11 @@ class Instrument extends Model
                     ->orderBy("inst.$sortBy", $sort)
                     ->get();
             } else {
-                return Instrument::select('instruments.*', 'ti.type_instrument_name', 'e.entity_name', 's.sector_name', 'instruments.id as instrument_id')
+                return Instrument::select('instruments.*', 'ti.type_instrument_name', 'e.entity_name', 's.sector_name', 'nd.national_direction_name', 'instruments.id as instrument_id')
                     ->join('type_instruments as ti', 'instruments.type_instrument_id', '=', 'ti.id')
                     ->join('entities as e', 'instruments.entity_id', '=', 'e.id')
                     ->join('sectors as s', 'instruments.sector_id', '=', 's.id')
+                    ->join('national_directions as nd', 'instruments.direction_id', '=', 'nd.id')
                     ->where('instruments.instrument_name', 'like', $search)
 
                     ->skip($skip)
@@ -86,10 +101,11 @@ class Instrument extends Model
 
     public static function counterPagination($search)
     {
-        return Instrument::select('instruments.*', 'ti.type_instrument_name', 'e.entity_name', 's.sector_name', 'instruments.id as instrument_id')
+        return Instrument::select('instruments.*', 'ti.type_instrument_name', 'e.entity_name', 's.sector_name', 'nd.national_direction_name', 'instruments.id as instrument_id')
             ->join('type_instruments as ti', 'instruments.type_instrument_id', '=', 'ti.id')
             ->join('entities as e', 'instruments.entity_id', '=', 'e.id')
             ->join('sectors as s', 'instruments.sector_id', '=', 's.id')
+            ->join('national_directions as nd', 'instruments.direction_id', '=', 'nd.id')
             ->where('instruments.instrument_name', 'like', $search)
 
             ->count();
@@ -99,7 +115,10 @@ class Instrument extends Model
     {
         return $this->belongsTo(Sector::class, 'sector_id', 'id');
     }
-
+    public function direction()
+    {
+        return $this->belongsTo(NationalDirection::class, 'direction_id', 'id');
+    }
     public function typeInstrument()
     {
         return $this->belongsTo(TypeInstrument::class, 'type_instrument_id', 'id');

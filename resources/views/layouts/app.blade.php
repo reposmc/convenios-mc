@@ -173,8 +173,7 @@
                             <div class=" col-sm-4 col-md-6 d-none d-md-block d-lg-block d-xl-block">
                                 <div class="col-4 col-sm-12">
                                     {{-- <a class="navbar-brand" href="{{ url('/') }}"> --}}
-                                        <h3 class="pt-4 fw-bold color-secondary mb-0">Sistema de
-                                            Desarrollo Cooperación
+                                        <h3 class="pt-4 fw-bold color-secondary mb-0">Sistema Institucional de Seguimiento de Convenios
                                         </h3>
                                     {{-- </a> --}}
                                 </div>

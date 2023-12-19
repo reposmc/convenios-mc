@@ -18,11 +18,11 @@ return new class extends Migration
           $table->id();
           $table->text('documento');
           $table->string('nombre', 45);
-          $table->unsignedBigInteger('exonerations_id');
+          $table->unsignedBigInteger('instrument_id');
           $table->softDeletes();
           $table->timestamps();
  
-          $table->foreign("exonerations_id")->references("id")->on("exonerations");
+          $table->foreign("instrument_id")->references("id")->on("instruments");
        });
     }
  

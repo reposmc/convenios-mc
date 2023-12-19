@@ -11,6 +11,7 @@ use App\Models\InstrumentsDependeciesDetail;
 use App\Models\UsersDependenciesDetail;
 use App\Models\Exoneration;
 use App\Models\Dependence;
+use App\Models\NationalDirection;
 use Encrypt;
 use DB;
 
@@ -22,7 +23,7 @@ class InstrumentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-{
+    {
     $itemsPerPage = $request->itemsPerPage;
     $skip = ($request->page - 1) * $request->itemsPerPage;
 
@@ -43,13 +44,14 @@ class InstrumentController extends Controller
             ->pluck('dependency_id')
             ->toArray();
 
-        $instruments = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'entities.entity_name', 'sectors.sector_name')
+        $instruments = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'entities.entity_name', 'sectors.sector_name', 'national_directions.national_direction_name')
             ->join('instruments_dependecies_detail', 'instruments.id', '=', 'instruments_dependecies_detail.instrument_id')
             ->join('dependences', 'instruments_dependecies_detail.dependency_id', '=', 'dependences.id')
             ->whereIn('dependences.id', $userDependencies)
             ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
             ->join('entities', 'instruments.entity_id', '=', 'entities.id')
             ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
+            ->join('national_directions', 'instruments.direction_id', '=', 'national_directions.id') 
             ->where(function ($query) use ($search) {
                 $query->where('instruments.instrument_name', 'LIKE', $search)
                     ->orWhere('instruments.description', 'LIKE', $search);
@@ -110,7 +112,7 @@ class InstrumentController extends Controller
         }
     }
     }
-
+    /* dd($instruments);  */
     $instruments = Encrypt::encryptObject($instruments, "id");
 
     $total = Instrument::counterPagination($search);
@@ -128,12 +130,13 @@ class InstrumentController extends Controller
         
         $idInstrument = Encrypt::decryptValue($request->id);
 
-        $instruments = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'entities.entity_name', 'sectors.sector_name')
+        $instruments = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'entities.entity_name', 'sectors.sector_name', 'national_directions.national_direction_name')
             ->join('instruments_dependecies_detail', 'instruments.id', '=', 'instruments_dependecies_detail.instrument_id')
             ->join('dependences', 'instruments_dependecies_detail.dependency_id', '=', 'dependences.id')
             ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
             ->join('entities', 'instruments.entity_id', '=', 'entities.id')
             ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
+            ->join('national_directions', 'instruments.direction_id', '=', 'national_directions.id')
             ->where('instruments.id', $idInstrument)
             ->distinct() 
             ->get();
@@ -179,8 +182,11 @@ class InstrumentController extends Controller
         $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
         $instruments->instrument_name = $request->instrument_name;
         $instruments->description = $request->description;
+        $instruments->date = $request->date;
+        $instruments->state = Instrument::VIGENTE;
         $instruments->sector_id = Sector::where('sector_name', $request->sector_name)->first()->id;
         $instruments->entity_id = Entity::where('entity_name', $request->entity_name)->first()->id;
+        $instruments->direction_id = NationalDirection::where('national_direction_name', $request->national_direction_name)->first()->id;
 
         $instruments->save();
 
@@ -226,8 +232,11 @@ class InstrumentController extends Controller
 
         $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
         $instruments->instrument_name = $request->instrument_name;
+        $instruments->date = $request->date;
+        $instruments->state = Instrument::VIGENTE;
         $instruments->sector_id = Sector::where('sector_name', $request->sector_name)->first()->id;
         $instruments->entity_id = Entity::where('entity_name', $request->entity_name)->first()->id;
+        $instruments->direction_id = NationalDirection::where('national_direction_name', $request->national_direction_name)->first()->id;
         $instruments->description = $request->description;
 
         $instruments->save();

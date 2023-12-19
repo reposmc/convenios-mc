@@ -103,6 +103,17 @@
                       />
                     </v-col>
                     <!-- type_instrument_name -->
+                    <!-- date -->
+                    <v-col cols="12" sm="12" md="6">
+                      <base-input
+                        label="Fecha de firma" 
+                        v-model="$v.editedItem.date.$model"
+                        :validation="$v.editedItem.date" 
+                        validationTextType="none" 
+                        type="date" 
+                      />
+                    </v-col>
+                    <!-- date -->
                   </v-row>
                   <v-row>
                     <!-- entity_name -->
@@ -127,6 +138,19 @@
                       />
                     </v-col>
                     <!-- sector_name -->
+                  </v-row>
+                  <v-row>
+                    <!-- follow -->
+                    <v-col cols="12" sm="12" md="12">
+                      <base-select-search
+                        label="Dirección Nacional encargada del seguimiento"
+                        v-model.trim="$v.editedItem.national_direction_name.$model"
+                        :items="directions"
+                        item="national_direction_name"
+                        :validation="$v.editedItem.national_direction_name"
+                      />
+                    </v-col>
+                    <!-- follow -->
                   </v-row>
                   <v-row>
                     <!-- description -->
@@ -277,6 +301,11 @@
           <span>Ver Instrumento</span>
         </v-tooltip>
       </template>
+      <template v-slot:[`item.state`]="{ item }">
+				<v-chip :color="item.state.toLocaleLowerCase()" small>{{
+					item.state
+				}}</v-chip>
+			</template>
       <template v-slot:no-data>
         <a
           href="#"
@@ -332,6 +361,17 @@
                   />
                 </v-col>
                 <!-- type_instrument_name -->
+                <!-- date -->
+                <v-col cols="12" sm="12" md="6">
+                  <base-input
+                    label="Fecha de firma" 
+                    v-model="$v.editedItem.date.$model"
+                    :validation="$v.editedItem.date" 
+                    validationTextType="none" 
+                    type="date" 
+                  />
+                </v-col>
+                <!-- date -->
               </v-row>
               <v-row>
                 <!-- entity_name -->
@@ -356,6 +396,19 @@
                   />
                 </v-col>
                 <!-- sector_name -->
+              </v-row>
+              <v-row>
+                <!-- follow -->
+                <v-col cols="12" sm="12" md="12">
+                  <base-select-search
+                    label="Dirección Nacional encargada del seguimiento"
+                    v-model.trim="$v.editedItem.national_direction_name.$model"
+                    :items="directions"
+                    item="national_direction_name"
+                    :validation="$v.editedItem.national_direction_name"
+                  />
+                </v-col>
+                <!-- follow -->
               </v-row>
               <v-row>
                 <!-- description -->
@@ -724,8 +777,27 @@
 
           <!-- Igual a convenio -->
           <v-row v-if="editedItem.type_instrument_name == 'Convenio'">
+            <!-- service_place_name -->
+            <v-col cols="12" sm="12" md="12">
+              <base-input
+                label="Espacio de servicio"
+                v-model.trim="$v.formExonerations.service_place_name.$model"
+                :validation="$v.formExonerations.service_place_name"
+                validationTextType="default"
+              />
+            </v-col>
+            <!-- service_place_name -->
+             <!-- is_tariffed -->
+             <v-col cols="12" sm="12" md="12">
+              <v-checkbox
+                v-model="$v.formExonerations.is_tariffed.$model"
+                label="No tarifado"
+              >
+              </v-checkbox>
+            </v-col>
+            <!-- is_tariffed -->
             <!-- dependence_name -->
-            <v-col cols="12" sm="12" md="6">
+            <v-col cols="12" sm="12" md="12" v-show="formExonerations.is_tariffed != true">
               <base-select-search
                 label="Dependencia"
                 v-model.trim="$v.formExonerations.dependence_name.$model"
@@ -736,36 +808,8 @@
               />
             </v-col>
             <!-- dependence_name -->
-
-            <!-- service_place_name -->
-            <v-col cols="12" sm="12" md="6">
-              <base-input
-                label="Espacio de servicio"
-                v-model.trim="$v.formExonerations.service_place_name.$model"
-                :validation="$v.formExonerations.service_place_name"
-                validationTextType="default"
-              />
-            </v-col>
-            <!-- service_place_name -->
-
-            <!-- is_tariffed -->
-            <v-col cols="12" sm="12" md="12">
-              <v-checkbox
-                v-model="$v.formExonerations.is_tariffed.$model"
-                label="No tarifado"
-              >
-              </v-checkbox>
-            </v-col>
-            <!-- is_tariffed -->
-
             <!-- non_tariff_concept -->
-            <v-col
-              cols="12"
-              xs="12"
-              sm="12"
-              md="12"
-              v-show="formExonerations.is_tariffed != false"
-            >
+            <v-col cols="12" xs="12" sm="12" md="12" v-show="formExonerations.is_tariffed != false">
               <base-input
                 label="Concepto no tarifado"
                 v-model.trim="$v.formExonerations.non_tariff_concept.$model"
@@ -774,14 +818,8 @@
               />
             </v-col>
             <!-- non_tariff_concept -->
-
             <!-- non_tariff_amount -->
-            <v-col
-              cols="12"
-              sm="12"
-              md="3"
-              v-show="formExonerations.is_tariffed != false"
-            >
+            <v-col cols="12" sm="12" md="3" v-show="formExonerations.is_tariffed != false">
               <base-input
                 label="Monto no tarifado"
                 v-model.number="$v.formExonerations.non_tariff_amount.$model"
@@ -790,14 +828,8 @@
               />
             </v-col>
             <!-- non_tariff_amount -->
-
             <!-- tariff_type_charge -->
-            <v-col
-              cols="12"
-              sm="12"
-              md="12"
-              v-show="formExonerations.is_tariffed != true"
-            >
+            <v-col cols="12" sm="12" md="12" v-show="formExonerations.is_tariffed != true">
               <base-select-search
                 label="Tarifa de dependencia"
                 v-model.trim="$v.formExonerations.tariff_type_charge.$model"
@@ -808,20 +840,13 @@
               />
             </v-col>
             <!-- tariff_type_charge -->
-
             <!-- tariff_value -->
-            <v-col
-              cols="12"
-              sm="12"
-              md="3"
-              v-show="formExonerations.is_tariffed != true"
-            >
+            <v-col cols="12" sm="12" md="3" v-show="formExonerations.is_tariffed != true">
               <h5 class="mb-0 mt-2 text-primary">
                 Tarifa: ${{ this.tariff_value }}
               </h5>
             </v-col>
             <!-- tariff_value -->
-
             <!-- number_hour -->
             <v-col cols="12" sm="12" md="3">
               <base-input
@@ -833,7 +858,6 @@
               />
             </v-col>
             <!-- number_hour -->
-
             <!-- number_people -->
             <v-col cols="12" sm="12" md="3">
               <base-input
@@ -845,7 +869,6 @@
               />
             </v-col>
             <!-- number_people -->
-
             <v-col cols="12" sm="12" md="3">
               <!-- totalTariffNumberPeople -->
               <h5
@@ -1164,10 +1187,13 @@ export default {
       //hasNewData: false,
       headers: [
         { text: "INSTRUMENTO", value: "instrument_name" },
+        { text: "FECHA DE FIRMA", value: "date" },
         { text: "TIPO DE INSTRUMENTO", value: "type_instrument_name" },
+        { text: 'ESTADO', value: 'state' },
+        { text: "DIRECCIÓN NACIONAL", value: "national_direction_name" },
         { text: "ENTIDAD", value: "entity_name" },
         { text: "SECTOR", value: "sector_name" },
-        { text: "ACCIONES", value: "actions", sortable: false },
+        { text: "ACCIONES", value: "actions", sortable: false, width: "12%" },
       ],
       options: {},
       selected: [],
@@ -1177,20 +1203,23 @@ export default {
       editedIndex: -1,
       editedItem: {
         instrument_name: "",
+        date: "",
         description: "",
         type_instrument_name: "",
         entity_name: "",
         sector_name: "",
+        national_direction_name: "",
         assignedDependencies: [],
         assignedExonerations: [],
       },
       defaultItem: {
         instrument_name: "",
+        date: "",
         description: "",
         type_instrument_name: "",
         entity_name: "",
-        national_direction_name: "",
         sector_name: "",
+        national_direction_name: "",
         assignedDependencies: [],
         assignedExonerations: [],
       },
@@ -1237,9 +1266,6 @@ export default {
       dialogVerExoneration: false,
       dialogEditInstrument: false,
       exonerationSeleccionado: null,
-      /* listDependence: {
-        dependence_name: {},
-      }, */
       listDependence: [],
     };
   },
@@ -1255,6 +1281,9 @@ export default {
       type_instrument_name: {
         required,
       },
+      date: {
+        required,
+      },
       description: {
         required,
         minLength: minLength(1),
@@ -1267,8 +1296,7 @@ export default {
         required,
       },
       national_direction_name: {
-        minLength: minLength(1),
-        maxLength: maxLength(150),
+        required,
       },
       assignedDependencies: {
         required,
@@ -1557,6 +1585,7 @@ export default {
       }
 
       this.close();
+      this.closeEdit();
       this.initialize();
       return;
     },
@@ -1940,3 +1969,20 @@ export default {
   },
 };
 </script>
+
+<style>
+.vigente {
+	background-color: green !important;
+	color: white !important;
+}
+
+.prórroga {
+	background-color: orange !important;
+	color: black !important;
+}
+
+.finalizado {
+	background-color: red !important;
+	color: white !important;
+}
+</style>

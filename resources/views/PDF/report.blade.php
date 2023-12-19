@@ -75,6 +75,10 @@
                         <td class="instrument-info">{{ $d->instrument_name }}</td>
                     </tr>
                     <tr>
+                        <td class="instrument-info">Fecha de firma:</td>
+                        <td class="instrument-info">{{ $d->date }}</td>
+                    </tr>
+                    <tr>
                         <td class="instrument-info">Tipo de convenio:</td>
                         <td class="instrument-info">{{ $d->type_instrument_name }}</td>
                     </tr>

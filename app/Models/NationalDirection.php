@@ -33,9 +33,15 @@ class NationalDirection extends Model
     {
         return $this->hasMany(NationalDirection::class);
     }
-
     public function dependence(){
         return $this->hasMany(Dependence::class, "national_direction_id")->withTrashed();
     }
-
+    public function instrument()
+    {
+        return $this->hasMany(Instrument::class);
+    }
+    public function instruments()
+    {
+        return $this->hasMany(Instrument::class, "direction_id")->withTrashed();
+    }
 }
