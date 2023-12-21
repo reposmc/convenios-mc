@@ -112,7 +112,7 @@ class InstrumentController extends Controller
         }
     }
     }
-    /* dd($instruments);  */
+    /* dd($instruments); */  
     $instruments = Encrypt::encryptObject($instruments, "id");
 
     $total = Instrument::counterPagination($search);

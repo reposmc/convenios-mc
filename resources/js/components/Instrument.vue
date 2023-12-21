@@ -153,29 +153,6 @@
                     <!-- follow -->
                   </v-row>
                   <v-row>
-                    <v-col cols="12" sm="12" md="4">
-                      <h5>Período de duración:</h5>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <base-input
-                          label="Fecha de inicio" 
-                          v-model="$v.editedItem.dateStart.$model"
-                          :validation="$v.editedItem.dateStart" 
-                          validationTextType="none" 
-                          type="date" 
-                        />
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <base-input
-                          label="Fecha de fin" 
-                          v-model="$v.editedItem.dateFinish.$model"
-                          :validation="$v.editedItem.dateFinish" 
-                          validationTextType="none" 
-                          type="date" 
-                        />
-                    </v-col>
-                  </v-row>
-                  <v-row>
                     <!-- description -->
                     <v-col cols="12" sm="12" md="12">
                       <base-text-area
@@ -197,6 +174,29 @@
                       </div> -->
                     </v-col>
                     <!-- description -->
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="4">
+                      <h5>Período de duración:</h5>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <base-input
+                          label="Fecha de inicio" 
+                          v-model="$v.editedItem.dateStart.$model"
+                          :validation="$v.editedItem.dateStart" 
+                          validationTextType="none" 
+                          type="date" 
+                        />
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <base-input
+                          label="Fecha de fin" 
+                          v-model="$v.editedItem.dateFinish.$model"
+                          :validation="$v.editedItem.dateFinish" 
+                          validationTextType="none" 
+                          type="date" 
+                        />
+                    </v-col>
                   </v-row>
                   <!-- Form -->
 
@@ -434,29 +434,6 @@
                 <!-- follow -->
               </v-row>
               <v-row>
-                <v-col cols="12" sm="12" md="4">
-                  <h5>Período de duración:</h5>
-                </v-col>
-                <v-col cols="12" sm="12" md="4">
-                  <base-input
-                      label="Fecha de inicio" 
-                      v-model="$v.editedItem.dateStart.$model"
-                      :validation="$v.editedItem.dateStart" 
-                      validationTextType="none" 
-                      type="date" 
-                    />
-                </v-col>
-                <v-col cols="12" sm="12" md="4">
-                  <base-input
-                      label="Fecha de fin" 
-                      v-model="$v.editedItem.dateFinish.$model"
-                      :validation="$v.editedItem.dateFinish" 
-                      validationTextType="none" 
-                      type="date" 
-                    />
-                </v-col>
-              </v-row>
-              <v-row>
                 <!-- description -->
                 <v-col cols="12" sm="12" md="12">
                   <base-text-area
@@ -478,6 +455,40 @@
                   </div> -->
                 </v-col>
                 <!-- description -->
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="12" md="8">
+                  <h5>Período de duración:</h5>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <h5>Estado:</h5>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="12" md="4">
+                  <base-input
+                      label="Fecha de inicio" 
+                      v-model="$v.editedItem.dateStart.$model"
+                      :validation="$v.editedItem.dateStart" 
+                      validationTextType="none" 
+                      type="date" 
+                    />
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <base-input
+                      label="Fecha de fin" 
+                      v-model="$v.editedItem.dateFinish.$model"
+                      :validation="$v.editedItem.dateFinish" 
+                      validationTextType="none" 
+                      type="date" 
+                    />
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <base-select-search
+                    label="Estado del Instrumento"
+                    :items="estado"
+                  />
+                </v-col>
               </v-row>
               <!-- Form -->
 
@@ -506,7 +517,6 @@
                   </a>
                 </v-col>
                 <!-- assignDependency -->
-
                 <!-- dependency table -->
                 <v-simple-table class="mt-2">
                   <thead>
@@ -1230,6 +1240,7 @@ export default {
       dialogExoneration: false,
       dialogCloseConfirm: false,
       dialogDelete: false,
+      estado: ["Prórroga", "Finalizado"],
       //hasNewData: false,
       headers: [
         { text: "INSTRUMENTO", value: "instrument_name" },
