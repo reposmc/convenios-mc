@@ -281,7 +281,7 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-tooltip top v-if="actualUser.role == 'Administrador'">
+        <v-tooltip top v-if="(actualUser.role == 'Administrador')">
           <template v-slot:activator="{ on, attrs }">
             <v-icon
               small
@@ -487,11 +487,50 @@
                   <base-select-search
                     label="Estado del Instrumento"
                     :items="estado"
+                    v-model.trim="$v.editedItem.state.$model"
+                    :validation="$v.editedItem.state"
                   />
                 </v-col>
               </v-row>
+              <v-row>
+                <h5 class="pt-3" v-if="hideExtension">Detalle de la Prorroga</h5>
+                <hr v-if="hideExtension"/>
+                <v-col cols="12" sm="12" md="4" v-if="hideExtension">
+                  <base-input
+                      label="Fecha de inicio de prórroga" 
+                      type="date" 
+                      v-model="$v.editedItem.dateStartExtension.$model"
+                      :validation="$v.editedItem.dateStartExtension" 
+                    />
+                </v-col>
+                <v-col cols="12" sm="12" md="4" v-if="hideExtension">
+                  <base-input
+                      label="Fecha de fin de prórroga" 
+                      type="date"
+                      v-model="$v.editedItem.dateFinishExtension.$model"
+                      :validation="$v.editedItem.dateFinishExtension"
+                    />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="12" md="12" v-if="hideExtension">
+                  <base-text-area
+                    label="Descripción de la prórroga"
+                    v-model="$v.editedItem.descriptionExtension.$model"
+                    :validation="$v.editedItem.descriptionExtension"
+                    :rows="7"
+                    validationTextType="default"
+                    :max="500"
+                    :min="1"
+                    :validationsInput="{
+                      required: true,
+                      minLength: true,
+                      maxLength: true,
+                    }"
+                  ></base-text-area>
+                </v-col>
+              </v-row>
               <!-- Form -->
-
               <!-- Dependencies -->
               <template>
                 <h5 class="pt-3">Dependencias</h5>
@@ -577,7 +616,7 @@
       >
         <v-card-title>
 					<h1 class="mx-auto pt-3 mb-3 text-center black-secondary">
-            {{ item.instrument_name }}
+            DETALLE DEL INSTRUMENTO
           </h1>
         </v-card-title>
         <v-card-text>
@@ -588,6 +627,12 @@
                 <v-simple-table>
                   <template v-slot:default>
                     <tbody>
+                      <tr>
+                        <th style="min-width: 100px">Nombre del Instrumento</th>
+                        <td>
+                          {{ item.instrument_name }}
+                        </td>
+                      </tr>
                       <tr>
                         <th style="min-width: 100px">Entidad</th>
                         <td>
@@ -1268,6 +1313,10 @@ export default {
         entity_name: "",
         sector_name: "",
         national_direction_name: "",
+        state: "",
+        dateStartExtension: "",
+        dateFinishExtension: "",
+        descriptionExtension: "", 
         assignedDependencies: [],
         assignedExonerations: [],
       },
@@ -1281,6 +1330,10 @@ export default {
         entity_name: "",
         sector_name: "",
         national_direction_name: "",
+        state: "",
+        dateStartExtension: "",
+        dateFinishExtension: "",
+        descriptionExtension: "",
         assignedDependencies: [],
         assignedExonerations: [],
       },
@@ -1327,7 +1380,7 @@ export default {
       dialogVerExoneration: false,
       dialogEditInstrument: false,
       exonerationSeleccionado: null,
-      listDependence: [],
+      listDependence:[],
     };
   },
 
@@ -1346,14 +1399,10 @@ export default {
         required,
       },
       dateStart: {
-        required: requiredIf(function (editedItem) {
-          return this.editedItem.dateStart != "";
-        }),
+
       },
       dateFinish: {
-        required: requiredIf(function (editedItem) {
-          return this.editedItem.dateFinish != "";
-        }),
+
       },
       description: {
         required,
@@ -1373,7 +1422,27 @@ export default {
         required,
       },
       assignedExonerations: {
-        // required,
+
+      },
+      state:{
+
+      },
+      dateStartExtension:{
+        required: requiredIf(function (editedItem) {
+          return this.editedItem.state == "Prórroga";
+        }),
+      },
+      dateFinishExtension:{
+        required: requiredIf(function (editedItem) {
+          return this.editedItem.state == "Prórroga";
+        }),
+      },
+      descriptionExtension:{
+        required: requiredIf(function (editedItem) {
+          return this.editedItem.state == "Prórroga";
+        }),
+        minLength: minLength(1),
+        maxLength: maxLength(200),
       },
     },
     formDependencies: {
@@ -1527,6 +1596,13 @@ export default {
     thereAreData() {
       return this.editedItem.assignedExonerations.length > 0;
     },
+    hideExtension(){
+      if (
+				this.editedItem.state === 'Prórroga'
+			) {
+				return true;
+			}
+		},
     /* thereAreSavedData() {
       return this.editedItem.assignedExonerations.some(assignedExonerations => assignedExonerations.id);
     },
@@ -1671,7 +1747,6 @@ export default {
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogEditInstrument = true;
-      this.listDependence.dependence_name = Object.assign({}, this.editedItem.assignedDependencies);
       /* console.log(this.listDependence); */ 
     },
 
@@ -1812,11 +1887,6 @@ export default {
     closeReset() {
       this.dialogExoneration = false;
     },
-
-    /* hasExistingExonerations() {
-      // Verificar si existen exoneraciones en la base de datos
-      return this.editedItem.assignedExonerations.some(exoneration => exoneration.id !== null);
-    }, */
 
     async addExoneration() {
       this.$v.editedItem.assignedExonerations.$touch();
@@ -1982,24 +2052,26 @@ export default {
       if (this.$v.formDependencies.$invalid) {
         return;
       }
+
+      this.listDependence = Object.assign([], this.editedItem.assignedDependencies);
       
       const selectedDependence = this.formDependencies.dependence_name;
 
       const test = this.listDependence.find((item) => {
-        return item.dependence_name == selectedDependence;
-      });
-      
+        return item == selectedDependence;
+      }); 
+
 			const dependenceSelectedArray = this.dependences.find((dependence) => {
 				return dependence.dependence_name == selectedDependence;
 			});
       
 			const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === selectedDependence);
-      const ifExists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === test);
-
-			if (dependenceSelectedArray && !exists && !ifExists) {
-				this.editedItem.assignedDependencies.push({
-					dependence_name: this.formDependencies.dependence_name,
-				});
+      const ifExists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === test); 
+    
+			if (dependenceSelectedArray && !exists && ifExists) {
+				this.editedItem.assignedDependencies.push(
+					this.formDependencies.dependence_name,
+				);
 				this.$toast.success('Dependencia agregada');
 			} else {
 				this.$toast.warning('Ya ingresó ' + selectedDependence + ' al registro.');

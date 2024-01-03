@@ -70,20 +70,20 @@ class InstrumentController extends Controller
                 ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
                 ->where('instrument_id', $item->instrument_id)->get()->pluck('dependence_name');
 
-        foreach ($instruments as $item) {
-            $item->assignedExonerations = Exoneration::select('exonerations.*')
-                ->where('instrument_id', $item->id)
-                ->get();
+            foreach ($instruments as $item) {
+                $item->assignedExonerations = Exoneration::select('exonerations.*')
+                    ->where('instrument_id', $item->id)
+                    ->get();
 
-            foreach ($item->assignedExonerations as $value) {
-                if (isset($value->is_tariffed) && $value->is_tariffed == 0) {
-                    $value->is_tariffed = "Sí";
-                } elseif (isset($value->is_tariffed) && $value->is_tariffed == 1) {
-                    $value->is_tariffed = "No";
+                foreach ($item->assignedExonerations as $value) {
+                    if (isset($value->is_tariffed) && $value->is_tariffed == 0) {
+                        $value->is_tariffed = "Sí";
+                    } elseif (isset($value->is_tariffed) && $value->is_tariffed == 1) {
+                        $value->is_tariffed = "No";
+                    }
                 }
             }
         }
-    }
     } else {
         // All records
         $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
@@ -229,31 +229,90 @@ class InstrumentController extends Controller
      */
     public function update(Request $request)
     {
-        $id = Encrypt::decryptValue($request->id);
-        $instruments = Instrument::find($id);
+        if($request->state == Instrument::PRORROGA){
+            $id = Encrypt::decryptValue($request->id);
+            $instruments = Instrument::find($id);
 
-        $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
-        $instruments->instrument_name = $request->instrument_name;
-        $instruments->date = $request->date;
-        $instruments->dateStart = $request->dateStart;
-        $instruments->dateFinish = $request->dateFinish;
-        $instruments->state = Instrument::VIGENTE;
-        $instruments->sector_id = Sector::where('sector_name', $request->sector_name)->first()->id;
-        $instruments->entity_id = Entity::where('entity_name', $request->entity_name)->first()->id;
-        $instruments->direction_id = NationalDirection::where('national_direction_name', $request->national_direction_name)->first()->id;
-        $instruments->description = $request->description;
+            $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
+            $instruments->instrument_name = $request->instrument_name;
+            $instruments->date = $request->date;
+            $instruments->dateStart = $request->dateStart;
+            $instruments->dateFinish = $request->dateFinish;
+            $instruments->state = Instrument::PRORROGA;
+            $instruments->sector_id = Sector::where('sector_name', $request->sector_name)->first()->id;
+            $instruments->entity_id = Entity::where('entity_name', $request->entity_name)->first()->id;
+            $instruments->direction_id = NationalDirection::where('national_direction_name', $request->national_direction_name)->first()->id;
+            $instruments->description = $request->description;
+            $instruments->dateStartExtension = $request->dateStartExtension;
+            $instruments->dateFinishExtension = $request->dateFinishExtension;
+            $instruments->descriptionExtension = $request->descriptionExtension;
 
-        $instruments->save();
+            $instruments->save();
 
-        InstrumentsDependeciesDetail::where('instrument_id', $instruments->id)->delete();
-        foreach ($request->assignedDependencies as $key => $dependence_name) {
+            InstrumentsDependeciesDetail::where('instrument_id', $instruments->id)->delete();
+            foreach ($request->assignedDependencies as $key => $dependence_name) {
 
-            $dependency = Dependence::where(['dependence_name' => $dependence_name])->first();
+                $dependency = Dependence::where(['dependence_name' => $dependence_name])->first();
 
-            InstrumentsDependeciesDetail::create([
-                'instrument_id' => $instruments->id,
-                'dependency_id' => $dependency->id,
-            ]);
+                InstrumentsDependeciesDetail::create([
+                    'instrument_id' => $instruments->id,
+                    'dependency_id' => $dependency->id,
+                ]);
+            }
+        }elseif($request->state == Instrument::FINALIZADO){
+            $id = Encrypt::decryptValue($request->id);
+            $instruments = Instrument::find($id);
+
+            $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
+            $instruments->instrument_name = $request->instrument_name;
+            $instruments->date = $request->date;
+            $instruments->dateStart = $request->dateStart;
+            $instruments->dateFinish = $request->dateFinish;
+            $instruments->state = Instrument::FINALIZADO;
+            $instruments->sector_id = Sector::where('sector_name', $request->sector_name)->first()->id;
+            $instruments->entity_id = Entity::where('entity_name', $request->entity_name)->first()->id;
+            $instruments->direction_id = NationalDirection::where('national_direction_name', $request->national_direction_name)->first()->id;
+            $instruments->description = $request->description;
+
+            $instruments->save();
+
+            InstrumentsDependeciesDetail::where('instrument_id', $instruments->id)->delete();
+            foreach ($request->assignedDependencies as $key => $dependence_name) {
+
+                $dependency = Dependence::where(['dependence_name' => $dependence_name])->first();
+
+                InstrumentsDependeciesDetail::create([
+                    'instrument_id' => $instruments->id,
+                    'dependency_id' => $dependency->id,
+                ]);
+            }
+        }else{
+            $id = Encrypt::decryptValue($request->id);
+            $instruments = Instrument::find($id);
+
+            $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
+            $instruments->instrument_name = $request->instrument_name;
+            $instruments->date = $request->date;
+            $instruments->dateStart = $request->dateStart;
+            $instruments->dateFinish = $request->dateFinish;
+            $instruments->state = Instrument::VIGENTE;
+            $instruments->sector_id = Sector::where('sector_name', $request->sector_name)->first()->id;
+            $instruments->entity_id = Entity::where('entity_name', $request->entity_name)->first()->id;
+            $instruments->direction_id = NationalDirection::where('national_direction_name', $request->national_direction_name)->first()->id;
+            $instruments->description = $request->description;
+
+            $instruments->save();
+
+            InstrumentsDependeciesDetail::where('instrument_id', $instruments->id)->delete();
+            foreach ($request->assignedDependencies as $key => $dependence_name) {
+
+                $dependency = Dependence::where(['dependence_name' => $dependence_name])->first();
+
+                InstrumentsDependeciesDetail::create([
+                    'instrument_id' => $instruments->id,
+                    'dependency_id' => $dependency->id,
+                ]);
+            }
         }
 
         return response()->json([
