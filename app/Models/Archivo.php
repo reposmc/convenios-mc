@@ -12,7 +12,7 @@ class Archivo extends Model
 
    protected $table = "archivos";
 
-   protected $fillable = ["id", "archivo", "nombre", "instrument_id"];
+   protected $fillable = ["id", "documento", "nombre", "instrument_id"];
 
    public $timestamps = false;
 

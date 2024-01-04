@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Instrument;
+use App\Models\Archivo;
 use App\Models\TypeInstrument;
 use App\Models\Entity;
 use App\Models\Sector;
@@ -14,6 +15,7 @@ use App\Models\Dependence;
 use App\Models\NationalDirection;
 use Encrypt;
 use DB;
+use Str;
 
 class InstrumentController extends Controller
 {
@@ -84,6 +86,14 @@ class InstrumentController extends Controller
                 }
             }
         }
+
+        /* $doc = $request->archivo ? $request->archivo->map(function ($archivo) {
+            return [
+               "url" => $archivo->archivo,
+               "archivo" => $archivo->nombre,
+               "id" => Str::uuid()
+            ];}); */
+
     } else {
         // All records
         $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
@@ -201,6 +211,25 @@ class InstrumentController extends Controller
                 'dependency_id' => $dependency->id,
             ]);
         }
+        
+        $file = request()->archivo;
+
+         if ($file != null) {
+            if (substr($file, 0, 20) == "data:application/pdf") {
+
+               $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+
+               $file = $archivo;
+
+               $portfolio = Archivo::create([
+                  'nombre' => request()->nom_archivo,
+                  'documento' => $file,
+                  'instrument_id' =>  $instruments->id,
+               ]);
+
+               $portfolio->save();
+            }
+         }
 
         return response()->json([
             "status" => "success",

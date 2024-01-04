@@ -82,6 +82,7 @@
                         auto-grow
                         :max="700"
 										    :min="1"
+                        :rows="6"
                         :validationsInput="{
                           required: true,
                           minLength: true,
@@ -199,7 +200,35 @@
                     </v-col>
                   </v-row>
                   <!-- Form -->
-
+                  <!-- Document -->
+                  <v-row>
+                    <v-col cols="12" sm="12" md="6" >
+                      <h5>Documento: (Opcional - PDF)</h5>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="6" >
+                      <input-file
+                        accept="application/pdf"
+                        v-model="$v.editedItem.archivo.$model"
+                        :validation="$v.editedItem.archivo"
+                        @update-file="editedItem.archivo = $event"
+                        @file-size-exceeded="$emit('file-size-exceeded', true)"
+                      />
+                    </v-col>
+                    <v-col cols="12" sm="12" md="6" >
+                      <v-text-field
+                        label="Nombre de archivo"
+                        class=""
+                        outlined
+                        dense
+                        type="text"
+                        v-model="$v.editedItem.nom_archivo.$model"
+                      ></v-text-field>
+                      <br />
+                      <br />
+                    </v-col>
+                  </v-row>
                   <!-- Dependencies -->
                   <template>
                     <h5 class="pt-3">Dependencias</h5>
@@ -455,6 +484,26 @@
                   </div> -->
                 </v-col>
                 <!-- description -->
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="12" md="3">
+                  <h5>Documento:</h5>
+                </v-col>
+                <v-col cols="12" sm="12" md="9">
+                  <v-icon small> mdi-paperclip </v-icon>
+                  <a
+                    v-for="(
+                      doc, i
+                    ) in editedItem.archivo"
+                    :key="i"
+                    :value="doc.archivo"
+                    :href="doc.url"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <span>{{ doc.archivo }}</span>
+                  </a>
+                </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12" sm="12" md="8">
@@ -1242,6 +1291,7 @@ import lib from "../libs/function";
 import { required, minLength,maxLength, requiredIf,} from "vuelidate/lib/validators";
 import axios from "axios";
 import BaseInput from "./base-components/BaseInput.vue";
+import InputFile from './base-components/InputFile.vue';
 import { title } from "process";
 import moment from "moment";
 import { log } from 'util';
@@ -1277,7 +1327,7 @@ const options = {
 Vue.use(Toast, options);
 
 export default {
-  components: { BaseInput },
+  components: { BaseInput, InputFile },
   data() {
     return {
       search: "",
@@ -1317,6 +1367,8 @@ export default {
         dateStartExtension: "",
         dateFinishExtension: "",
         descriptionExtension: "", 
+        archivo: {},
+        nom_archivo: "",
         assignedDependencies: [],
         assignedExonerations: [],
       },
@@ -1334,6 +1386,8 @@ export default {
         dateStartExtension: "",
         dateFinishExtension: "",
         descriptionExtension: "",
+        archivo: {},
+        nom_archivo: "",
         assignedDependencies: [],
         assignedExonerations: [],
       },
@@ -1443,6 +1497,26 @@ export default {
         }),
         minLength: minLength(1),
         maxLength: maxLength(200),
+      },
+      archivo: {
+        file_size_validation: (value, vm) => {
+					if (Array.isArray(value)) {
+						let error = true;
+						for (let i = 0; i < value.length; i++) {
+							let file = value[i];
+							if (file.size > 5242880) {
+								error = false;
+								break;
+							}
+						}
+
+						return error;
+					}
+					return true;
+				},
+			},
+      nom_archivo: {
+
       },
     },
     formDependencies: {
@@ -1731,9 +1805,9 @@ export default {
         }
       }
 
+      this.initialize();
       this.close();
       this.closeEdit();
-      this.initialize();
       return;
     },
 
