@@ -58,11 +58,12 @@ class InstrumentController extends Controller
                 $query->where('instruments.instrument_name', 'LIKE', $search)
                     ->orWhere('instruments.description', 'LIKE', $search);
             })
+            ->where()
             ->orderBy($sortBy, $sort)
             ->skip($skip)
             ->take($itemsPerPage)
             ->get();
-
+            
         // Load exonerations for each instrument
         foreach ($instruments as $item) {
             $item->assignedDependencies = InstrumentsDependeciesDetail::select(
@@ -71,6 +72,18 @@ class InstrumentController extends Controller
             )
                 ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
                 ->where('instrument_id', $item->instrument_id)->get()->pluck('dependence_name');
+            
+            $item->archivo = Archivo::select('archivos.*')
+                                ->where('instrument_id', $item->instrument_id)->get();
+            
+            $item->archivo = $item->archivo ? $item->archivo->map(function ($archivo) {
+                return [
+                    "url" => $archivo->documento,
+                    "nombre" => $archivo->nombre,
+                    "tipo" => Archivo::NORMAL,
+                    "id" => Str::uuid()
+                ];
+                }) : [];
 
             foreach ($instruments as $item) {
                 $item->assignedExonerations = Exoneration::select('exonerations.*')
@@ -87,13 +100,6 @@ class InstrumentController extends Controller
             }
         }
 
-        /* $doc = $request->archivo ? $request->archivo->map(function ($archivo) {
-            return [
-               "url" => $archivo->archivo,
-               "archivo" => $archivo->nombre,
-               "id" => Str::uuid()
-            ];}); */
-
     } else {
         // All records
         $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
@@ -107,22 +113,34 @@ class InstrumentController extends Controller
                 ->join('dependences as d', 'instruments_dependecies_detail.dependency_id', '=', 'd.id')
                 ->where('instrument_id', $item->instrument_id)->get()->pluck('dependence_name');
 
-        foreach ($instruments as $item) {
-            $item->assignedExonerations = Exoneration::select('exonerations.*')
-                ->where('instrument_id', $item->id)
-                ->get();
+            $item->archivo = Archivo::select('archivos.*')
+                                ->where('instrument_id', $item->instrument_id)->get();
+            
+            $item->archivo = $item->archivo ? $item->archivo->map(function ($archivo) {
+                return [
+                   "url" => $archivo->documento,
+                   "nombre" => $archivo->nombre,
+                   "tipo" => Archivo::NORMAL,
+                   "id" => Str::uuid()
+                ];
+             }) : [];
 
-            foreach ($item->assignedExonerations as $value) {
-                if (isset($value->is_tariffed) && $value->is_tariffed == 0) {
-                    $value->is_tariffed = "Sí";
-                } elseif (isset($value->is_tariffed) && $value->is_tariffed == 1) {
-                    $value->is_tariffed = "No";
+            foreach ($instruments as $item) {
+                $item->assignedExonerations = Exoneration::select('exonerations.*')
+                    ->where('instrument_id', $item->id)
+                    ->get();
+
+                foreach ($item->assignedExonerations as $value) {
+                    if (isset($value->is_tariffed) && $value->is_tariffed == 0) {
+                        $value->is_tariffed = "Sí";
+                    } elseif (isset($value->is_tariffed) && $value->is_tariffed == 1) {
+                        $value->is_tariffed = "No";
+                    }
                 }
             }
         }
     }
-    }
-    /* dd($instruments); */  
+    
     $instruments = Encrypt::encryptObject($instruments, "id");
 
     $total = Instrument::counterPagination($search);
@@ -224,6 +242,7 @@ class InstrumentController extends Controller
                $portfolio = Archivo::create([
                   'nombre' => request()->nom_archivo,
                   'documento' => $file,
+                  'tipo' => Archivo::NORMAL,
                   'instrument_id' =>  $instruments->id,
                ]);
 
@@ -236,17 +255,6 @@ class InstrumentController extends Controller
             "message" => "Registro creado correctamente.",
             "success" => true,
         ]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
     }
 
     /**
@@ -287,6 +295,28 @@ class InstrumentController extends Controller
                     'instrument_id' => $instruments->id,
                     'dependency_id' => $dependency->id,
                 ]);
+            }
+
+            if(request()->archivo != ''){
+                $file = request()->archivo;
+
+                if ($file != null) {
+                    if (substr($file, 0, 20) == "data:application/pdf") {
+
+                    $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+
+                    $file = $archivo;
+
+                    $portfolio = Archivo::create([
+                        'nombre' => request()->nom_archivo,
+                        'documento' => $file,
+                        'tipo' => Archivo::PRORROGA,
+                        'instrument_id' =>  $instruments->id,
+                    ]);
+
+                    $portfolio->save();
+                    }
+                }
             }
         }elseif($request->state == Instrument::FINALIZADO){
             $id = Encrypt::decryptValue($request->id);

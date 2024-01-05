@@ -496,12 +496,12 @@
                       doc, i
                     ) in editedItem.archivo"
                     :key="i"
-                    :value="doc.archivo"
+                    :value="doc.nombre"
                     :href="doc.url"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
-                    <span>{{ doc.archivo }}</span>
+                    <span>{{ doc.nombre }}</span>
                   </a>
                 </v-col>
               </v-row>
@@ -562,21 +562,31 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" sm="12" md="12" v-if="hideExtension">
-                  <base-text-area
-                    label="Descripción de la prórroga"
-                    v-model="$v.editedItem.descriptionExtension.$model"
-                    :validation="$v.editedItem.descriptionExtension"
-                    :rows="7"
-                    validationTextType="default"
-                    :max="500"
-                    :min="1"
-                    :validationsInput="{
-                      required: true,
-                      minLength: true,
-                      maxLength: true,
-                    }"
-                  ></base-text-area>
+                <v-col cols="12" sm="12" md="6" v-if="hideExtension">
+                  <h5>Documento: (Opcional - PDF)</h5>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="12" md="6" v-if="hideExtension">
+                  <input-file
+                    accept="application/pdf"
+                    v-model="$v.editedItem.archivo.$model"
+                    :validation="$v.editedItem.archivo"
+                    @update-file="editedItem.archivo = $event"
+                    @file-size-exceeded="$emit('file-size-exceeded', true)"
+                  />
+                </v-col>
+                <v-col cols="12" sm="12" md="6" v-if="hideExtension">
+                  <v-text-field
+                    label="Nombre de archivo"
+                    class=""
+                    outlined
+                    dense
+                    type="text"
+                    v-model="$v.editedItem.nom_archivo.$model"
+                  ></v-text-field>
+                  <br />
+                  <br />
                 </v-col>
               </v-row>
               <!-- Form -->
@@ -1241,9 +1251,7 @@
         <!-- save exoneration -->
       </v-card>
     </v-dialog>
-    <!--form detail-->
 
-    <!-- close confirm -->
     <v-dialog v-model="dialogCloseConfirm" max-width="500px">
       <v-card class="h-100">
         <v-container>
@@ -1273,7 +1281,7 @@
         </v-container>
       </v-card>
     </v-dialog>
-    <!-- close confirm -->
+
   </div>
 </template>
 
@@ -1453,10 +1461,10 @@ export default {
         required,
       },
       dateStart: {
-
+        required,
       },
       dateFinish: {
-
+        required,
       },
       description: {
         required,
@@ -1950,7 +1958,7 @@ export default {
               "fail"
             );
           });
-
+          
         this.records = data.records;
         this.recordsFiltered = data.records;
         this.total = data.total;

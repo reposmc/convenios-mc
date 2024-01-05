@@ -12,7 +12,7 @@ class Archivo extends Model
 
    protected $table = "archivos";
 
-   protected $fillable = ["id", "documento", "nombre", "instrument_id"];
+   protected $fillable = ["id", "documento", "nombre", "tipo", "instrument_id"];
 
    public $timestamps = false;
 
@@ -23,6 +23,9 @@ class Archivo extends Model
       'updated_at',
       'deleted_at',
    ];
+
+   public const PRORROGA = "Prórroga";
+   public const NORMAL = "Normal";
 
    public function instrument()
    {
