@@ -561,34 +561,6 @@
                     />
                 </v-col>
               </v-row>
-              <v-row>
-                <v-col cols="12" sm="12" md="6" v-if="hideExtension">
-                  <h5>Documento: (Opcional - PDF)</h5>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" sm="12" md="6" v-if="hideExtension">
-                  <input-file
-                    accept="application/pdf"
-                    v-model="$v.editedItem.archivo.$model"
-                    :validation="$v.editedItem.archivo"
-                    @update-file="editedItem.archivo = $event"
-                    @file-size-exceeded="$emit('file-size-exceeded', true)"
-                  />
-                </v-col>
-                <v-col cols="12" sm="12" md="6" v-if="hideExtension">
-                  <v-text-field
-                    label="Nombre de archivo"
-                    class=""
-                    outlined
-                    dense
-                    type="text"
-                    v-model="$v.editedItem.nom_archivo.$model"
-                  ></v-text-field>
-                  <br />
-                  <br />
-                </v-col>
-              </v-row>
               <!-- Form -->
               <!-- Dependencies -->
               <template>
@@ -1296,7 +1268,7 @@ import exonerationApi from "../apis/exonerationApi";
 import roleApi from "../apis/roleApi";
 import userApi from "../apis/userApi";
 import lib from "../libs/function";
-import { required, minLength,maxLength, requiredIf,} from "vuelidate/lib/validators";
+import { required, minLength, maxLength, requiredIf,} from "vuelidate/lib/validators";
 import axios from "axios";
 import BaseInput from "./base-components/BaseInput.vue";
 import InputFile from './base-components/InputFile.vue';
