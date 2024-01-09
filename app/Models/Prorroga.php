@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Archivo extends Model
+class Prorroga extends Model
 {
    use HasFactory, SoftDeletes;
 
-   protected $table = "archivos";
+   protected $table = "prorrogas";
 
-   protected $fillable = ["id", "documento", "nombre", "instrument_id"];
+   protected $fillable = ["id", "documento", "nombre", 'dateStartExtension', 'dateFinishExtension', "instrument_id"];
 
    public $timestamps = false;
 
@@ -26,6 +26,6 @@ class Archivo extends Model
 
    public function instrument()
    {
-      return $this->belongsTo(Archivo::class, "instrument_id")->withTrashed();
+      return $this->belongsTo(Prorroga::class, "instrument_id")->withTrashed();
    }
 }

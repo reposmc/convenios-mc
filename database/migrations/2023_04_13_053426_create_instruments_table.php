@@ -25,9 +25,6 @@ return new class extends Migration
             $table->foreignId('entity_id')->constrained('entities');
             $table->foreignId('direction_id')->constrained('national_directions');
             $table->text('description')->nullable();
-            $table->date('dateStartExtension')->nullable();
-            $table->date('dateFinishExtension')->nullable();
-            $table->text('descriptionExtension')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

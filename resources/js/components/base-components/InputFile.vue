@@ -91,11 +91,11 @@ export default {
 
   methods: {
     async updateFile(e) {
-      // const size = e.target.files[0].size / 1024 / 1024;
-      // if (size > 5) {
-      //   this.$emit("file-size-exceeded", true);
-      //   return;
-      // }
+       const size = e.target.files[0].size / 1024 / 1024;
+       if (size > 5) {
+         this.$emit("file-size-exceeded", true);
+         return;
+      }
       const file = await this.toBase64(e.target.files[0]);
       this.fileName = e.target.files[0].name;
       this.$emit("update-file", file);

@@ -18,7 +18,6 @@ return new class extends Migration
           $table->id();
           $table->text('documento');
           $table->string('nombre', 45);
-          $table->enum('tipo', ['Normal', 'Prórroga']);
           $table->unsignedBigInteger('instrument_id');
           $table->softDeletes();
           $table->timestamps();

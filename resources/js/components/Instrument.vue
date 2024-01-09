@@ -177,32 +177,12 @@
                     <!-- description -->
                   </v-row>
                   <v-row>
-                    <v-col cols="12" sm="12" md="4">
-                      <h5>Período de duración:</h5>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <base-input
-                          label="Fecha de inicio" 
-                          v-model="$v.editedItem.dateStart.$model"
-                          :validation="$v.editedItem.dateStart" 
-                          validationTextType="none" 
-                          type="date" 
-                        />
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <base-input
-                          label="Fecha de fin" 
-                          v-model="$v.editedItem.dateFinish.$model"
-                          :validation="$v.editedItem.dateFinish" 
-                          validationTextType="none" 
-                          type="date" 
-                        />
+                    <v-col cols="12" sm="12" md="8" v-if="!hideStatus">
+                      <h5>Modificar Documento Oficial: (Opcional - PDF)</h5>
                     </v-col>
                   </v-row>
-                  <!-- Form -->
-                  <!-- Document -->
                   <v-row>
-                    <v-col cols="12" sm="12" md="6" >
+                    <v-col cols="12" sm="12" md="6" v-if="hideStatus">
                       <h5>Documento: (Opcional - PDF)</h5>
                     </v-col>
                   </v-row>
@@ -229,6 +209,106 @@
                       <br />
                     </v-col>
                   </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="8">
+                      <h5>Período de duración:</h5>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4" v-if="!hideStatus">
+                      <h5>Estado:</h5>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="4">
+                      <base-input
+                          label="Fecha de inicio" 
+                          v-model="$v.editedItem.dateStart.$model"
+                          :validation="$v.editedItem.dateStart" 
+                          validationTextType="none" 
+                          type="date" 
+                        />
+                      <br />
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <base-input
+                          label="Fecha de fin" 
+                          v-model="$v.editedItem.dateFinish.$model"
+                          :validation="$v.editedItem.dateFinish" 
+                          validationTextType="none" 
+                          type="date" 
+                        />
+                      <br />
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4" v-if="!hideStatus">
+                      <base-select-search
+                        label="Estado del Instrumento"
+                        :items="estado"
+                        v-model.trim="$v.editedItem.state.$model"
+                        :validation="$v.editedItem.state"
+                      />
+                      <br />
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <h5 class="pt-3" v-if="hideExtension">Detalle de la Prorroga</h5>
+                    <hr v-if="hideExtension"/>
+                    <v-col cols="12" sm="12" md="4" v-if="hideExtension">
+                      <base-input
+                          label="Fecha de inicio de prórroga" 
+                          type="date" 
+                          v-model="$v.editedItem.dateStartExtension.$model"
+                          :validation="$v.editedItem.dateStartExtension" 
+                        />
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4" v-if="hideExtension">
+                      <base-input
+                          label="Fecha de fin de prórroga" 
+                          type="date"
+                          v-model="$v.editedItem.dateFinishExtension.$model"
+                          :validation="$v.editedItem.dateFinishExtension"
+                        />
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="8" v-if="hideExtension">
+                      <h5>Documento de Prórroga (Opcional - PDF)</h5>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="6" v-if="hideExtension">
+                      <input-file
+                        accept="application/pdf"
+                        v-model="$v.editedItem.prorroga.$model"
+                        :validation="$v.editedItem.prorroga"
+                        @update-file="editedItem.prorroga = $event"
+                        @file-size-exceeded="$emit('file-size-exceeded', true)"
+                      />
+                    </v-col>
+                    <v-col cols="12" sm="12" md="6" v-if="hideExtension">
+                      <v-text-field
+                        label="Nombre de archivo de prórroga"
+                        class=""
+                        outlined
+                        dense
+                        type="text"
+                        v-model="$v.editedItem.nom_prorroga.$model"
+                      ></v-text-field>
+                      <br />
+                      <br />
+                    </v-col>
+                  </v-row>
+                  <!-- <v-row>
+                    <v-col cols="12" sm="12" md="3" v-if="!hideStatus">
+                      <h5>Documento:</h5>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="9" v-if="!hideStatus">
+                      <v-icon small> mdi-paperclip </v-icon>
+                      <a v-for="(doc, i) in editedItem.archivo" :key="i" :value="doc.nombre" :href="doc.url" target="_blank"
+                        >
+                          <span>{{ doc.nombre }}</span>
+                      </a> 
+                      <br/>
+                    </v-col>
+                  </v-row> --> 
                   <!-- Dependencies -->
                   <template>
                     <h5 class="pt-3">Dependencias</h5>
@@ -270,7 +350,7 @@
                           ) in editedItem.assignedDependencies"
                           :key="index"
                         >
-                          <td>{{ assigned.dependence_name }}</td>
+                          <td>{{ assigned }}</td>
                           <td>
                             <v-icon @click="deleteAssignedDependency(index)">
                               delete
@@ -315,7 +395,7 @@
             <v-icon
               small
               class="mr-2"
-              @click="editItemDependence(item)"
+              @click="editItem(item)"
               v-bind="attrs"
               v-on="on"
             >
@@ -368,276 +448,6 @@
         </a>
       </template>
     </v-data-table>
-
-    <v-dialog v-model="dialogEditInstrument" max-width="1000px" persistent>
-      <v-card class="flexcard" height="100%">
-          <v-card-title>
-            <h1 class="mx-auto pt-3 mb-3 text-center black-secondary">
-              {{ formTitle }}
-            </h1>
-          </v-card-title>
-
-          <v-card-text>
-            <v-container>
-              <h5>Información del instrumento</h5>
-              <hr />
-              <v-row>
-                <!-- instrument_name -->
-                <v-col cols="12" sm="12" md="12">
-                  <base-text-area
-                    label="Nombre"
-                    v-model="$v.editedItem.instrument_name.$model"
-                    :validation="$v.editedItem.instrument_name"
-                    validationTextType="default"
-                    auto-grow
-                    :max="700"
-                    :min="1"
-                    :validationsInput="{
-                      required: true,
-                      minLength: true,
-                      maxLength: true,
-                    }"
-                  />
-                </v-col>
-                <!-- instrument_name -->
-              </v-row>
-              <v-row>
-                <!-- type_instrument_name -->
-                <v-col cols="12" sm="12" md="6">
-                  <base-select-search
-                    label="Tipo de instrumento"
-                    v-model.trim="$v.editedItem.type_instrument_name.$model"
-                    :items="types"
-                    item="type_instrument_name"
-                    :validation="$v.editedItem.type_instrument_name"
-                  />
-                </v-col>
-                <!-- type_instrument_name -->
-                <!-- date -->
-                <v-col cols="12" sm="12" md="6">
-                  <base-input
-                    label="Fecha de firma" 
-                    v-model="$v.editedItem.date.$model"
-                    :validation="$v.editedItem.date" 
-                    validationTextType="none" 
-                    type="date" 
-                  />
-                </v-col>
-                <!-- date -->
-              </v-row>
-              <v-row>
-                <!-- entity_name -->
-                <v-col cols="12" sm="12" md="6">
-                  <base-select-search
-                    label="Entidad"
-                    v-model.trim="$v.editedItem.entity_name.$model"
-                    :items="entities"
-                    item="entity_name"
-                    :validation="$v.editedItem.entity_name"
-                  />
-                </v-col>
-                <!-- entity_name -->
-                <!-- sector_name -->
-                <v-col cols="12" sm="12" md="6">
-                  <base-select-search
-                    label="Sector"
-                    v-model.trim="$v.editedItem.sector_name.$model"
-                    :items="sectors"
-                    item="sector_name"
-                    :validation="$v.editedItem.sector_name"
-                  />
-                </v-col>
-                <!-- sector_name -->
-              </v-row>
-              <v-row>
-                <!-- follow -->
-                <v-col cols="12" sm="12" md="12">
-                  <base-select-search
-                    label="Dirección Nacional encargada del seguimiento"
-                    v-model.trim="$v.editedItem.national_direction_name.$model"
-                    :items="directions"
-                    item="national_direction_name"
-                    :validation="$v.editedItem.national_direction_name"
-                  />
-                </v-col>
-                <!-- follow -->
-              </v-row>
-              <v-row>
-                <!-- description -->
-                <v-col cols="12" sm="12" md="12">
-                  <base-text-area
-                    label="Descripción del instrumento"
-                    v-model="$v.editedItem.description.$model"
-                    :validation="$v.editedItem.description"
-                    :rows="7"
-                    validationTextType="default"
-                    :max="500"
-                    :min="1"
-                    :validationsInput="{
-                      required: true,
-                      minLength: true,
-                      maxLength: true,
-                    }"
-                  ></base-text-area>
-                  <!--  <div style="display: flex; justify-content: flex-end">
-                    <span class="">(Máximo 500 caracteres)</span>
-                  </div> -->
-                </v-col>
-                <!-- description -->
-              </v-row>
-              <v-row>
-                <v-col cols="12" sm="12" md="3">
-                  <h5>Documento:</h5>
-                </v-col>
-                <v-col cols="12" sm="12" md="9">
-                  <v-icon small> mdi-paperclip </v-icon>
-                  <a
-                    v-for="(
-                      doc, i
-                    ) in editedItem.archivo"
-                    :key="i"
-                    :value="doc.nombre"
-                    :href="doc.url"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    <span>{{ doc.nombre }}</span>
-                  </a>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" sm="12" md="8">
-                  <h5>Período de duración:</h5>
-                </v-col>
-                <v-col cols="12" sm="12" md="4">
-                  <h5>Estado:</h5>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" sm="12" md="4">
-                  <base-input
-                      label="Fecha de inicio" 
-                      v-model="$v.editedItem.dateStart.$model"
-                      :validation="$v.editedItem.dateStart" 
-                      validationTextType="none" 
-                      type="date" 
-                    />
-                </v-col>
-                <v-col cols="12" sm="12" md="4">
-                  <base-input
-                      label="Fecha de fin" 
-                      v-model="$v.editedItem.dateFinish.$model"
-                      :validation="$v.editedItem.dateFinish" 
-                      validationTextType="none" 
-                      type="date" 
-                    />
-                </v-col>
-                <v-col cols="12" sm="12" md="4">
-                  <base-select-search
-                    label="Estado del Instrumento"
-                    :items="estado"
-                    v-model.trim="$v.editedItem.state.$model"
-                    :validation="$v.editedItem.state"
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <h5 class="pt-3" v-if="hideExtension">Detalle de la Prorroga</h5>
-                <hr v-if="hideExtension"/>
-                <v-col cols="12" sm="12" md="4" v-if="hideExtension">
-                  <base-input
-                      label="Fecha de inicio de prórroga" 
-                      type="date" 
-                      v-model="$v.editedItem.dateStartExtension.$model"
-                      :validation="$v.editedItem.dateStartExtension" 
-                    />
-                </v-col>
-                <v-col cols="12" sm="12" md="4" v-if="hideExtension">
-                  <base-input
-                      label="Fecha de fin de prórroga" 
-                      type="date"
-                      v-model="$v.editedItem.dateFinishExtension.$model"
-                      :validation="$v.editedItem.dateFinishExtension"
-                    />
-                </v-col>
-              </v-row>
-              <!-- Form -->
-              <!-- Dependencies -->
-              <template>
-                <h5 class="pt-3">Dependencias</h5>
-                <hr />
-                <!-- dependence_name -->
-                <v-col cols="12" md="6">
-                  <base-select-search
-                    label="Dependencia"
-                    v-model="$v.formDependencies.dependence_name.$model"
-                    :items="dependences"
-                    item="dependence_name"
-                    :validation="$v.formDependencies.dependence_name"
-                  />
-                </v-col>
-                <!-- dependence_name -->
-                <!-- assignDependency -->
-                <v-col cols="12" md="6">
-                  <a
-                    class="btn btn-normal"
-                    @click="assignDependencyEdit"
-                  >
-                    Agregar
-                  </a>
-                </v-col>
-                <!-- assignDependency -->
-                <!-- dependency table -->
-                <v-simple-table class="mt-2">
-                  <thead>
-                    <tr>
-                      <th>Dependencia</th>
-                      <th>Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="(
-                        assigned, index
-                      ) in editedItem.assignedDependencies"
-                      :key="index"
-                    >
-                      <td>{{ assigned }}</td>
-                      <td>
-                        <v-icon @click="deleteAssignedDependency(index)">
-                          delete
-                        </v-icon>
-                      </td>
-                    </tr>
-                  </tbody>
-                </v-simple-table>
-                <!-- dependency table -->
-              </template>
-              <!-- Dependencies -->
-
-              <!-- save buttons -->
-              <v-row>
-                <v-col align="center">
-                  <v-btn
-                    color="btn-normal no-uppercase mt-3"
-                    rounded
-                    @click="save()"
-                  >
-                    Guardar
-                  </v-btn>
-                  <v-btn
-                    color="btn-normal-close no-uppercase mt-3"
-                    rounded
-                    @click="closeEdit"
-                  >
-                    Cancelar
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card-text>
-        </v-card>
-    </v-dialog>
 
     <v-dialog v-model="dialogVerExoneration" max-width="1000px" persistent>
       <v-card
@@ -693,18 +503,7 @@
                         <td colspan="4">
                           <div>
                             <v-icon small> mdi-paperclip </v-icon>
-                           <!--  <a
-                              v-for="(
-                                doc, i
-                              ) in movimientoSeleccionado.archivo"
-                              :key="i"
-                              :value="doc.archivo"
-                              :href="doc.url"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              <span>{{ doc.archivo }}</span>
-                            </a> -->
+
                           </div>
                         </td>
                       </tr>
@@ -1345,10 +1144,11 @@ export default {
         national_direction_name: "",
         state: "",
         dateStartExtension: "",
-        dateFinishExtension: "",
-        descriptionExtension: "", 
-        archivo: {},
+        dateFinishExtension: "", 
+        archivo: "",
         nom_archivo: "",
+        prorroga:"",
+        nom_prorroga:"",
         assignedDependencies: [],
         assignedExonerations: [],
       },
@@ -1365,9 +1165,10 @@ export default {
         state: "",
         dateStartExtension: "",
         dateFinishExtension: "",
-        descriptionExtension: "",
-        archivo: {},
+        archivo: "",
         nom_archivo: "",
+        prorroga:"",
+        nom_prorroga:"",
         assignedDependencies: [],
         assignedExonerations: [],
       },
@@ -1462,21 +1263,14 @@ export default {
 
       },
       dateStartExtension:{
-        required: requiredIf(function (editedItem) {
+        /* required: requiredIf(function () {
           return this.editedItem.state == "Prórroga";
-        }),
+        }), */
       },
       dateFinishExtension:{
-        required: requiredIf(function (editedItem) {
+        /* required: requiredIf(function () {
           return this.editedItem.state == "Prórroga";
-        }),
-      },
-      descriptionExtension:{
-        required: requiredIf(function (editedItem) {
-          return this.editedItem.state == "Prórroga";
-        }),
-        minLength: minLength(1),
-        maxLength: maxLength(200),
+        }), */
       },
       archivo: {
         file_size_validation: (value, vm) => {
@@ -1496,6 +1290,26 @@ export default {
 				},
 			},
       nom_archivo: {
+         
+      },
+      prorroga: {
+        file_size_validation: (value, vm) => {
+					if (Array.isArray(value)) {
+						let error = true;
+						for (let i = 0; i < value.length; i++) {
+							let file = value[i];
+							if (file.size > 5242880) {
+								error = false;
+								break;
+							}
+						}
+
+						return error;
+					}
+					return true;
+				},
+      },
+      nom_prorroga: {
 
       },
     },
@@ -1657,6 +1471,13 @@ export default {
 				return true;
 			}
 		},
+    hideStatus(){
+      if (
+				this.editedItem.state === ''
+			) {
+				return true;
+			}
+		},
     /* thereAreSavedData() {
       return this.editedItem.assignedExonerations.some(assignedExonerations => assignedExonerations.id);
     },
@@ -1785,9 +1606,9 @@ export default {
         }
       }
 
-      this.initialize();
+      
       this.close();
-      this.closeEdit();
+      this.initialize();
       return;
     },
 
@@ -1804,22 +1625,12 @@ export default {
       /* console.log(this.listDependence); */ 
     },
 
-    closeEdit() {
-      this.dialogEditInstrument = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-        this.clearAssignedDependency();
-      });
-    },
-
     close() {
       this.dialog = false;
-      this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
         this.clearAssignedDependency();
-      });
+        this.$emit('updateFile:fileName', "test");
     },
 
     closeExoneration() {
@@ -2075,67 +1886,54 @@ export default {
       if (this.$v.formDependencies.$invalid) {
         return;
       }
-      
-      const selectedDependence = this.formDependencies.dependence_name;
-
-			const dependenceSelectedArray = this.dependences.find((dependence) => {
-				return dependence.dependence_name == selectedDependence;
-			});
-
-			const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === selectedDependence);
-      
-			if (dependenceSelectedArray && !exists) {
-				this.editedItem.assignedDependencies.push({
-					dependence_name: this.formDependencies.dependence_name,
-				});
-				this.$toast.success('Dependencia agregada');
-			} else {
-				this.$toast.warning('Ya ingresó ' + selectedDependence + ' al registro.');
-			} 
-
-     /*  this.editedItem.assignedDependencies.push(
-        this.formDependencies.dependence_name
-      ); */
-      this.formDependencies.dependence_name = {};
-      this.$v.formDependencies.$reset();
-    },
-
-    assignDependencyEdit() {
-      this.$v.formDependencies.$touch();
-
-      if (this.$v.formDependencies.$invalid) {
-        return;
-      }
 
       this.listDependence = Object.assign([], this.editedItem.assignedDependencies);
-      
+
       const selectedDependence = this.formDependencies.dependence_name;
 
-      const test = this.listDependence.find((item) => {
-        return item == selectedDependence;
-      }); 
+      if(this.listDependence == '' || this.listDependence == null){
+        const dependenceSelectedArray = this.dependences.find((dependence) => {
+          return dependence.dependence_name == selectedDependence;
+        });
 
-			const dependenceSelectedArray = this.dependences.find((dependence) => {
-				return dependence.dependence_name == selectedDependence;
-			});
+        const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === selectedDependence);
+        
+        if (dependenceSelectedArray && !exists) {
+          this.editedItem.assignedDependencies.push(
+            this.formDependencies.dependence_name,
+          );
+          this.$toast.success('Dependencia agregada');
+        } else {
+          this.$toast.warning('Ya ingresó ' + selectedDependence + ' al registro.');
+        } 
+
+        this.formDependencies.dependence_name = {};
+        this.$v.formDependencies.$reset();
+
+      } else {
+        const test = this.listDependence.find((item) => {
+          return item == selectedDependence;
+        }); 
+        
+        const dependenceSelectedArray = this.dependences.find((dependence) => {
+          return dependence.dependence_name == selectedDependence;
+        });
+        
+        const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === selectedDependence);
+        const ifExists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === test); 
       
-			const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === selectedDependence);
-      const ifExists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === test); 
-    
-			if (dependenceSelectedArray && !exists && ifExists) {
-				this.editedItem.assignedDependencies.push(
-					this.formDependencies.dependence_name,
-				);
-				this.$toast.success('Dependencia agregada');
-			} else {
-				this.$toast.warning('Ya ingresó ' + selectedDependence + ' al registro.');
-			} 
+          if (dependenceSelectedArray && !exists && ifExists) {
+          this.editedItem.assignedDependencies.push(
+            this.formDependencies.dependence_name,
+          );
+          this.$toast.success('Dependencia agregada');
+          } else {
+            this.$toast.warning('Ya ingresó ' + selectedDependence + ' al registro.');
+          } 
 
-     /*  this.editedItem.assignedDependencies.push(
-        this.formDependencies.dependence_name
-      ); */
-      this.formDependencies.dependence_name = {};
-      this.$v.formDependencies.$reset();
+        this.formDependencies.dependence_name = {};
+        this.$v.formDependencies.$reset();
+      }
     },
 
     deleteAssignedDependency(index) {

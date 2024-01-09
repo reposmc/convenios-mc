@@ -28,9 +28,6 @@ class Instrument extends Model
         'entity_id',
         'direction_id',
         'description',
-        'dateStartExtension',
-        'dateFinishExtension',
-        'descriptionExtension',
     ];
 
     public $hidden = [
