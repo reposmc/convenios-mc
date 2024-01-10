@@ -113,6 +113,10 @@ export default {
     clickInputFile() {
       this.$refs.inputFile.click();
     },
+
+    clearFileName() {
+      this.fileName = "";
+    },
   },
 };
 </script>

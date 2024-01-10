@@ -294,17 +294,18 @@ class InstrumentController extends Controller
             }
       
             //DOCUMENTO OFICIAL ACTUALIZADO
-            $file = $request->archivo;
+           $file = $request->archivo;
             
             $idArchivo = Archivo::select('archivos.instrument_id')->where('instrument_id', $instruments->id)->first();
-
+            $urlArchivo = Archivo::select('archivos.instrument_id','archivos.documento','archivos.nombre')->where('instrument_id', $instruments->id);
+            
             if ($idArchivo == null) {
                 if ($file != null) {
                    if (substr($file, 0, 22) == "data:application/pdf") {
        
                       $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
        
-                      $file = $archivo;
+                      $file = $archivo; 
        
                       $portfolio = Archivo::create([
                          'nombre' => request()->nom_archivo,
@@ -331,7 +332,7 @@ class InstrumentController extends Controller
     
                     }
                 }
-            }
+            } 
 
             //DOCUMENTOS DE PRORROGA
             $fileP = $request->prorroga;
@@ -429,9 +430,8 @@ class InstrumentController extends Controller
             }
             
             $file = request()->archivo;
-
             $idArchivo = Archivo::select('archivos.instrument_id')->where('instrument_id', $instruments->id)->first();
-            
+
             if ($idArchivo == null) {
                 if ($file != null) {
                    if (substr($file, 0, 20) == "data:application/pdf") {
@@ -453,16 +453,15 @@ class InstrumentController extends Controller
                 if ($file != null) {
                     if (substr($file, 0, 20) == "data:application/pdf") {
     
-                    $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
-    
-                    $file = $archivo;
-    
-                    Archivo::where('instrument_id', $instruments->id)->update([
-                        'nombre' => request()->nom_archivo,
-                        'documento' => $file,
-                        'instrument_id' =>  $instruments->id,
-                    ]);
-    
+                        $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+        
+                        $file = $archivo;
+        
+                        Archivo::where('instrument_id', $instruments->id)->update([
+                            'nombre' => request()->nom_archivo,
+                            'documento' => $file,
+                            'instrument_id' =>  $instruments->id,
+                        ]);
                     }
                 }
             }
