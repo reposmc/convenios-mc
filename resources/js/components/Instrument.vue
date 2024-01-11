@@ -11,25 +11,7 @@
       @show-alert="updateAlert($event)"
       class="mb-2"
     />
-
-    <!-- filters -->
-		<v-tabs show-arrows grow class="pt-6">
-			<v-tab
-				@click="options.filter = 'Vigente'"
-				>Vigente
-			</v-tab>
-			<v-tab
-				@click="options.filter = 'Prórroga'"
-				>Prórrogas
-			</v-tab>
-			<v-tab @click="options.filter = 'Finalizada'">
-				<!-- <v-badge :content="approved"> -->
-				Finalizadas
-				<!-- </v-badge>-->
-			</v-tab>
-		</v-tabs>
-		<!-- filters -->
-
+    
     <v-data-table
       v-model="selected"
       :single-select="false"
@@ -79,6 +61,7 @@
                 </v-col>
               </v-row>
             </template>
+
             <v-card class="flexcard" height="100%">
               <v-card-title>
                 <h1 class="mx-auto pt-3 mb-3 text-center black-secondary">
@@ -407,6 +390,24 @@
             </v-card>
           </v-dialog>
         </v-toolbar>
+        <!-- filters -->
+      <v-tabs show-arrows grow class="pt-6">
+        <v-tab
+          @click="options.filter = 'Vigente'"
+          >Vigente
+        </v-tab>
+        <v-tab
+          @click="options.filter = 'Prórroga'"
+          >Prórrogas
+        </v-tab>
+        <v-tab 
+          @click="options.filter = 'Finalizado'">
+          <!-- <v-badge :content="approved"> -->
+          Finalizadas
+          <!-- </v-badge>-->
+        </v-tab>
+      </v-tabs>
+      <!-- filters -->
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip top v-if="(actualUser.role == 'Administrador')">
@@ -1083,16 +1084,13 @@ import directionApi from "../apis/directionApi";
 import dependenceApi from "../apis/dependenceApi";
 import sectorApi from "../apis/sectorApi";
 import exonerationApi from "../apis/exonerationApi";
-import roleApi from "../apis/roleApi";
 import userApi from "../apis/userApi";
 import lib from "../libs/function";
 import { required, minLength, maxLength, requiredIf,} from "vuelidate/lib/validators";
 import axios from "axios";
 import BaseInput from "./base-components/BaseInput.vue";
 import InputFile from './base-components/InputFile.vue';
-import { title } from "process";
 import moment from "moment";
-import { log } from 'util';
 import Toast, { TYPE } from '../../../node_modules/vue-toastification';
 import '../../sass/_variablesToast.scss';
 
@@ -1128,7 +1126,6 @@ export default {
   components: { BaseInput, InputFile },
   data() {
     return {
-      search: "",
       dialog: false,
       dialogExoneration: false,
       dialogCloseConfirm: false,
@@ -1138,15 +1135,17 @@ export default {
       headers: [
         { text: "INSTRUMENTO", value: "instrument_name" },
         { text: "FECHA DE FIRMA", value: "date" },
-        { text: "TIPO DE INSTRUMENTO", value: "type_instrument_name" },
-        { text: 'ESTADO', value: 'state' },
-        { text: "DIRECCIÓN NACIONAL", value: "national_direction_name" },
-        { text: "ENTIDAD", value: "entity_name" },
-        { text: "SECTOR", value: "sector_name" },
+        { text: "TIPO DE INSTRUMENTO", value: "type_instrument_name", sortable: false },
+        { text: 'ESTADO', value: 'state', sortable: false },
+        { text: "DIRECCIÓN NACIONAL", value: "national_direction_name", sortable: false },
+        { text: "ENTIDAD", value: "entity_name", sortable: false },
+        { text: "SECTOR", value: "sector_name", sortable: false },
         { text: "ACCIONES", value: "actions", sortable: false, width: "12%" },
       ],
-      options: {},
-      filter: "Vigente",
+      options: {
+        filter: "Vigente",
+        search: "",
+      },
       selected: [],
       records: [],
       totalItems: 0,
@@ -1498,12 +1497,6 @@ export default {
 				return true;
 			}
 		},
-    /* thereAreSavedData() {
-      return this.editedItem.assignedExonerations.some(assignedExonerations => assignedExonerations.id);
-    },
-    canSaveChanges() {
-      return this.thereAreData || this.thereAreSavedData;
-    }, */
   },
 
   watch: {
@@ -1642,7 +1635,6 @@ export default {
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogEditInstrument = true;
-      /* console.log(this.listDependence); */ 
     },
 
     close() {

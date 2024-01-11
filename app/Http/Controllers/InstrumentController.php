@@ -35,7 +35,7 @@ class InstrumentController extends Controller
         $itemsPerPage =  Instrument::count();
         $skip = 0;
     }
-
+    
     $sortBy = (isset($request->sortBy[0])) ? $request->sortBy[0] : 'id';
     $sort = (isset($request->sortDesc[0])) ? "asc" : "desc";
 
@@ -101,8 +101,9 @@ class InstrumentController extends Controller
         }
 
     } else {
+        $filter = $request->filter;
         // All records
-        $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage);
+        $instruments = Instrument::allDataSearched($search, $sortBy, $sort, $skip, $itemsPerPage, $filter);
 
         // Load exonerations for each instrument
         foreach ($instruments as $item) {
