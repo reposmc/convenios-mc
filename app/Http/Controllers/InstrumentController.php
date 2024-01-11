@@ -294,18 +294,18 @@ class InstrumentController extends Controller
             }
       
             //DOCUMENTO OFICIAL ACTUALIZADO
-           $file = $request->archivo;
-            
+            $file = request()->archivo;
+
+            $bdFile = Archivo::select('archivos.documento', 'archivos.nombre')->where('instrument_id', $instruments->id)->get();
             $idArchivo = Archivo::select('archivos.instrument_id')->where('instrument_id', $instruments->id)->first();
-            $urlArchivo = Archivo::select('archivos.instrument_id','archivos.documento','archivos.nombre')->where('instrument_id', $instruments->id);
             
             if ($idArchivo == null) {
                 if ($file != null) {
-                   if (substr($file, 0, 22) == "data:application/pdf") {
+                   if (substr($file, 0, 20) == "data:application/pdf") {
        
                       $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
        
-                      $file = $archivo; 
+                      $file = $archivo;
        
                       $portfolio = Archivo::create([
                          'nombre' => request()->nom_archivo,
@@ -316,20 +316,28 @@ class InstrumentController extends Controller
                       $portfolio->save();
                    }
                 }
-            }else{
+            }else if(is_array($file) == 1){
+                if($file[0]['url'] === $bdFile[0]['documento'] && $request->nom_archivo == '' || $request->nom_archivo == null){
+
+                    Archivo::where('instrument_id', $instruments->id)->update([
+                        'nombre' => $bdFile[0]['nombre'],
+                        'documento' => $bdFile[0]['documento'],
+                        'instrument_id' =>  $instruments->id,
+                    ]);
+                }
+            }else {
                 if ($file != null) {
                     if (substr($file, 0, 20) == "data:application/pdf") {
     
-                    $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
-    
-                    $file = $archivo;
-    
-                    Archivo::where('instrument_id', $instruments->id)->update([
-                        'nombre' => request()->nom_archivo,
-                        'documento' => $file,
-                        'instrument_id' =>  $instruments->id,
-                    ]);
-    
+                        $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+        
+                        $file = $archivo;
+        
+                        Archivo::where('instrument_id', $instruments->id)->update([
+                            'nombre' => request()->nom_archivo,
+                            'documento' => $file,
+                            'instrument_id' =>  $instruments->id,
+                        ]);
                     }
                 }
             } 
@@ -384,22 +392,75 @@ class InstrumentController extends Controller
                 ]);
             }
 
+            //DOCUMENTO OFICIAL ACTUALIZADO PARA FINALIZAR
             $file = request()->archivo;
 
-            if ($file != null) {
-                if (substr($file, 0, 20) == "data:application/pdf") {
-
-                $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
-
-                $file = $archivo;
-
-                Archivo::where('instrument_id', $instruments->id)->update([
-                    'nombre' => request()->nom_archivo,
-                    'documento' => $file,
-                    'instrument_id' =>  $instruments->id,
-                ]);
-
+            $bdFile = Archivo::select('archivos.documento', 'archivos.nombre')->where('instrument_id', $instruments->id)->get();
+            $idArchivo = Archivo::select('archivos.instrument_id')->where('instrument_id', $instruments->id)->first();
+            
+            if ($idArchivo == null) {
+                if ($file != null) {
+                   if (substr($file, 0, 20) == "data:application/pdf") {
+       
+                      $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+       
+                      $file = $archivo;
+       
+                      $portfolio = Archivo::create([
+                         'nombre' => request()->nom_archivo,
+                         'documento' => $file,
+                         'instrument_id' =>  $instruments->id,
+                      ]);
+       
+                      $portfolio->save();
+                   }
                 }
+            }else if(is_array($file) == 1){
+                if($file[0]['url'] === $bdFile[0]['documento'] && $request->nom_archivo == '' || $request->nom_archivo == null){
+
+                    Archivo::where('instrument_id', $instruments->id)->update([
+                        'nombre' => $bdFile[0]['nombre'],
+                        'documento' => $bdFile[0]['documento'],
+                        'instrument_id' =>  $instruments->id,
+                    ]);
+                }
+            }else {
+                if ($file != null) {
+                    if (substr($file, 0, 20) == "data:application/pdf") {
+    
+                        $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+        
+                        $file = $archivo;
+        
+                        Archivo::where('instrument_id', $instruments->id)->update([
+                            'nombre' => request()->nom_archivo,
+                            'documento' => $file,
+                            'instrument_id' =>  $instruments->id,
+                        ]);
+                    }
+                }
+            } 
+
+            //DOCUMENTOS DE PRORROGA PARA FINALIZAR
+            $fileP = $request->prorroga;
+
+            if ($fileP != null) {
+               if (substr($fileP, 0, 20) == "data:application/pdf") {
+
+                  $prorroga = FileController::base64ToFile($fileP, request()->nom_prorroga . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+
+                  $fileP = $prorroga;
+
+                  $portfolio = Prorroga::create([
+                    'nombre' => request()->nom_prorroga,
+                    'documento' => $fileP,
+                    'dateStartExtension' => request()->dateStartExtension, 
+                    'dateFinishExtension' => request()->dateFinishExtension,
+                    'instrument_id' =>  $instruments->id,
+                  ]);
+
+                $portfolio->save();
+               }
             }
         }else{
             $id = Encrypt::decryptValue($request->id);
@@ -430,6 +491,8 @@ class InstrumentController extends Controller
             }
             
             $file = request()->archivo;
+
+            $bdFile = Archivo::select('archivos.documento', 'archivos.nombre')->where('instrument_id', $instruments->id)->get();
             $idArchivo = Archivo::select('archivos.instrument_id')->where('instrument_id', $instruments->id)->first();
 
             if ($idArchivo == null) {
@@ -449,7 +512,16 @@ class InstrumentController extends Controller
                       $portfolio->save();
                    }
                 }
-            }else{
+            }else if(is_array($file) == 1){
+                if($file[0]['url'] === $bdFile[0]['documento'] && $request->nom_archivo == '' || $request->nom_archivo == null){
+
+                    Archivo::where('instrument_id', $instruments->id)->update([
+                        'nombre' => $bdFile[0]['nombre'],
+                        'documento' => $bdFile[0]['documento'],
+                        'instrument_id' =>  $instruments->id,
+                    ]);
+                }
+            }else {
                 if ($file != null) {
                     if (substr($file, 0, 20) == "data:application/pdf") {
     

@@ -11,6 +11,25 @@
       @show-alert="updateAlert($event)"
       class="mb-2"
     />
+
+    <!-- filters -->
+		<v-tabs show-arrows grow class="pt-6">
+			<v-tab
+				@click="options.filter = 'Vigente'"
+				>Vigente
+			</v-tab>
+			<v-tab
+				@click="options.filter = 'Prórroga'"
+				>Prórrogas
+			</v-tab>
+			<v-tab @click="options.filter = 'Finalizada'">
+				<!-- <v-badge :content="approved"> -->
+				Finalizadas
+				<!-- </v-badge>-->
+			</v-tab>
+		</v-tabs>
+		<!-- filters -->
+
     <v-data-table
       v-model="selected"
       :single-select="false"
@@ -1127,6 +1146,7 @@ export default {
         { text: "ACCIONES", value: "actions", sortable: false, width: "12%" },
       ],
       options: {},
+      filter: "Vigente",
       selected: [],
       records: [],
       totalItems: 0,
@@ -1215,7 +1235,7 @@ export default {
       dialogVerExoneration: false,
       dialogEditInstrument: false,
       exonerationSeleccionado: null,
-      listDependence:[],
+      listDependence: [],
     };
   },
 
@@ -1741,7 +1761,7 @@ export default {
               "fail"
             );
           });
-          
+
         this.records = data.records;
         this.recordsFiltered = data.records;
         this.total = data.total;
