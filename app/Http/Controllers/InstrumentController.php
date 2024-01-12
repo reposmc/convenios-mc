@@ -42,6 +42,9 @@ class InstrumentController extends Controller
     $search = (isset($request->search)) ? "%$request->search%" : '%%';
 
     if (auth()->user()->hasRole('Usuario')) {
+        
+        $filter = $request->filter;
+
         // User with dependencies
         $userDependencies = UsersDependenciesDetail::where('user_id', auth()->user()->id)
             ->pluck('dependency_id')
@@ -59,7 +62,7 @@ class InstrumentController extends Controller
                 $query->where('instruments.instrument_name', 'LIKE', $search)
                     ->orWhere('instruments.description', 'LIKE', $search);
             })
-            ->where()
+            ->where('instruments.state', $filter)
             ->orderBy($sortBy, $sort)
             ->skip($skip)
             ->take($itemsPerPage)

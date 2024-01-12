@@ -13,7 +13,7 @@
     />
     
     <v-data-table
-      v-model="selected"
+      
       :single-select="false"
       :search="options.search"
       :headers="headers"
@@ -391,23 +391,12 @@
           </v-dialog>
         </v-toolbar>
         <!-- filters -->
-      <v-tabs show-arrows grow class="pt-6">
-        <v-tab
-          @click="options.filter = 'Vigente'"
-          >Vigente
-        </v-tab>
-        <v-tab
-          @click="options.filter = 'Prórroga'"
-          >Prórrogas
-        </v-tab>
-        <v-tab 
-          @click="options.filter = 'Finalizado'">
-          <!-- <v-badge :content="approved"> -->
-          Finalizadas
-          <!-- </v-badge>-->
-        </v-tab>
-      </v-tabs>
-      <!-- filters -->
+        <v-tabs show-arrows grow class="pt-6" >
+          <v-tab @click="options.filter = 'Vigente'">Vigente</v-tab>
+          <v-tab @click="options.filter = 'Prórroga'">Prórrogas</v-tab>
+          <v-tab @click="options.filter = 'Finalizado'">Finalizadas</v-tab>
+        </v-tabs>
+        <!-- filters -->
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip top v-if="(actualUser.role == 'Administrador')">
@@ -418,6 +407,7 @@
               @click="editItem(item)"
               v-bind="attrs"
               v-on="on"
+              v-if="(options.filter != 'Finalizado')"
             >
               mdi-pencil
             </v-icon>
@@ -432,6 +422,7 @@
               @click="addNewExoneration(item)"
               v-bind="attrs"
               v-on="on"
+              v-if="(options.filter != 'Finalizado')"
             >
               post_add
             </v-icon>
@@ -1135,7 +1126,7 @@ export default {
       headers: [
         { text: "INSTRUMENTO", value: "instrument_name" },
         { text: "FECHA DE FIRMA", value: "date" },
-        { text: "TIPO DE INSTRUMENTO", value: "type_instrument_name", sortable: false },
+        { text: "TIPO DE INSTRUMENTO", value: "type_instrument_name", sortable: false, width: "15%"},
         { text: 'ESTADO', value: 'state', sortable: false },
         { text: "DIRECCIÓN NACIONAL", value: "national_direction_name", sortable: false },
         { text: "ENTIDAD", value: "entity_name", sortable: false },
@@ -1226,7 +1217,6 @@ export default {
       redirectSessionFinished: false,
       alertTimeOut: 0,
       debounce: 0,
-      selectedTab: 0,
       tariff_value: 0,
       total_value: 0,
       total_value_view: 0,
@@ -1504,8 +1494,8 @@ export default {
       handler() {
         this.getDataFromApi();
       },
-      deep: false,
-      dirty: false,
+      /* deep: false,
+      dirty: false, */
     },
     dialog(val) {
       val || this.close();
@@ -1752,13 +1742,17 @@ export default {
               "No fue posible obtener los registros.",
               "fail"
             );
+            this.redirectSessionFinished = verifySessionFinished(
+							error.response.status,
+							419
+						);
           });
-
+        
         this.records = data.records;
         this.recordsFiltered = data.records;
         this.total = data.total;
         this.loading = false;
-      }, 500);
+      }, 100);
     },
 
     closeReset() {

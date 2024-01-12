@@ -19,7 +19,7 @@
         "resolve-url-loader": "^3.1.2",
         "sass": "^1.32.11",
         "sass-loader": "^11.0.1",
-        "vue": "^2.6.12",
+        "vue": "^2.7.10",
         "vue-loader": "^15.11.1",
         "vue-template-compiler": "^2.6.12"
     },
@@ -31,7 +31,7 @@
         "v-mask": "^2.3.0",
         "vue-toastification": "^1.7.14",
         "vuelidate": "^0.7.7",
-        "vuetify": "^2.6.2",
+        "vuetify": "^2.6.10",
         "webpack-obfuscator": "^3.5.0"
     }
 }
