@@ -29,9 +29,8 @@ class ServicePlace extends Model
 
     public $timestamps = false;
 
-    public function tariffs()
+    public function exonerations()
     {
-        return $this->hasMany(ServicePlace::class);
+        return $this->hasMany(Exoneration::class, "service_places_id")->withTrashed();
     }
-
 }

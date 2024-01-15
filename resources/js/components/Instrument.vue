@@ -391,10 +391,10 @@
           </v-dialog>
         </v-toolbar>
         <!-- filters -->
-        <v-tabs show-arrows grow class="pt-6" >
-          <v-tab @click="options.filter = 'Vigente'">Vigente</v-tab>
-          <v-tab @click="options.filter = 'Prórroga'">Prórrogas</v-tab>
-          <v-tab @click="options.filter = 'Finalizado'">Finalizadas</v-tab>
+        <v-tabs show-arrows grow class="pt-6">
+          <v-tab @click="clickVigente">Vigente</v-tab>
+          <v-tab @click="clickProrroga">Prórrogas</v-tab>
+          <v-tab @click="clickFinalizado">Finalizadas</v-tab>
         </v-tabs>
         <!-- filters -->
       </template>
@@ -720,13 +720,30 @@
           <!-- Igual a convenio -->
           <v-row v-if="editedItem.type_instrument_name == 'Convenio'">
             <!-- service_place_name -->
-            <v-col cols="12" sm="12" md="12">
+            <v-col cols="12" sm="12" md="9" v-show="formExonerations.is_place != true">
               <base-input
                 label="Espacio de servicio"
                 v-model.trim="$v.formExonerations.service_place_name.$model"
                 :validation="$v.formExonerations.service_place_name"
                 validationTextType="default"
               />
+            </v-col>
+            <v-col cols="12" sm="12" md="9" v-show="formExonerations.is_place != false">
+              <base-select-search
+                label="Espacio de servicio"
+                v-model.trim="$v.formExonerations.service_place_name.$model"
+                :items="places"
+                item="place_name"
+                :validation="$v.formExonerations.service_place_name"
+              />
+              <br />
+            </v-col>
+            <v-col cols="12" sm="12" md="3">
+              <v-checkbox
+                v-model="$v.formExonerations.is_place.$model"
+                label="No registrado"
+              >
+              </v-checkbox>
             </v-col>
             <!-- service_place_name -->
              <!-- is_tariffed -->
@@ -1075,6 +1092,7 @@ import directionApi from "../apis/directionApi";
 import dependenceApi from "../apis/dependenceApi";
 import sectorApi from "../apis/sectorApi";
 import exonerationApi from "../apis/exonerationApi";
+import placeApi from "../apis/placeApi";
 import userApi from "../apis/userApi";
 import lib from "../libs/function";
 import { required, minLength, maxLength, requiredIf,} from "vuelidate/lib/validators";
@@ -1193,6 +1211,7 @@ export default {
         date_event: moment().format("YYYY-MM-DD"),
         service_place_name: "",
         is_tariffed: false,
+        is_place: false,
         non_tariff_concept: "",
         non_tariff_amount: 0,
         tariff_type_charge: "",
@@ -1364,6 +1383,7 @@ export default {
           );
         }),
       },
+      is_place: {},
       non_tariff_amount: {
         required: requiredIf(function (editedItem) {
           return this.editedItem.type_instrument_name == "Convenio";
@@ -1494,8 +1514,8 @@ export default {
       handler() {
         this.getDataFromApi();
       },
-      /* deep: false,
-      dirty: false, */
+      deep: false,
+      dirty: false,
     },
     dialog(val) {
       val || this.close();
@@ -1523,6 +1543,7 @@ export default {
         sectorApi.get(),
         userApi.post("/actualUser"),
         dependenceApi.get(),
+        placeApi.get(),
       ];
       let responses = await Promise.all(requests).catch((error) => {
         this.updateAlert(true, "No fue posible obtener los registros.", "fail");
@@ -1538,9 +1559,11 @@ export default {
       this.sectors = responses[4].data.sectors;
       this.actualUser = responses[5].data.user;
       this.dependences = responses[6].data.dependences;
+      this.places = responses[7].data.places;
 
       this.recordsFiltered = this.records;
       this.loading = false;
+      console.log(responses);
     },
 
     addRecord() {
@@ -1629,10 +1652,9 @@ export default {
 
     close() {
       this.dialog = false;
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-        this.clearAssignedDependency();
-        this.$emit('updateFile:fileName', "test");
+      this.editedItem = Object.assign({}, this.defaultItem);
+      this.editedIndex = -1;
+      this.clearAssignedDependency();
     },
 
     closeExoneration() {
@@ -1753,6 +1775,21 @@ export default {
         this.total = data.total;
         this.loading = false;
       }, 100);
+    },
+
+    clickVigente(){
+      this.getDataFromApi();
+      this.options.filter = 'Vigente';
+    },
+
+    clickProrroga(){
+      this.getDataFromApi();
+      this.options.filter = 'Prórroga';
+    },
+
+    clickFinalizado(){
+      this.getDataFromApi();
+      this.options.filter = 'Finalizado';
     },
 
     closeReset() {

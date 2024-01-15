@@ -40,4 +40,5 @@ class Entity extends Model
     public function instruments()
     {
         return $this->hasMany(Instrument::class, "entity_id")->withTrashed();
-    }}
+    }
+}

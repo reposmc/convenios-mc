@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Exoneration;
 use App\Models\Instrument;
+use App\Models\ServicePlace;
 //use App\Models\Entity;
 use Encrypt;
+use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
 
 class ExonerationController extends Controller
 {
@@ -18,7 +20,10 @@ class ExonerationController extends Controller
     public function index()
     {
         $exonerations = Exoneration::all();
-
+        /* $exonerations = Exoneration::select('exonerations.*', 'service_places.place_name')
+                            ->join('service_places', 'exonerations.service_places_id', '=', 'service_places.id')
+                            ->get(); */
+        
         $exonerations = Encrypt::encryptObject($exonerations, 'id');
 
         return response()->json([
@@ -38,11 +43,12 @@ class ExonerationController extends Controller
     {
         $instrument_id = Encrypt::decryptValue($request->id);
 
+        $service_places_id = 1;
         //Delete existing records
         Exoneration::where('instrument_id', $instrument_id)->delete();
 
         $exonerations = $request->assignedExonerations;
-
+        
         foreach ($exonerations as $exoneration) {
 
             Exoneration::create([
@@ -61,6 +67,7 @@ class ExonerationController extends Controller
                 'concept' => $exoneration["concept"],
                 'quantity' => $exoneration["quantity"],
                 'estimated_price' => $exoneration["estimated_price"],
+                'service_places_id' => $service_places_id,
             ]);
         }
 
@@ -69,25 +76,6 @@ class ExonerationController extends Controller
             "message" => "Registros creados correctamente."
         ]);
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         //

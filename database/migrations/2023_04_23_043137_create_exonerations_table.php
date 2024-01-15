@@ -30,6 +30,7 @@ return new class extends Migration
             $table->integer('quantity')->nullable();
             $table->double('estimated_price', 8, 2)->nullable()->default(null);
             $table->string('exonerated_description')->nullable();
+            $table->foreignId('service_places_id')->constrained('service_places')->nullable();
             // $table->softDeletes();
             $table->timestamps();
         });

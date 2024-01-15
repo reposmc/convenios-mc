@@ -211,7 +211,6 @@ class Instrument extends Model
             ->join('sectors as s', 'instruments.sector_id', '=', 's.id')
             ->join('national_directions as nd', 'instruments.direction_id', '=', 'nd.id')
             ->where('instruments.instrument_name', 'like', $search)
-
             ->count();
     }
 
