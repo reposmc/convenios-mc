@@ -311,6 +311,16 @@ class DependenceSeeder extends Seeder
             "dependence_name" => "Parque Arqueológico Cihuatán",
             "national_direction_id" => 6,
         ],
+        [
+            "id" => 60,
+            "dependence_name" => "Palacio Nacional",
+            "national_direction_id" => 1,
+        ],
+        [
+            "id" => 61,
+            "dependence_name" => "Ex Casa Presidencial (EXCAPRES)",
+            "national_direction_id" => 1,
+        ],
         ]);
     }
 }

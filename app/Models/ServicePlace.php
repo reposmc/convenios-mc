@@ -29,8 +29,4 @@ class ServicePlace extends Model
 
     public $timestamps = false;
 
-    public function exonerations()
-    {
-        return $this->hasMany(Exoneration::class, "service_places_id")->withTrashed();
-    }
 }

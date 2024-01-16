@@ -88,6 +88,17 @@ class InstrumentController extends Controller
                 ];
                 }) : [];
 
+                $item->prorroga = Prorroga::select('prorrogas.*')
+                        ->where('instrument_id', $item->instrument_id)->get();
+
+                $item->prorroga = $item->prorroga ? $item->prorroga->map(function ($prorroga) {
+                return [
+                    "url" => $prorroga->documento,
+                    "nombre" => $prorroga->nombre,
+                    "id" => Str::uuid()
+                ];
+                }) : [];
+
             foreach ($instruments as $item) {
                 $item->assignedExonerations = Exoneration::select('exonerations.*')
                     ->where('instrument_id', $item->id)
@@ -127,6 +138,17 @@ class InstrumentController extends Controller
                    "id" => Str::uuid()
                 ];
              }) : [];
+
+             $item->prorroga = Prorroga::select('prorrogas.*')
+                        ->where('instrument_id', $item->instrument_id)->get();
+
+                $item->prorroga = $item->prorroga ? $item->prorroga->map(function ($prorroga) {
+                return [
+                    "url" => $prorroga->documento,
+                    "nombre" => $prorroga->nombre,
+                    "id" => Str::uuid()
+                ];
+                }) : [];
 
             foreach ($instruments as $item) {
                 $item->assignedExonerations = Exoneration::select('exonerations.*')
@@ -178,6 +200,28 @@ class InstrumentController extends Controller
                 $item->assignedExonerations = Exoneration::select('exonerations.*')
                     ->where('instrument_id', $item->id)
                     ->get();
+                
+                    $item->archivo = Archivo::select('archivos.*')
+                    ->where('instrument_id', $item->id)->get();
+
+                    $item->archivo = $item->archivo ? $item->archivo->map(function ($archivo) {
+                        return [
+                        "url" => $archivo->documento,
+                        "nombre" => $archivo->nombre,
+                        "id" => Str::uuid()
+                        ];
+                    }) : [];
+
+                    $item->prorroga = Prorroga::select('prorrogas.*')
+                                ->where('instrument_id', $item->id)->get();
+
+                        $item->prorroga = $item->prorroga ? $item->prorroga->map(function ($prorroga) {
+                        return [
+                            "url" => $prorroga->documento,
+                            "nombre" => $prorroga->nombre,
+                            "id" => Str::uuid()
+                        ];
+                        }) : [];
 
                 foreach ($item->assignedExonerations as $value) {
                     if (isset($value->is_tariffed) && $value->is_tariffed == 0) {
@@ -187,7 +231,7 @@ class InstrumentController extends Controller
                     }
                 }
             }
-            /* dd($instruments); */
+           /* dd($instruments); */ 
         $instruments = Encrypt::encryptObject($instruments, "id");
 
         /* return response()->json([
@@ -444,28 +488,6 @@ class InstrumentController extends Controller
                     }
                 }
             } 
-
-            //DOCUMENTOS DE PRORROGA PARA FINALIZAR
-            $fileP = $request->prorroga;
-
-            if ($fileP != null) {
-               if (substr($fileP, 0, 20) == "data:application/pdf") {
-
-                  $prorroga = FileController::base64ToFile($fileP, request()->nom_prorroga . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
-
-                  $fileP = $prorroga;
-
-                  $portfolio = Prorroga::create([
-                    'nombre' => request()->nom_prorroga,
-                    'documento' => $fileP,
-                    'dateStartExtension' => request()->dateStartExtension, 
-                    'dateFinishExtension' => request()->dateFinishExtension,
-                    'instrument_id' =>  $instruments->id,
-                  ]);
-
-                $portfolio->save();
-               }
-            }
         }else{
             $id = Encrypt::decryptValue($request->id);
             $instruments = Instrument::find($id);

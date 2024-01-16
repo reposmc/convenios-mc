@@ -298,19 +298,6 @@
                       <br />
                     </v-col>
                   </v-row>
-                  <!-- <v-row>
-                    <v-col cols="12" sm="12" md="3" v-if="!hideStatus">
-                      <h5>Documento:</h5>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="9" v-if="!hideStatus">
-                      <v-icon small> mdi-paperclip </v-icon>
-                      <a v-for="(doc, i) in editedItem.archivo" :key="i" :value="doc.nombre" :href="doc.url" target="_blank"
-                        >
-                          <span>{{ doc.nombre }}</span>
-                      </a> 
-                      <br/>
-                    </v-col>
-                  </v-row> --> 
                   <!-- Dependencies -->
                   <template>
                     <h5 class="pt-3">Dependencias</h5>
@@ -486,6 +473,12 @@
                         </td>
                       </tr>
                       <tr>
+                        <th style="min-width: 100px">Tipo de Instrumento</th>
+                        <td>
+                          {{ item.type_instrument_name }}
+                        </td>
+                      </tr>
+                      <tr>
                         <th style="min-width: 100px">Entidad</th>
                         <td>
                           {{ item.entity_name }}
@@ -498,9 +491,15 @@
                         </td>
                       </tr>
                       <tr>
-                        <th style="min-width: 100px">Tipo de Instrumento</th>
+                        <th style="min-width: 100px">Fecha de Firma</th>
                         <td>
-                          {{ item.type_instrument_name }}
+                          {{ item.date }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th style="min-width: 100px">Dirección Nacional que da el seguimeinto</th>
+                        <td>
+                          {{ item.national_direction_name }}
                         </td>
                       </tr>
                       <tr>
@@ -514,7 +513,51 @@
                         <td colspan="4">
                           <div>
                             <v-icon small> mdi-paperclip </v-icon>
-
+                            <a
+																v-for="(
+																	doc, i
+																) in item.archivo"
+																:key="i"
+																:value="doc.nombre"
+																:href="doc.url"
+																rel="noopener noreferrer"
+																target="_blank"
+															>
+																<span>{{ doc.nombre }}</span>
+														</a>
+                            <!-- <v-row>
+                              <v-col cols="12" sm="12" md="3" v-if="!hideStatus">
+                                <h5>Documento:</h5>
+                              </v-col>
+                              <v-col cols="12" sm="12" md="9" v-if="!hideStatus">
+                                <v-icon small> mdi-paperclip </v-icon>
+                                <a v-for="(doc, i) in editedItem.archivo" :key="i" :value="doc.nombre" :href="doc.url" target="_blank"
+                                  >
+                                    <span>{{ doc.nombre }}</span>
+                                </a> 
+                                <br/>
+                              </v-col>
+                            </v-row> --> 
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th style="min-width: 100px">Documento de Prórroga</th>
+                        <td colspan="4">
+                          <div>
+                            <v-icon small> mdi-paperclip </v-icon>
+                            <a
+																v-for="(
+																	doc, i
+																) in item.prorroga"
+																:key="i"
+																:value="doc.nombre"
+																:href="doc.url"
+																rel="noopener noreferrer"
+																target="_blank"
+															>
+																<span>{{ doc.nombre }} | </span>
+														</a>
                           </div>
                         </td>
                       </tr>
@@ -660,67 +703,10 @@
               <h5>Detalle de la exoneración</h5>
               <hr />
             </v-col>
-            <!-- date_event -->
-            <v-col cols="12" sm="12" md="6">
-              <base-input
-                label="Fecha de evento"
-                v-model="$v.formExonerations.date_event.$model"
-                :validation="$v.formExonerations.date_event"
-                validationTextType="none"
-                type="date"
-              />
-            </v-col>
-            <!-- date_event -->
           </v-row>
-
-          <!-- Diferente de convenio -->
-          <v-row v-if="editedItem.type_instrument_name != 'Convenio'">
-            <!-- concept -->
-            <v-col cols="12" xs="12" sm="12" md="12">
-              <base-input
-                label="Concepto"
-                v-model.trim="$v.formExonerations.concept.$model"
-                :validation="$v.formExonerations.concept"
-                validationTextType="default"
-                :max="200"
-                :min="1"
-                :validationsInput="{
-                  required: true,
-                  minLength: true,
-                  maxLength: true,
-                }"
-              />
-            </v-col>
-            <!-- concept -->
-
-            <!-- quantity -->
-            <v-col cols="12" xs="12" sm="12" md="6">
-              <base-input
-                label="Cantidad"
-                v-model.trim="$v.formExonerations.quantity.$model"
-                :validation="$v.formExonerations.quantity"
-                type="number"
-              />
-            </v-col>
-            <!-- quantity -->
-
-            <!-- estimated_price -->
-            <v-col cols="12" xs="12" sm="12" md="6">
-              <base-input
-                label="Precio estimado"
-                v-model.trim="$v.formExonerations.estimated_price.$model"
-                :validation="$v.formExonerations.estimated_price"
-                type="number"
-              />
-            </v-col>
-            <!-- estimated_price -->
-          </v-row>
-          <!-- Diferente de convenio -->
-
-          <!-- Igual a convenio -->
           <v-row v-if="editedItem.type_instrument_name == 'Convenio'">
-            <!-- service_place_name -->
-            <v-col cols="12" sm="12" md="9" v-show="formExonerations.is_place != true">
+             <!-- service_place_name -->
+             <v-col cols="12" sm="12" md="9" v-show="formExonerations.is_place != true">
               <base-input
                 label="Espacio de servicio"
                 v-model.trim="$v.formExonerations.service_place_name.$model"
@@ -741,19 +727,80 @@
             <v-col cols="12" sm="12" md="3">
               <v-checkbox
                 v-model="$v.formExonerations.is_place.$model"
-                label="No registrado"
+                label="Registrado"
               >
               </v-checkbox>
             </v-col>
+          </v-row>
+          <v-row>
+            <!-- date_event -->
+            <v-col cols="12" sm="12" md="6">
+              <base-input
+                label="Fecha de evento"
+                v-model="$v.formExonerations.date_event.$model"
+                :validation="$v.formExonerations.date_event"
+                validationTextType="none"
+                type="date"
+              />
+            </v-col>
+            <!-- date_event -->
+          </v-row>
+          <!-- Diferente de convenio -->
+          <v-row v-if="editedItem.type_instrument_name != 'Convenio'">
+            <!-- concept -->
+            <v-col cols="12" xs="12" sm="12" md="12">
+              <base-input
+                label="Concepto"
+                v-model.trim="$v.formExonerations.concept.$model"
+                :validation="$v.formExonerations.concept"
+                validationTextType="default"
+                :max="200"
+                :min="1"
+                :validationsInput="{
+                  required: true,
+                  minLength: true,
+                  maxLength: true,
+                }"
+              />
+            </v-col>
+            <!-- concept -->
+            <!-- quantity -->
+            <v-col cols="12" xs="12" sm="12" md="6">
+              <base-input
+                label="Cantidad"
+                v-model.trim="$v.formExonerations.quantity.$model"
+                :validation="$v.formExonerations.quantity"
+                type="number"
+              />
+            </v-col>
+            <!-- quantity -->
+            <!-- estimated_price -->
+            <v-col cols="12" xs="12" sm="12" md="6">
+              <base-input
+                label="Precio estimado"
+                v-model.trim="$v.formExonerations.estimated_price.$model"
+                :validation="$v.formExonerations.estimated_price"
+                type="number"
+              />
+            </v-col>
+            <!-- estimated_price -->
+          </v-row>
+          <!-- Diferente de convenio -->
+          <!-- Igual a convenio -->
+          <v-row v-if="editedItem.type_instrument_name == 'Convenio'">
             <!-- service_place_name -->
              <!-- is_tariffed -->
-             <v-col cols="12" sm="12" md="12">
+             <v-col cols="12" sm="12" md="9">
+              <h5 class="pt-3">Especificación de la Tarifa</h5>
+             </v-col>
+             <v-col cols="12" sm="12" md="3">
               <v-checkbox
                 v-model="$v.formExonerations.is_tariffed.$model"
                 label="No tarifado"
               >
               </v-checkbox>
             </v-col>
+            <hr />
             <!-- is_tariffed -->
             <!-- dependence_name -->
             <v-col cols="12" sm="12" md="12" v-show="formExonerations.is_tariffed != true">
@@ -876,7 +923,6 @@
             </v-col>
           </v-row>
           <!-- Igual a convenio -->
-
           <!-- exonerated_description -->
           <v-row>
             <v-col cols="12" sm="12" md="12">
@@ -900,7 +946,6 @@
             </v-col>
           </v-row>
           <!-- exonerated_description -->
-
           <!-- Exonerations -->
           <template>
             <v-col cols="12" md="6">
@@ -1106,7 +1151,7 @@ import '../../sass/_variablesToast.scss';
 const options = {
 	toastDefaults: {
 		[TYPE.SUCCESS]: {
-			timeout: 2000,
+			timeout: 4000,
 			closeOnClick: false,
 			icon: {
 				iconClass: 'material-icons',
@@ -1117,7 +1162,7 @@ const options = {
 		},
 
 		[TYPE.WARNING]: {
-			timeout: 2000,
+			timeout: 4000,
 			closeOnClick: false,
 			icon: {
 				iconClass: 'material-icons',
@@ -1173,9 +1218,9 @@ export default {
         state: "",
         dateStartExtension: "",
         dateFinishExtension: "", 
-        archivo: "",
+        archivo: {},
         nom_archivo: "",
-        prorroga:"",
+        prorroga: {},
         nom_prorroga:"",
         assignedDependencies: [],
         assignedExonerations: [],
@@ -1193,9 +1238,9 @@ export default {
         state: "",
         dateStartExtension: "",
         dateFinishExtension: "",
-        archivo: "",
+        archivo: {},
         nom_archivo: "",
-        prorroga:"",
+        prorroga: {},
         nom_prorroga:"",
         assignedDependencies: [],
         assignedExonerations: [],
@@ -1293,12 +1338,12 @@ export default {
       dateStartExtension:{
         /* required: requiredIf(function () {
           return this.editedItem.state == "Prórroga";
-        }), */
+        }), */ 
       },
       dateFinishExtension:{
         /* required: requiredIf(function () {
           return this.editedItem.state == "Prórroga";
-        }), */
+        }),  */
       },
       archivo: {
         file_size_validation: (value, vm) => {
@@ -1563,7 +1608,6 @@ export default {
 
       this.recordsFiltered = this.records;
       this.loading = false;
-      console.log(responses);
     },
 
     addRecord() {
@@ -1575,12 +1619,35 @@ export default {
     },
 
     async save() {
+      this.loading = true;
       this.$v.editedItem.$touch();
 
-      if (this.$v.editedItem.$invalid) {
-        this.updateAlert(true, "Campos obligatorios.", "fail");
-        return;
-      }
+      if(this.$v.editedItem.$invalid) {
+          this.loading = false;
+          this.updateAlert(true, "Campos obligatorios.", "fail");
+
+          if(this.editedItem.date > this.editedItem.dateStart || this.editedItem.date > this.editedItem.dateFinish) {
+              this.loading = false;  
+              this.$toast.warning('El período de duración debe ser después de la fecha de firma.'); 
+          } 
+              
+          if(this.editedItem.dateStart > this.editedItem.dateFinish){
+              this.loading = false;
+              this.$toast.warning('La fecha de inicio esta adelantada a la fecha final del período de duración.');
+          } 
+              
+          if(this.editedItem.assignDependency == '' || this.editedItem.assignDependency == null){
+              this.loading = false;
+              this.$toast.warning('Agregue dependencias al instrumento.'); 
+          }
+
+          if(this.editedItem.dateStartExtension == '' || this.editedItem.dateStartExtension == null && this.editedItem.dateFinishExtension == '' || this.editedItem.dateFinishExtension == null 
+          && this.editedItem.state == 'Prórroga' && this.editedItem.state != '' && this.editedItem.prorroga == '' || this.editedItem.prorroga == null && this.editedItem.nom_prorroga == '' || this.editedItem.nom_prorroga == null){
+            this.loading = false;
+            this.$toast.warning('Agregue el detalle del período de prórroga.');
+          }
+          return;
+      } 
 
       //Update instrument
       if (this.editedIndex > -1) {
@@ -1681,7 +1748,7 @@ export default {
 				const { data } = await instrumentApi.get('/getInstrument/' + item.id);
 				this.exonerationSeleccionado = data;
 				this.dialogVerExoneration = true;
-			} catch (error) {}
+			} catch (error) {}  
 		},
 
 		closeViewExoneration() {
@@ -1769,7 +1836,7 @@ export default {
 							419
 						);
           });
-        
+      
         this.records = data.records;
         this.recordsFiltered = data.records;
         this.total = data.total;

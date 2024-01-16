@@ -20,9 +20,6 @@ class ExonerationController extends Controller
     public function index()
     {
         $exonerations = Exoneration::all();
-        /* $exonerations = Exoneration::select('exonerations.*', 'service_places.place_name')
-                            ->join('service_places', 'exonerations.service_places_id', '=', 'service_places.id')
-                            ->get(); */
         
         $exonerations = Encrypt::encryptObject($exonerations, 'id');
 
@@ -43,7 +40,6 @@ class ExonerationController extends Controller
     {
         $instrument_id = Encrypt::decryptValue($request->id);
 
-        $service_places_id = 1;
         //Delete existing records
         Exoneration::where('instrument_id', $instrument_id)->delete();
 
@@ -67,7 +63,6 @@ class ExonerationController extends Controller
                 'concept' => $exoneration["concept"],
                 'quantity' => $exoneration["quantity"],
                 'estimated_price' => $exoneration["estimated_price"],
-                'service_places_id' => $service_places_id,
             ]);
         }
 

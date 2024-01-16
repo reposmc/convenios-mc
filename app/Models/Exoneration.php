@@ -34,7 +34,7 @@ class Exoneration extends Model
         'quantity',
         'estimated_price',
         'exonerated_description',
-        'service_places_id',
+        /* 'service_places_id', */
     ];
 
     public $hidden = [
@@ -52,9 +52,5 @@ class Exoneration extends Model
     public function tariff()
     {
         return $this->belongsTo(Tariff::class, "tariff_id_hour", "id");
-    }
-    public function service_places()
-    {
-        return $this->belongsTo(ServicePlace::class, 'service_places_id', 'id');
     }
 }
