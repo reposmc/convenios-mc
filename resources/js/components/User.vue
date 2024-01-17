@@ -161,10 +161,9 @@
                     </v-col> -->
                     <!-- Password -->
                     <!-- Dependencies -->
-                    <template>
+                    <!-- <template>
                       <h5 class="pt-3">Dependencias</h5>
                       <hr />
-                      <!-- dependence_name -->
                       <v-col cols="12" md="6">
                         <base-select-search
                           label="Dependencia"
@@ -176,8 +175,6 @@
                           :validation="$v.formDependencies.dependence_name"
                         />
                       </v-col>
-                      <!-- dependence_name -->
-                      <!-- assignDependency -->
                       <v-col cols="12" md="6">
                         <a
                           href="#"
@@ -187,9 +184,6 @@
                           Agregar
                         </a>
                       </v-col>
-                      <!-- assignDependency -->
-
-                      <!-- dependency table -->
                       <v-simple-table class="mt-2">
                         <thead>
                           <tr>
@@ -204,7 +198,7 @@
                             ) in editedItem.assignedDependencies"
                             :key="index"
                           >
-                            <td>{{ assigned.dependence_name }}</td>
+                            <td>{{ assigned }}</td>
                             <td>
                               <v-icon @click="deleteAssignedDependency(index)">
                                 delete
@@ -213,9 +207,7 @@
                           </tr>
                         </tbody>
                       </v-simple-table>
-                      <!-- dependency table -->
-                    </template>
-                    <!-- Dependencies -->
+                    </template> -->
                   </v-row>
                   <!-- Form -->
                   <v-row>
@@ -302,13 +294,7 @@ const options = {
 
 Vue.use(Toast, options);
 
-import {
-  required,
-  minLength,
-  maxLength,
-  email,
-  helpers,
-} from "vuelidate/lib/validators";
+import {required, minLength, maxLength, email, } from "vuelidate/lib/validators";
 
 export default {
   data() {
@@ -361,6 +347,7 @@ export default {
       redirectSessionFinished: false,
       showAlert: false,
       typePassword: "password",
+      listDependence: [],
     };
   },
 
@@ -646,48 +633,61 @@ export default {
       this.typePassword = e.show;
     },
 
-    assignDependency() {
-      /* this.$v.formDependencies.$touch();
-
-      if (this.$v.formDependencies.$invalid) {
-        return;
-      }
-
-      this.editedItem.assignedDependencies.push(
-        this.formDependencies.dependence_name
-      );
-      this.formDependencies.dependence_name = "";
-
-      this.$v.formDependencies.$reset(); */
+    /* assignDependency() {
       this.$v.formDependencies.$touch();
 
       if (this.$v.formDependencies.$invalid) {
         return;
       }
 
-      const selectedDependence = this.formDependencies.dependence_name;
-
-			const dependenceSelectedArray = this.dependencies.find((dependence) => {
-				return dependence.dependence_name == selectedDependence;
-			});
-
-			const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === selectedDependence);
+      this.listDependence = Object.assign([], this.editedItem.assignedDependencies);
       
-			if (dependenceSelectedArray && !exists) {
-				this.editedItem.assignedDependencies.push({
-					dependence_name: this.formDependencies.dependence_name,
-				});
-				this.$toast.success('Dependencia agregada');
-			} else {
-				this.$toast.warning('Ya ingresó ' + selectedDependence + ' al registro.');
-			} 
+      const selectedDependence = this.formDependencies.dependence_name;
+      
+      if(this.listDependence == '' || this.listDependence == null){
+        const dependenceSelectedArray = this.dependencies.find((dependencies) => {
+          return dependencies.dependence_name == selectedDependence;
+        });
+        console.log(this.editedItem.assignedDependencies);
+        const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === selectedDependence);
+        
+        if (dependenceSelectedArray && !exists) {
+          this.editedItem.assignedDependencies.push(
+            this.formDependencies.dependence_name,
+          );
+          this.$toast.success('Dependencia agregada');
+        } else {
+          this.$toast.warning('Ya ingresó ' + selectedDependence + ' al registro.');
+        } 
 
-     /*  this.editedItem.assignedDependencies.push(
-        this.formDependencies.dependence_name
-      ); */
-      this.formDependencies.dependence_name = {};
-      this.$v.formDependencies.$reset();
-    },
+        this.formDependencies.dependence_name = {};
+        this.$v.formDependencies.$reset();
+
+      } else {
+        const test = this.listDependence.find((item) => {
+          return item == selectedDependence;
+        }); 
+        
+        const dependenceSelectedArray = this.dependences.find((dependence) => {
+          return dependence.dependence_name == selectedDependence;
+        });
+        
+        const exists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === selectedDependence);
+        const ifExists = this.editedItem.assignedDependencies.find((det) => det.dependence_name === test); 
+
+          if (dependenceSelectedArray && !exists && ifExists) {
+          this.editedItem.assignedDependencies.push(
+            this.formDependencies.dependence_name,
+          );
+          this.$toast.success('Dependencia agregada');
+          } else {
+            this.$toast.warning('Ya ingresó ' + selectedDependence + ' al registro.');
+          } 
+
+        this.formDependencies.dependence_name = {};
+        this.$v.formDependencies.$reset();
+      }
+    }, */
 
     deleteAssignedDependency(index) {
       this.editedItem.assignedDependencies.splice(index, 1);

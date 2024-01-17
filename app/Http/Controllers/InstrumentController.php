@@ -234,13 +234,6 @@ class InstrumentController extends Controller
            /* dd($instruments); */ 
         $instruments = Encrypt::encryptObject($instruments, "id");
 
-        /* return response()->json([
-            "status" => 200,
-            "message" => "Registros obtenidos correctamente.",
-            "records" => $instruments,
-            "success" => true,
-        ]) ;*/
-
         return $instruments;
     }
 

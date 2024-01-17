@@ -34,7 +34,6 @@ class Exoneration extends Model
         'quantity',
         'estimated_price',
         'exonerated_description',
-        /* 'service_places_id', */
     ];
 
     public $hidden = [

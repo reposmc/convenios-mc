@@ -120,6 +120,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::resource('/api/web/type', TypeInstrumentController::class);
         Route::resource('/api/web/entity', EntityController::class);
         Route::resource('/api/web/tariff', TariffController::class);
+        Route::resource('/api/web/place', ServicePlaceController::class);
         Route::resource('/api/web/dependence', DependenceController::class);
         Route::resource('/api/web/direction', NationalDirectionController::class);
         Route::resource('/api/web/sector', SectorController::class);
@@ -131,6 +132,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
         //User dependencies
         Route::post('/api/web/dependence/dependenciesByUser', [DependenceController::class, 'dependenciesByUser']);
+
+        Route::get('api/web/instrument/getInstrument/{id}', [InstrumentController::class, 'getInstrument']);
 
         //Views
         Route::get('/instruments', function () {

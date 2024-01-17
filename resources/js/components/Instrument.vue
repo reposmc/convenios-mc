@@ -1998,7 +1998,7 @@ export default {
       }
 
       this.listDependence = Object.assign([], this.editedItem.assignedDependencies);
-
+      
       const selectedDependence = this.formDependencies.dependence_name;
 
       if(this.listDependence == '' || this.listDependence == null){
