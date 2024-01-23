@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('prorrogas', function (Blueprint $table) {
             $table->id();
             $table->text('documento');
-            $table->string('nombre', 45);
+            $table->string('nombre', 200);
             $table->date('dateStartExtension')->nullable();
             $table->date('dateFinishExtension')->nullable();
             $table->unsignedBigInteger('instrument_id');

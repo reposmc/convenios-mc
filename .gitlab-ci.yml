@@ -1,0 +1,23 @@
+stages:
+  - pull
+  - install
+  - compile
+
+project:
+  stage: pull
+  script:
+    - cd /home/administrador/nginx/apps/convenios-mc
+    - git pull https://repositorios:g6gQyyTx3a-CqWsSzpmW@git.cultura.gob.sv/desarrollo-mc/convenios-mc.git
+
+dependencies:
+  stage: install
+  script:
+    - cd /home/administrador/nginx/apps/convenios-mc
+    - docker compose run npm i
+    - docker compose run composer i
+
+deploy:
+  stage: compile
+  script:
+    - cd /home/administrador/nginx/apps/convenios-mc
+    - docker compose run npm run prod

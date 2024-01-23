@@ -83,7 +83,6 @@ class InstrumentController extends Controller
             $item->archivo = $item->archivo ? $item->archivo->map(function ($archivo) {
                 return [
                     "url" => $archivo->documento,
-                    "nombre" => $archivo->nombre,
                     "id" => Str::uuid()
                 ];
                 }) : [];
@@ -134,7 +133,6 @@ class InstrumentController extends Controller
             $item->archivo = $item->archivo ? $item->archivo->map(function ($archivo) {
                 return [
                    "url" => $archivo->documento,
-                   "nombre" => $archivo->nombre,
                    "id" => Str::uuid()
                 ];
              }) : [];
@@ -229,6 +227,7 @@ class InstrumentController extends Controller
                     } elseif (isset($value->is_tariffed) && $value->is_tariffed == 1) {
                         $value->is_tariffed = "No";
                     }
+                    $item->total += $value->total_amount;
                 }
             }
            /* dd($instruments); */ 
@@ -245,6 +244,7 @@ class InstrumentController extends Controller
      */
     public function store(Request $request)
     {
+        
         $instruments = new Instrument;
 
         $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
@@ -271,17 +271,19 @@ class InstrumentController extends Controller
         }
 
         $file = request()->archivo;
+        $nom_archivo = request()->nom_archivo;
+        $nom_archivo = substr($nom_archivo,0,-4);
 
          if ($file != null) {
             if (substr($file, 0, 20) == "data:application/pdf") {
 
-               $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+              $archivo = FileController::base64ToFile($file, $nom_archivo . '-' . date("Y-m-d"), "Comprobantes");
 
-               $file = $archivo;
+               $file = $archivo; 
 
                $portfolio = Archivo::create([
-                  'nombre' => request()->nom_archivo,
                   'documento' => $file,
+                  'nombre' => $nom_archivo,
                   'instrument_id' =>  $instruments->id,
                ]);
 
@@ -336,27 +338,29 @@ class InstrumentController extends Controller
       
             //DOCUMENTO OFICIAL ACTUALIZADO
             $file = request()->archivo;
+            $nom_archivo = request()->nom_archivo;
+            $nom_archivo = substr($nom_archivo,0,-4);
 
-            $bdFile = Archivo::select('archivos.documento', 'archivos.nombre')->where('instrument_id', $instruments->id)->get();
+            $bdFile = Archivo::select('archivos.documento')->where('instrument_id', $instruments->id)->get();
             $idArchivo = Archivo::select('archivos.instrument_id')->where('instrument_id', $instruments->id)->first();
             
             if ($idArchivo == null) {
                 if ($file != null) {
-                   if (substr($file, 0, 20) == "data:application/pdf") {
-       
-                      $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
-       
-                      $file = $archivo;
-       
-                      $portfolio = Archivo::create([
-                         'nombre' => request()->nom_archivo,
-                         'documento' => $file,
-                         'instrument_id' =>  $instruments->id,
-                      ]);
-       
-                      $portfolio->save();
-                   }
-                }
+                    if (substr($file, 0, 20) == "data:application/pdf") {
+        
+                      $archivo = FileController::base64ToFile($file, $nom_archivo . '-' . date("Y-m-d"), "Comprobantes");
+        
+                       $file = $archivo; 
+        
+                       $portfolio = Archivo::create([
+                          'documento' => $file,
+                          'nombre' => $nom_archivo,
+                          'instrument_id' =>  $instruments->id,
+                       ]);
+        
+                       $portfolio->save();
+                    }
+                 }
             }else if(is_array($file) == 1){
                 if($file[0]['url'] === $bdFile[0]['documento'] && $request->nom_archivo == '' || $request->nom_archivo == null){
 
@@ -370,13 +374,13 @@ class InstrumentController extends Controller
                 if ($file != null) {
                     if (substr($file, 0, 20) == "data:application/pdf") {
     
-                        $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+                        $archivo = FileController::base64ToFile($file, $nom_archivo . '-' . date("Y-m-d"), "Comprobantes");
         
                         $file = $archivo;
         
                         Archivo::where('instrument_id', $instruments->id)->update([
-                            'nombre' => request()->nom_archivo,
                             'documento' => $file,
+                            'nombre' => $nom_archivo,
                             'instrument_id' =>  $instruments->id,
                         ]);
                     }
@@ -385,17 +389,19 @@ class InstrumentController extends Controller
 
             //DOCUMENTOS DE PRORROGA
             $fileP = $request->prorroga;
+            $nom_prorroga = request()->nom_prorroga;
+            $nom_prorroga = substr($nom_prorroga,0,-4);
 
             if ($fileP != null) {
                if (substr($fileP, 0, 20) == "data:application/pdf") {
 
-                  $prorroga = FileController::base64ToFile($fileP, request()->nom_prorroga . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+                  $prorroga = FileController::base64ToFile($fileP, $nom_prorroga . '-' . date("Y-m-d"), "Comprobantes");
 
-                  $fileP = $prorroga;
+                  $fileP = $prorroga; 
 
                   $portfolio = Prorroga::create([
-                    'nombre' => request()->nom_prorroga,
                     'documento' => $fileP,
+                    'nombre' => $nom_prorroga,
                     'dateStartExtension' => request()->dateStartExtension, 
                     'dateFinishExtension' => request()->dateFinishExtension,
                     'instrument_id' =>  $instruments->id,
@@ -435,26 +441,28 @@ class InstrumentController extends Controller
 
             //DOCUMENTO OFICIAL ACTUALIZADO PARA FINALIZAR
             $file = request()->archivo;
+            $nom_archivo = request()->nom_archivo;
+            $nom_archivo = substr($nom_archivo,0,-4);
 
-            $bdFile = Archivo::select('archivos.documento', 'archivos.nombre')->where('instrument_id', $instruments->id)->get();
+            $bdFile = Archivo::select('archivos.documento')->where('instrument_id', $instruments->id)->get();
             $idArchivo = Archivo::select('archivos.instrument_id')->where('instrument_id', $instruments->id)->first();
             
             if ($idArchivo == null) {
                 if ($file != null) {
-                   if (substr($file, 0, 20) == "data:application/pdf") {
-       
-                      $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
-       
-                      $file = $archivo;
-       
-                      $portfolio = Archivo::create([
-                         'nombre' => request()->nom_archivo,
-                         'documento' => $file,
-                         'instrument_id' =>  $instruments->id,
-                      ]);
-       
-                      $portfolio->save();
-                   }
+                    if (substr($file, 0, 20) == "data:application/pdf") {
+        
+                      $archivo = FileController::base64ToFile($file, $nom_archivo . '-' . date("Y-m-d"), "Comprobantes");
+        
+                       $file = $archivo; 
+        
+                       $portfolio = Archivo::create([
+                          'documento' => $file,
+                          'nombre' => $nom_archivo,
+                          'instrument_id' =>  $instruments->id,
+                       ]);
+        
+                       $portfolio->save();
+                    }
                 }
             }else if(is_array($file) == 1){
                 if($file[0]['url'] === $bdFile[0]['documento'] && $request->nom_archivo == '' || $request->nom_archivo == null){
@@ -469,21 +477,30 @@ class InstrumentController extends Controller
                 if ($file != null) {
                     if (substr($file, 0, 20) == "data:application/pdf") {
     
-                        $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+                        $archivo = FileController::base64ToFile($file, $nom_archivo . '-' . date("Y-m-d"), "Comprobantes");
         
                         $file = $archivo;
         
                         Archivo::where('instrument_id', $instruments->id)->update([
-                            'nombre' => request()->nom_archivo,
                             'documento' => $file,
+                            'nombre' => $nom_archivo,
                             'instrument_id' =>  $instruments->id,
                         ]);
                     }
                 }
-            } 
+            }
         }else{
             $id = Encrypt::decryptValue($request->id);
-            $instruments = Instrument::find($id);
+            /* $instruments = Instrument::find($id); */
+            $instruments = Instrument::with("exoneration")->where('id', $id)->first();
+
+            if(sizeof($instruments->exoneration) > 0){
+                /* abort(403, "No se puede eliminar este registro porque ya ha sido utilizado."); */
+                return response()->json([
+                    "status"=>"fail",
+                    "message"=>"El registro no puede modificarse porque ya contiene exoneraciones."
+                ]);
+            }
 
             $instruments->type_instrument_id = TypeInstrument::where('type_instrument_name', $request->type_instrument_name)->first()->id;
             $instruments->instrument_name = $request->instrument_name;
@@ -510,27 +527,29 @@ class InstrumentController extends Controller
             }
             
             $file = request()->archivo;
+            $nom_archivo = request()->nom_archivo;
+            $nom_archivo = substr($nom_archivo,0,-4);
 
-            $bdFile = Archivo::select('archivos.documento', 'archivos.nombre')->where('instrument_id', $instruments->id)->get();
+            $bdFile = Archivo::select('archivos.documento')->where('instrument_id', $instruments->id)->get();
             $idArchivo = Archivo::select('archivos.instrument_id')->where('instrument_id', $instruments->id)->first();
 
             if ($idArchivo == null) {
                 if ($file != null) {
-                   if (substr($file, 0, 20) == "data:application/pdf") {
-       
-                      $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
-       
-                      $file = $archivo;
-       
-                      $portfolio = Archivo::create([
-                         'nombre' => request()->nom_archivo,
-                         'documento' => $file,
-                         'instrument_id' =>  $instruments->id,
-                      ]);
-       
-                      $portfolio->save();
-                   }
-                }
+                    if (substr($file, 0, 20) == "data:application/pdf") {
+        
+                      $archivo = FileController::base64ToFile($file, $nom_archivo . '-' . date("Y-m-d"), "Comprobantes");
+        
+                       $file = $archivo; 
+        
+                       $portfolio = Archivo::create([
+                          'documento' => $file,
+                          'nombre' => $nom_archivo,
+                          'instrument_id' =>  $instruments->id,
+                       ]);
+        
+                       $portfolio->save();
+                    }
+                 }
             }else if(is_array($file) == 1){
                 if($file[0]['url'] === $bdFile[0]['documento'] && $request->nom_archivo == '' || $request->nom_archivo == null){
 
@@ -544,18 +563,17 @@ class InstrumentController extends Controller
                 if ($file != null) {
                     if (substr($file, 0, 20) == "data:application/pdf") {
     
-                        $archivo = FileController::base64ToFile($file, request()->nom_archivo . '-' . date("Y-m-d") . '-' .  Str::random(6), "Comprobantes");
+                        $archivo = FileController::base64ToFile($file, $nom_archivo . '-' . date("Y-m-d"), "Comprobantes");
         
                         $file = $archivo;
         
                         Archivo::where('instrument_id', $instruments->id)->update([
-                            'nombre' => request()->nom_archivo,
                             'documento' => $file,
+                            'nombre' => $nom_archivo,
                             'instrument_id' =>  $instruments->id,
                         ]);
                     }
                 }
-            }
         }
 
         return response()->json([
@@ -563,6 +581,7 @@ class InstrumentController extends Controller
             "message" => "Registro modificado correctamente."
         ]);
     }
+}
 
     /**
      * Remove the specified resource from storage.

@@ -181,7 +181,8 @@ return [
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider::class,
         Leolopez\Backup\BackupServiceProvider::class,
-        Leolopez\Encrypt\EncryptServiceProvider::class
+        Leolopez\Encrypt\EncryptServiceProvider::class,
+        Reposmc\LoginSv\LoginSvServiceProvider::class
     ],
 
     /*

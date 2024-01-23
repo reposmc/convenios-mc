@@ -1,24 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-5 col-12">
-            <div class="">
-                <div class="card-body">
-                    <div class="row mb-0 mt-0">
-                        <div class="col-md-12 text-center pt-3 pb-3">
-                            <img src="{{ asset('logos/Escudo_D.svg') }}" class="logo-size" alt="Escudo_D">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-12">
+                <div class="">
+                    <div class="card-body">
+                        <div class="row mb-0 mt-0">
+                            <div class="col-md-12 text-center pt-3 pb-3">
+                                <img src="{{ asset('logos/Escudo_D.svg') }}" class="logo-size" alt="Escudo_D">
+                            </div>
                         </div>
-                    </div>
-                    <h3 class="color-primary text-center">Ingresa tus datos para iniciar</h3>
-                    {{-- <h6 class="color-primary text-center mb-3">o <a href="{{ route('register') }}"
+                        <h3 class="color-primary text-center">Ingresa tus datos para iniciar</h3>
+                        {{-- <h6 class="color-primary text-center mb-3">o <a href="{{ route('register') }}"
                             class="no-decoration">regístrate
                             aquí</a> si aún no tienes
                         cuenta.</h6> --}}
 
-                    {{-- @if (env('LOCAL_LOGIN')) --}}
-                    <form method="POST" action="{{ route('login') }}">
+                        {{-- @if (env('LOCAL_LOGIN')) --}}
+                        {{-- <form method="POST" action="{{ route('login') }}">
                         @csrf
 
                         <div class="form-group row mb-0">
@@ -78,27 +78,27 @@
                                 @endif
                             </div>
                         </div>
-                    </form>
-                    {{-- @endif --}}
+                    </form> --}}
+                        {{-- @endif --}}
 
-                    {{-- LOGIN SV --}}
-                    @if (env('LOGIN_SV_LOGIN'))
-                    <div class="form-group row-fluid mb-0">
-                        <div class="col-md-12 text-center">
-                            <a href="/redirectToProvider" class=" btn btn-normal shadow-none text-uppercase">
-                                {{ __('Iniciar sesión con LoginSV') }}
-                            </a>
-                        </div>
+                        {{-- LOGIN SV --}}
+                        @if (config('auth.LOGIN_SV_LOGIN'))
+                            <div class="form-group row-fluid mb-0">
+                                <div class="col-md-12 text-center">
+                                    <a href="/redirectToProvider" class=" btn btn-normal shadow-none text-uppercase">
+                                        {{ __('Iniciar sesión') }}
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+                        {{-- END LOGIN SV --}}
                     </div>
-                    @endif
-                    {{-- END LOGIN SV --}}
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/showPassword.js') }}" defer></script>
+    <script src="{{ asset('js/showPassword.js') }}" defer></script>
 @endsection

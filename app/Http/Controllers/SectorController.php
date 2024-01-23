@@ -13,6 +13,7 @@ class SectorController extends Controller
         $sectors = Sector::select('sectors.*')
                     ->orderBy('sector_name', 'asc')
                     ->get();
+
         $sectors = Encrypt::encryptObject($sectors, 'id');
 
         return response()->json([
@@ -32,11 +33,6 @@ class SectorController extends Controller
         ]);
     }
 
-    public function show(Sector $sector)
-    {
-        //
-    }
-
     public function update(Request $request)
     {
         $data = Encrypt::decryptArray($request->all(), 'id');
@@ -53,9 +49,13 @@ class SectorController extends Controller
         $id = Encrypt::decryptValue($id);
 
         $sector = Sector::with("instruments")->where('id', $id)->first();
-
+        
         if(sizeof($sector->instruments) > 0){
-            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+            /* abort(403, "No se puede eliminar este registro porque ya ha sido utilizado."); */
+            return response()->json([
+                "status"=>"fail",
+                "message"=>"El registro no puede eliminarse porque ya ha sido utilizado."
+            ]);
         }
 
         $sector->delete();

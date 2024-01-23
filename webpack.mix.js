@@ -38,5 +38,5 @@ if (!mix.inProduction()) {
                 ["app.js"]
             ),
         ],
-    });
+    }).version();
 }

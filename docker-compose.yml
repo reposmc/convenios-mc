@@ -1,0 +1,57 @@
+version: "3"
+
+networks:
+  nginx:
+    external: true
+
+services:
+  app:
+    image: cyberduck/php-fpm-laravel:8.2
+    container_name: php-convenios-mc
+    restart: always
+    expose:
+      - 9000
+    volumes:
+      - ./:/var/www/convenios-mc:delegated
+    networks:
+      nginx:
+        aliases:
+          - php-convenios-mc
+
+  composer:
+    image: cyberduck/php-fpm-laravel:8.2
+    container_name: composer
+    volumes:
+      - ./:/var/www/convenios-mc
+    working_dir: /var/www/convenios-mc
+    depends_on:
+      - app
+    entrypoint: ["composer"]
+    networks:
+      nginx:
+        aliases:
+          - composer-convenios-mc
+
+  npm:
+    image: node:18
+    container_name: npm
+    volumes:
+      - ./:/var/www/convenios-mc
+    working_dir: /var/www/convenios-mc
+    entrypoint: ["npm"]
+    networks:
+      nginx:
+        aliases:
+          - npm-convenios-mc
+
+  artisan:
+    image: cyberduck/php-fpm-laravel:8.2
+    container_name: artisan
+    volumes:
+      - ./:/var/www/convenios-mc:delegated
+    working_dir: /var/www/convenios-mc
+    entrypoint: ["php", "/var/www/convenios-mc/artisan"]
+    networks:
+      nginx:
+        aliases:
+          - artisan-convenios-mc

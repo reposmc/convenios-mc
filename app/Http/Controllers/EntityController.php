@@ -13,6 +13,7 @@ class EntityController extends Controller
         $entities = Entity::select('entities.*')
                     ->orderBy('entity_name', 'asc')
                     ->get();
+
         $entities = Encrypt::encryptObject($entities, 'id');
 
         return response()->json([
@@ -50,7 +51,11 @@ class EntityController extends Controller
         $entity = Entity::with("instruments")->where('id', $id)->first();
 
         if(sizeof($entity->instruments) > 0){
-            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+            /* abort(403, "No se puede eliminar este registro porque ya ha sido utilizado."); */
+            return response()->json([
+                "status"=>"fail",
+                "message"=>"El registro no puede eliminarse porque ya ha sido utilizado."
+            ]);
         }
 
         $entity->delete();

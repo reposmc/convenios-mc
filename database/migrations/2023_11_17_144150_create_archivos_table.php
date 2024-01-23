@@ -17,7 +17,7 @@ return new class extends Migration
  
           $table->id();
           $table->text('documento');
-          $table->string('nombre', 45);
+          $table->string('nombre', 200);
           $table->unsignedBigInteger('instrument_id');
           $table->softDeletes();
           $table->timestamps();

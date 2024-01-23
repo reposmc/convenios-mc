@@ -48,8 +48,14 @@ class Exoneration extends Model
     {
         return $this->belongsTo(Instrument::class, 'instrument_id', 'id');
     }
+
     public function tariff()
     {
         return $this->belongsTo(Tariff::class, "tariff_id_hour", "id");
     }
+
+    /* public function dependence()
+    {
+        return $this->belongsTo(Dependence::class, "dependence_id", "id");
+    } */
 }

@@ -189,16 +189,17 @@
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col cols="12" sm="12" md="6" >
+                    <v-col cols="12" sm="12" md="12" >
                       <input-file
                         accept="application/pdf"
                         v-model="$v.editedItem.archivo.$model"
                         :validation="$v.editedItem.archivo"
                         @update-file="editedItem.archivo = $event"
                         @file-size-exceeded="$emit('file-size-exceeded', true)"
+                        @name-file="editedItem.nom_archivo = $event"
                       />
                     </v-col>
-                    <v-col cols="12" sm="12" md="6" >
+                    <!-- <v-col cols="12" sm="12" md="6" >
                       <v-text-field
                         label="Nombre de archivo"
                         class=""
@@ -206,10 +207,10 @@
                         dense
                         type="text"
                         v-model="$v.editedItem.nom_archivo.$model"
-                      ></v-text-field>
+                      ></v-text-field> 
                       <br />
                       <br />
-                    </v-col>
+                    </v-col>-->
                   </v-row>
                   <v-row>
                     <v-col cols="12" sm="12" md="8">
@@ -276,16 +277,17 @@
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col cols="12" sm="12" md="6" v-if="hideExtension">
+                    <v-col cols="12" sm="12" md="12" v-if="hideExtension">
                       <input-file
                         accept="application/pdf"
                         v-model="$v.editedItem.prorroga.$model"
                         :validation="$v.editedItem.prorroga"
                         @update-file="editedItem.prorroga = $event"
                         @file-size-exceeded="$emit('file-size-exceeded', true)"
+                        @name-file="editedItem.nom_prorroga = $event"
                       />
                     </v-col>
-                    <v-col cols="12" sm="12" md="6" v-if="hideExtension">
+                    <!-- <v-col cols="12" sm="12" md="6" v-if="hideExtension">
                       <v-text-field
                         label="Nombre de archivo de prórroga"
                         class=""
@@ -293,10 +295,10 @@
                         dense
                         type="text"
                         v-model="$v.editedItem.nom_prorroga.$model"
-                      ></v-text-field>
+                      ></v-text-field> 
                       <br />
                       <br />
-                    </v-col>
+                    </v-col>-->
                   </v-row>
                   <!-- Dependencies -->
                   <template>
@@ -655,6 +657,22 @@
               <!-- body -->
               <!-- total table -->
             </v-simple-table>
+            <!-- total table -->
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 16px;
+              "
+            >
+              <span colspan="6" class="fw-bold">
+                Total de exoneraciones por instrumento:
+              </span>
+              <span class="fw-bold" v-if="item.total > 0">$ {{ item.total.toFixed(2) }}</span>
+              <span class="fw-bold" v-if="item.total <= 0">$ {{ total_value_view }}</span>
+            </div>
+            <!-- total table -->
           </template>
         </v-row>
           <v-row>
@@ -1362,9 +1380,6 @@ export default {
 					return true;
 				},
 			},
-      nom_archivo: {
-         
-      },
       prorroga: {
         file_size_validation: (value, vm) => {
 					if (Array.isArray(value)) {
@@ -1381,9 +1396,6 @@ export default {
 					}
 					return true;
 				},
-      },
-      nom_prorroga: {
-
       },
     },
     formDependencies: {
@@ -1418,6 +1430,8 @@ export default {
         required: requiredIf(function (editedItem) {
           return this.editedItem.type_instrument_name == "Convenio";
         }),
+        minLength: minLength(1),
+        maxLength: maxLength(200),
       },
       is_tariffed: {},
       non_tariff_concept: {
@@ -1470,9 +1484,6 @@ export default {
       },
       exonerated_description: {
         required,
-        /* required: requiredIf(function(editedItem){
-        return this.editedItem.type_instrument_name == "Convenio"
-      }), */
         minLength: minLength(1),
         maxLength: maxLength(500),
       },
@@ -1539,16 +1550,12 @@ export default {
       return this.editedItem.assignedExonerations.length > 0;
     },
     hideExtension(){
-      if (
-				this.editedItem.state === 'Prórroga'
-			) {
+      if (this.editedItem.state === 'Prórroga') {
 				return true;
 			}
 		},
     hideStatus(){
-      if (
-				this.editedItem.state === ''
-			) {
+      if (this.editedItem.state === '') {
 				return true;
 			}
 		},
@@ -1640,12 +1647,6 @@ export default {
               this.loading = false;
               this.$toast.warning('Agregue dependencias al instrumento.'); 
           }
-
-          if(this.editedItem.dateStartExtension == '' || this.editedItem.dateStartExtension == null && this.editedItem.dateFinishExtension == '' || this.editedItem.dateFinishExtension == null 
-          && this.editedItem.state == 'Prórroga' && this.editedItem.state != '' && this.editedItem.prorroga == '' || this.editedItem.prorroga == null && this.editedItem.nom_prorroga == '' || this.editedItem.nom_prorroga == null){
-            this.loading = false;
-            this.$toast.warning('Agregue el detalle del período de prórroga.');
-          }
           return;
       } 
 
@@ -1676,6 +1677,10 @@ export default {
             "Registro modificado correctamente.",
             "success"
           );
+        }
+
+        if (res.data.status == "fail") {
+          this.$toast.warning('El registro no puede modificar el tipo de instrumento porque ya contiene exoneraciones.');
         }
       } else {
         //Create instrument
@@ -1726,16 +1731,12 @@ export default {
 
     closeExoneration() {
       this.dialogCloseConfirm = true;
+      this.$v.formExonerations.$reset();
     },
 
     dialogExonerationCloseConfirm() {
-      this.$nextTick(() => {
-        this.editedItem = this.defaultItem;
-        this.editedIndex = -1;
-      });
-
-      this.dialogCloseConfirm = false;
       this.$v.formExonerations.$reset();
+      this.dialogCloseConfirm = false;
       this.dialogExoneration = false;
     },
 
@@ -1861,6 +1862,7 @@ export default {
 
     closeReset() {
       this.dialogExoneration = false;
+      this.$v.formExonerations.$reset();
     },
 
     async addExoneration() {
@@ -1888,6 +1890,7 @@ export default {
       if (res.data.status == "success") {
         this.updateAlert(true, "Registro almacenado correctamente.", "success");
       }
+      
       this.closeReset();
       this.initialize();
       return;
@@ -1970,6 +1973,7 @@ export default {
 
       //reset alerts
       this.$v.formExonerations.$reset();
+      
     },
 
     deleteAssignedExoneration(index) {
@@ -2070,6 +2074,24 @@ export default {
 
     updateTimeOut(event) {
       this.redirectSessionFinished = event;
+    },
+
+    clearExonerations() {
+      //clear inputs
+      this.formExonerations.concept = "";
+      this.formExonerations.quantity = "";
+      this.formExonerations.estimated_price = "";
+      this.formExonerations.dependence_name = "";
+      this.formExonerations.service_place_name = "";
+      this.formExonerations.is_tariffed = false;
+      this.formExonerations.non_tariff_concept = "";
+      this.formExonerations.non_tariff_amount = 0;
+      this.formExonerations.tariff_type_charge = "";
+      this.formExonerations.tariff_amount = 0;
+      this.formExonerations.number_hour = "";
+      this.formExonerations.number_people = "";
+      this.formExonerations.exonerated_description = "";
+      this.tariff_value = 0;
     },
   },
 };

@@ -13,6 +13,9 @@ return [
     |
     */
 
+    'LOCAL_LOGIN' => env('LOCAL_LOGIN', true),
+    'LOGIN_SV_LOGIN' => env('LOGIN_SV_LOGIN', false),
+
     'defaults' => [
         'guard' => 'web',
         'passwords' => 'users',

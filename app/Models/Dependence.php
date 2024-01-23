@@ -32,7 +32,7 @@ class Dependence extends Model
 
     public function exonerations()
     {
-        return $this->hasMany(Exoneration::class);
+        return $this->hasMany(Exonerations::class);
     }
 
     public function national_directions()

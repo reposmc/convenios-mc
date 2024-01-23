@@ -13,6 +13,7 @@ class TypeInstrumentController extends Controller
         $types = TypeInstrument::select('type_instruments.*')
                 ->orderBy('type_instrument_name', 'asc')
                 ->get();
+
         $types = Encrypt::encryptObject($types, 'id');
 
         return response()->json([
@@ -50,7 +51,11 @@ class TypeInstrumentController extends Controller
         $typeInstrument = TypeInstrument::with("instruments")->where('id', $id)->first();
 
         if(sizeof($typeInstrument->instruments) > 0){
-            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+            /* abort(403, "No se puede eliminar este registro porque ya ha sido utilizado."); */
+            return response()->json([
+                "status"=>"fail",
+                "message"=>"El registro no puede eliminarse porque ya ha sido utilizado."
+            ]);
         }
 
         $typeInstrument->delete();

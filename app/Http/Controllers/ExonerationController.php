@@ -115,17 +115,4 @@ class ExonerationController extends Controller
 
         return response()->json(['message' => 'success', 'exonerations' => $servicePlaces]);
     }
-    
-    /* public function filterByEntity(Request $request)
-    {
-        $entityName = $request->entity_name;
-        $servicePlaces = Exoneration::select('service_place_name')
-            ->join('instruments', 'exonerations.instrument_id', '=', 'instruments.id')
-            ->join('entities', 'instruments.entity_id', '=', 'entities.id')
-            ->where('entities.entity_name', $entityName)
-            ->groupBy('service_place_name')
-            ->get();
-
-        return response()->json(['message' => 'success', 'exonerations' => $servicePlaces]);
-    } */
 }

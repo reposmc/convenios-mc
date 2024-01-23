@@ -278,10 +278,10 @@
           .catch((error) => {
             this.updateAlert(
               true,
-              "No fue posible eliminar el registro porque ya ha sido utilizado.",
+              "No fue posible eliminar el registros.",
               "fail"
             );
-            this.closeDelete();
+            this.close();
             this.redirectSessionFinished = lib.verifySessionFinished(
               error.response.status,
               419

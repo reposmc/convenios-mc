@@ -75,11 +75,11 @@
                         <td class="instrument-info">{{ $d->instrument_name }}</td>
                     </tr>
                     <tr>
-                        <td class="instrument-info">Fecha de firma:</td>
+                        <td class="instrument-info">Fecha de Firma:</td>
                         <td class="instrument-info">{{ $d->date }}</td>
                     </tr>
                     <tr>
-                        <td class="instrument-info">Tipo de convenio:</td>
+                        <td class="instrument-info">Tipo de instrumento:</td>
                         <td class="instrument-info">{{ $d->type_instrument_name }}</td>
                     </tr>
                     <tr>
@@ -91,10 +91,13 @@
                         <td class="instrument-info">{{ $d->sector_name }}</td>
                     </tr>
                     <tr>
+                        <td class="instrument-info">Dirección Nacional que da el seguimiento:</td>
+                        <td class="instrument-info">{{ $d->national_direction_name }}</td>
+                    </tr>
+                    <tr>
                         <td class="instrument-info">Descripción:</td>
                         <td class="instrument-info">{{ $d->description }}</td>
                     </tr>
-                    
                 </tbody>
             </table>
             <br>

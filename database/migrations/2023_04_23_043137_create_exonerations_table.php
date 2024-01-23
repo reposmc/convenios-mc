@@ -26,7 +26,7 @@ return new class extends Migration
             $table->tinyInteger('is_tariffed')->nullable()->comment('0 = Tarifado, 1 = No Tarifado')->default(null);
             $table->double('tariff_amount', 8, 2)->nullable()->default(null);
             $table->double('total_amount', 8, 2)->nullable()->default(null);
-            $table->string('concept', 200)->nullable();
+            $table->string('concept')->nullable();
             $table->integer('quantity')->nullable();
             $table->double('estimated_price', 8, 2)->nullable()->default(null);
             $table->string('exonerated_description')->nullable();

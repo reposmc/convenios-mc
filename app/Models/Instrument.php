@@ -227,8 +227,13 @@ class Instrument extends Model
         return $this->belongsTo(TypeInstrument::class, 'type_instrument_id', 'id');
     }
 
-    public function exonerations()
+    public function exoneration()
     {
         return $this->hasMany(Exoneration::class);
+    }
+
+    public function exonerations()
+    {
+        return $this->hasMany(Exoneration::class, "instrument_id")->withTrashed();
     }
 }

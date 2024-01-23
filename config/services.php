@@ -30,4 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'loginsv' => [
+        'client_id' => env('LOGIN_SV_CLIENT_ID'),
+        'client_secret' => env('LOGIN_SV_CLIENT_SECRET'),
+        'redirect' => env('LOGIN_SV_REDIRECT'),
+    ],
+
 ];

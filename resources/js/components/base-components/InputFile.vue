@@ -10,6 +10,7 @@
       type="file"
       ref="inputFile"
       class="d-none p-3"
+      name="namefile"
       @change="updateFile"
       :accept="accept"
     />
@@ -36,6 +37,8 @@
 </template>
 
 <script>
+import SectorVue from '../Sector.vue';
+
 export default {
   data() {
     return {
@@ -91,14 +94,15 @@ export default {
 
   methods: {
     async updateFile(e) {
-       const size = e.target.files[0].size / 1024 / 1024;
-       if (size > 5) {
-         this.$emit("file-size-exceeded", true);
-         return;
+      const size = e.target.files[0].size / 1024 / 1024;
+      if (size > 5) {
+        this.$emit("file-size-exceeded", true);
+        return;
       }
       const file = await this.toBase64(e.target.files[0]);
       this.fileName = e.target.files[0].name;
       this.$emit("update-file", file);
+      this.$emit("name-file", this.fileName);
     },
 
     async toBase64(file) {
@@ -112,9 +116,6 @@ export default {
 
     clickInputFile() {
       this.$refs.inputFile.click();
-    },
-
-    clearFileName() {
       this.fileName = "";
     },
   },

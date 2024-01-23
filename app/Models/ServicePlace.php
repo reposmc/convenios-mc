@@ -29,4 +29,9 @@ class ServicePlace extends Model
 
     public $timestamps = false;
 
+    public function tariffs()
+    {
+        return $this->hasMany(ServicePlace::class);
+    }
+
 }

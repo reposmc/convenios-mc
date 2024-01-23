@@ -13,6 +13,7 @@ class NationalDirectionController extends Controller
         $directions = NationalDirection::select("national_directions.*")
                         ->orderBy('national_direction_name', 'asc')
                         ->get();
+                        
         $directions = Encrypt::encryptObject($directions, 'id');
 
         return response()->json([
@@ -50,7 +51,19 @@ class NationalDirectionController extends Controller
         $nationalDirection = NationalDirection::with("dependence")->where('id', $id)->first();
 
         if(sizeof($nationalDirection->dependence) > 0) {
-            abort(403, "No se puede eliminar este registro porque ya ha sido utilizado.");
+            /* abort(403, "No se puede eliminar este registro porque ya ha sido utilizado."); */
+            return response()->json([
+                "status"=>"fail",
+                "message"=>"El registro no puede eliminarse porque ya ha sido utilizado."
+            ]);
+        }
+
+        if(sizeof($nationalDirection->instruments) > 0){
+            /* abort(403, "No se puede eliminar este registro porque ya ha sido utilizado."); */
+            return response()->json([
+                "status"=>"fail",
+                "message"=>"El registro no puede eliminarse porque ya ha sido utilizado."
+            ]);
         }
 
         $nationalDirection->delete();

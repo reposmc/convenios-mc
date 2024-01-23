@@ -17,6 +17,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\ExcelController;
+use App\Http\Controllers\LoginSvController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,7 +60,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::post('/api/web/dependence/dependenciesByUser', [DependenceController::class, 'dependenciesByUser']);
 
         Route::get('api/web/instrument/getInstrument/{id}', [InstrumentController::class, 'getInstrument']);
-
+        
         // Views
         Route::get('/departments', function () {
             return view('department.index');
@@ -154,5 +155,9 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 Route::get('/api/web/tariff/byTariffTypeCharge/{tariffTypeCharge}', [TariffController::class, 'byTariffTypeCharge']);
 Route::get('api/web/tariff/byDependencyName/{dependencies}', [TariffController::class, 'byDependencyName']);
 Route::get('api/web/exonerations/byEntityName/{entity_name}', [ExonerationController::class, 'filterByEntity']);
+/* Route::get('api/web/exoneration/byEntityName/{entity_name}', [ExonerationController::class, 'filterByEntity']); */
 
 Route::post('import', [ExcelController::class, 'import']);
+
+Route::get('/redirectToProvider', [LoginSvController::class, 'redirectToProvider']);
+Route::get('/callback', [LoginSvController::class, 'handleProviderCallback']);

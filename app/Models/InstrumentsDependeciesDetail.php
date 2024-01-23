@@ -28,9 +28,4 @@ class InstrumentsDependeciesDetail extends Model
     ];
 
     public $timestamps = true;
-
-    public function dependence()
-   {
-      return $this->belongsTo(Dependence::class, "dependency_id");
-   }
 }

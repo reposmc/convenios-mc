@@ -207,10 +207,11 @@ class PDFController extends Controller
                     $instrument_id = Instrument::where("instrument_name", $request->instrument_name)->first()->id;
                     $kind_of_report = NULL;
 
-                    $data = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'sectors.sector_name', 'entities.entity_name')
+                    $data = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'sectors.sector_name', 'entities.entity_name', 'national_directions.national_direction_name')
                                         ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
                                         ->join('entities', 'instruments.entity_id', '=', 'entities.id')
                                         ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
+                                        ->join('national_directions', 'instruments.direction_id', '=', 'national_directions.id')
                                         ->where('instruments.id', $instrument_id)
                                         ->get();
 
@@ -233,13 +234,14 @@ class PDFController extends Controller
                     $instrument_id = Instrument::where("instrument_name", $request->instrument_name)->first()->id;
                     $kind_of_report = NULL;
 
-                    $data = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'sectors.sector_name', 'entities.entity_name')
+                    $data = Instrument::select('instruments.*', 'type_instruments.type_instrument_name', 'sectors.sector_name', 'entities.entity_name', 'national_directions.national_direction_name')
                                         ->join('type_instruments', 'instruments.type_instrument_id', '=', 'type_instruments.id')
                                         ->join('entities', 'instruments.entity_id', '=', 'entities.id')
                                         ->join('sectors', 'instruments.sector_id', '=', 'sectors.id')
+                                        ->join('national_directions', 'instruments.direction_id', '=', 'national_directions.id')
                                         ->where('instruments.id', $instrument_id)
                                         ->get();
-
+        
                     foreach($data as $item){
                         $item->exonerations = Exoneration::select('exonerations.*')
                         ->where('exonerations.instrument_id', $instrument_id)

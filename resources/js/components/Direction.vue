@@ -168,6 +168,36 @@
   import directionApi from "../apis/directionApi";
   import lib from "../libs/function";
   import { required, minLength, maxLength } from "vuelidate/lib/validators";
+  import Toast, { TYPE } from '../../../node_modules/vue-toastification';
+import '../../sass/_variablesToast.scss';
+
+const options = {
+	toastDefaults: {
+		[TYPE.SUCCESS]: {
+			timeout: 4000,
+			closeOnClick: false,
+			icon: {
+				iconClass: 'material-icons',
+				iconChildren: 'check_circle',
+				iconTag: 'span',
+			},
+			maxToasts: 1,
+		},
+
+		[TYPE.WARNING]: {
+			timeout: 4000,
+			closeOnClick: false,
+			icon: {
+				iconClass: 'material-icons',
+				iconChildren: 'warning',
+				iconTag: 'span',
+			},
+			maxToasts: 1,
+		},
+	},
+};
+
+Vue.use(Toast, options);
   
   export default {
     data: () => ({
@@ -261,10 +291,10 @@
           .catch((error) => {
             this.updateAlert(
               true,
-              "No fue posible eliminar el registro porque ya ha sido utilizado.",
+              "No fue posible eliminar el registros.",
               "fail"
             );
-            this.closeDelete();
+            this.close();
             this.redirectSessionFinished = lib.verifySessionFinished(
               error.response.status,
               419
@@ -277,6 +307,10 @@
             200
           );
           this.updateAlert(true, "Registro eliminado.", "success");
+        }
+
+        if (res.data.status == "fail") {
+          this.$toast.warning('El registro no puede eliminarse porque ya ha sido utilizado.');
         }
   
         this.initialize();

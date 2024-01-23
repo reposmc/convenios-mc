@@ -10,50 +10,30 @@
             <v-container>
                 <v-row class="mx-auto">
                     <v-col cols="12" sm="12" md="12">
-                        <base-select-search 
-                            label="Tipo de Reporte"
+                        <base-select-search label="Tipo de Reporte"
                             :items="['Instrumento', 'Dirección Nacional', 'General',]"
-                            :validation="$v.parameters.kind_of_report" 
-                        />
+                            :validation="$v.parameters.kind_of_report" />
                     </v-col>
                     <!-- <v-col cols="12" sm="12" md="12" v-if="parameters.kindOfReport == 'General'">
                         <base-select-search label="Institución" v-model.trim="$v.parameters.entity_name.$model"
                             :items="entities" item="entity_name" :validation="$v.parameters.entity_name" />
                     </v-col> -->
                     <v-col cols="12" sm="12" md="12" v-if="parameters.kind_of_report == 'Dirección Nacional'">
-                        <base-select-search 
-                            label="Dirección Nacional"
-                            v-model.trim="$v.parameters.national_direction_name.$model" 
-                            :items="nationals"
-                            item="national_direction_name" 
-                            :validation="$v.parameters.national_direction_name" />
+                        <base-select-search label="Dirección Nacional"
+                            v-model.trim="$v.parameters.national_direction_name.$model" :items="nationals"
+                            item="national_direction_name" :validation="$v.parameters.national_direction_name" />
                     </v-col>
                     <v-col cols="12" sm="12" md="12" v-if="parameters.kind_of_report == 'Instrumento'">
-                        <base-select-search 
-                            label="Instrumento" 
-                            v-model.trim="$v.parameters.instrument_name.$model"
-                            :items="instruments" 
-                            item="instrument_name" 
-                            :validation="$v.parameters.instrument_name" />
+                        <base-select-search label="Instrumento" v-model.trim="$v.parameters.instrument_name.$model"
+                            :items="instruments" item="instrument_name" :validation="$v.parameters.instrument_name" />
                     </v-col>
                     <v-col cols="12" sm="12" md="6">
-                        <base-input
-                            label="Fecha inicial" 
-                            v-model="$v.parameters.dateOne.$model"
-                            :validation="$v.parameters.dateOne" 
-                            validationTextType="none" 
-                            type="date" 
-                            v-show="hidden"
-                        />
+                        <base-input label="Fecha inicial" v-model="$v.parameters.dateOne.$model"
+                            :validation="$v.parameters.dateOne" validationTextType="none" type="date" v-show="hidden"/>
                     </v-col>
                     <v-col cols="12" sm="12" md="6">
-                        <base-input 
-                            label="Fecha final" 
-                            v-model="$v.parameters.dateTwo.$model"
-                            :validation="$v.parameters.dateTwo" 
-                            validationTextType="none" 
-                            type="date" 
-                            v-show="hidden"/>
+                        <base-input label="Fecha final" v-model="$v.parameters.dateTwo.$model"
+                            :validation="$v.parameters.dateTwo" validationTextType="none" type="date" v-show="hidden"/>
                     </v-col>
                     <v-col cols="12" sm="12" md="12" v-if="parameters.kind_of_report == 'Dirección Nacional'">
                         <v-checkbox
